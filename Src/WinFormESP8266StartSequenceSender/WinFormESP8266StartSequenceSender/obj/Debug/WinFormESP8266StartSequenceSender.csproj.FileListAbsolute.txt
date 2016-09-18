@@ -1,0 +1,1 @@
+C:\Users\Abranch\Documents\Visual Studio 2015\Projects\WinFormESP8266StartSequenceSender\WinFormESP8266StartSequenceSender\bin\Debug\WinFormESP8266StartSequenceSender.exe.config

@@ -1,0 +1,13 @@
+﻿  Strip.cpp
+c1xx : warning C4117: macro name '__cplusplus' is reserved, '#define' ignored
+c:\users\abranch\documents\arduino\protrinkethandlerx_vs\__vm\.protrinkethandlerx_vs.vsarduino.h(13): warning C4005: '__AVR_ATmega328p__': macro redefinition
+  c:\users\abranch\documents\arduino\protrinkethandlerx_vs\__vm\.protrinkethandlerx_vs.vsarduino.h(13): note: command-line arguments:  see previous definition of '__AVR_ATmega328p__'
+c:\users\abranch\documents\arduino\protrinkethandlerx_vs\__vm\.protrinkethandlerx_vs.vsarduino.h(14): warning C4005: '__AVR_ATmega328P__': macro redefinition
+  c:\users\abranch\documents\arduino\protrinkethandlerx_vs\__vm\.protrinkethandlerx_vs.vsarduino.h(14): note: command-line arguments:  see previous definition of '__AVR_ATmega328P__'
+c:\users\abranch\documents\arduino\protrinkethandlerx_vs\__vm\.protrinkethandlerx_vs.vsarduino.h(17): warning C4005: 'ARDUINO_AVR_PROTRINKET5': macro redefinition
+  c:\users\abranch\documents\arduino\protrinkethandlerx_vs\__vm\.protrinkethandlerx_vs.vsarduino.h(17): note: command-line arguments:  see previous definition of 'ARDUINO_AVR_PROTRINKET5'
+c:\users\abranch\documents\arduino\protrinkethandlerx_vs\__vm\.protrinkethandlerx_vs.vsarduino.h(18): warning C4005: 'ARDUINO_ARCH_AVR': macro redefinition
+  c:\users\abranch\documents\arduino\protrinkethandlerx_vs\__vm\.protrinkethandlerx_vs.vsarduino.h(18): note: command-line arguments:  see previous definition of 'ARDUINO_ARCH_AVR'
+c:\users\abranch\documents\arduino\protrinkethandlerx_vs\__vm\.protrinkethandlerx_vs.vsarduino.h(19): warning C4117: macro name '__cplusplus' is reserved, '#define' ignored
+c:\program files (x86)\arduino\hardware\tools\avr\avr\include\math.h(364): warning C4002: too many actual parameters for macro '__asm__'
+c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\delay.h(95): fatal error C1021: invalid preprocessor command 'warning'

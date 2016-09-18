@@ -1,0 +1,11 @@
+C:\Users\Abranch\Documents\Visual Studio 2015\Projects\LEDLightingComposer\LEDLightingComposer_Tests\bin\Debug\LEDLightingComposer_Tests.dll
+C:\Users\Abranch\Documents\Visual Studio 2015\Projects\LEDLightingComposer\LEDLightingComposer_Tests\bin\Debug\LEDLightingComposer_Tests.pdb
+C:\Users\Abranch\Documents\Visual Studio 2015\Projects\LEDLightingComposer\LEDLightingComposer_Tests\bin\Debug\LEDLightingComposer.exe
+C:\Users\Abranch\Documents\Visual Studio 2015\Projects\LEDLightingComposer\LEDLightingComposer_Tests\bin\Debug\Microsoft.VisualStudio.QualityTools.UnitTestFramework.dll
+C:\Users\Abranch\Documents\Visual Studio 2015\Projects\LEDLightingComposer\LEDLightingComposer_Tests\bin\Debug\MySql.Data.dll
+C:\Users\Abranch\Documents\Visual Studio 2015\Projects\LEDLightingComposer\LEDLightingComposer_Tests\bin\Debug\AxInterop.WMPLib.dll
+C:\Users\Abranch\Documents\Visual Studio 2015\Projects\LEDLightingComposer\LEDLightingComposer_Tests\bin\Debug\Interop.WMPLib.dll
+C:\Users\Abranch\Documents\Visual Studio 2015\Projects\LEDLightingComposer\LEDLightingComposer_Tests\bin\Debug\LEDLightingComposer.pdb
+C:\Users\Abranch\Documents\Visual Studio 2015\Projects\LEDLightingComposer\LEDLightingComposer_Tests\obj\Debug\LEDLightingComposer_Tests.csprojResolveAssemblyReference.cache
+C:\Users\Abranch\Documents\Visual Studio 2015\Projects\LEDLightingComposer\LEDLightingComposer_Tests\obj\Debug\LEDLightingComposer_Tests.dll
+C:\Users\Abranch\Documents\Visual Studio 2015\Projects\LEDLightingComposer\LEDLightingComposer_Tests\obj\Debug\LEDLightingComposer_Tests.pdb

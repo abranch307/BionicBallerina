@@ -1,0 +1,9 @@
+C:\Users\Abranch\Desktop\Microcontroller_Projects\ESP8266\ESP8266StructSenderProg\ESP8266StructSenderProg\bin\Debug\ESP8266StructSenderProg.exe.config
+C:\Users\Abranch\Desktop\Microcontroller_Projects\ESP8266\ESP8266StructSenderProg\ESP8266StructSenderProg\bin\Debug\ESP8266StructSenderProg.exe
+C:\Users\Abranch\Desktop\Microcontroller_Projects\ESP8266\ESP8266StructSenderProg\ESP8266StructSenderProg\bin\Debug\ESP8266StructSenderProg.pdb
+C:\Users\Abranch\Desktop\Microcontroller_Projects\ESP8266\ESP8266StructSenderProg\ESP8266StructSenderProg\obj\Debug\ESP8266StructSenderProg.csprojResolveAssemblyReference.cache
+C:\Users\Abranch\Desktop\Microcontroller_Projects\ESP8266\ESP8266StructSenderProg\ESP8266StructSenderProg\obj\Debug\ESP8266StructSenderProg.StructSenderFrm.resources
+C:\Users\Abranch\Desktop\Microcontroller_Projects\ESP8266\ESP8266StructSenderProg\ESP8266StructSenderProg\obj\Debug\ESP8266StructSenderProg.Properties.Resources.resources
+C:\Users\Abranch\Desktop\Microcontroller_Projects\ESP8266\ESP8266StructSenderProg\ESP8266StructSenderProg\obj\Debug\ESP8266StructSenderProg.csproj.GenerateResource.Cache
+C:\Users\Abranch\Desktop\Microcontroller_Projects\ESP8266\ESP8266StructSenderProg\ESP8266StructSenderProg\obj\Debug\ESP8266StructSenderProg.exe
+C:\Users\Abranch\Desktop\Microcontroller_Projects\ESP8266\ESP8266StructSenderProg\ESP8266StructSenderProg\obj\Debug\ESP8266StructSenderProg.pdb
