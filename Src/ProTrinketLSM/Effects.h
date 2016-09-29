@@ -42,8 +42,8 @@ class Effects {
 	public:
 		static void allClear(Adafruit_DotStar* strip, LightingSequence* lseqs, uint16_t* currentSequence);
 		static void rainbow(Adafruit_DotStar* strip, LightingSequence* lseqs, uint16_t* currentSequence, uint16_t* i, uint16_t* p0, uint16_t* p1, uint16_t* p2, uint16_t* p3, uint16_t* p4, uint16_t* p5);
-		static void loadColor(Adafruit_DotStar* strip, LightingSequence* lseqs, uint16_t* currentSequence);
-		static void bounceBack(Adafruit_DotStar* strip, LightingSequence* lseqs, uint16_t* currentSequence);
+		static void loadColor(Adafruit_DotStar* strip, LightingSequence* lseqs, uint16_t* currentSequence, uint16_t* shiftPixelToLoad, bool clearTailPixel, bool clearLastHeadPixel);
+		static void bounceBack(Adafruit_DotStar* strip, LightingSequence* lseqs, uint16_t* currentSequence, bool* init, bool* forward, uint16_t *shiftPixelsBy, uint16_t* tail, uint16_t* head, uint16_t* bounces, uint16_t initHead, uint16_t initTail);
 		static void flowThrough(Adafruit_DotStar* strip, LightingSequence* lseqs, uint16_t* currentSequence);
 	private:
 		//Disallow creating instance of object

@@ -31,22 +31,22 @@ void setup()
 	////Setup lighting sequences
 
 	LightingSequence* seqs1 = (LightingSequence*)calloc(5, sizeof(LightingSequence));
-	seqs1[0] = { LOADCOLOR, 5, "1,2,3,4,5", "1,2,3,4,5", 0, 4000, 0, 0 };//load color effect
-	seqs1[1] = { FLOWTHROUGH, 5, "1,2,3,4,5", "1,2,3,4,5", 0, 4000, 0, 2 };//flowthrough effect
-	seqs1[2] = { CLEAR, 5, "", "", 0, 4, 0, 0 };//clear effect
-	seqs1[3] = { BOUNCEBACK, 5, "1,2,3,4,5", "1,2,3,4,5", 4000, 1000, 0, 2 };//bounceback effect
-	seqs1[4] = { RAINBOW, 5, "1,2,3,4,5", "1,2,3,4,5", 4000, 5000, 1, 2 };//rainbow effect
+	seqs1[0] = { LOADCOLOR, 5, "1,2,3,4,5 ", "1,2,3,4,5 ", 0, 4000, 0, 0 };//load color effect
+	seqs1[1] = { FLOWTHROUGH, 5, "1,2,3,4,5 ", "1,2,3,4,5 ", 0, 4000, 0, 2 };//flowthrough effect
+	seqs1[2] = { CLEAR, 5, " ", " ", 0, 4, 0, 0 };//clear effect
+	seqs1[3] = { BOUNCEBACK, 5, "1,2,3,4,5 ", "1,2,3,4,5 ", 4000, 1000, 0, 2 };//bounceback effect
+	seqs1[4] = { RAINBOW, 5, "1,2,3,4,5 ", "1,2,3,4,5 ", 4000, 5000, 1, 2 };//rainbow effect
 
 	//Initialize strip
 	strips[0] = Strip(30, 4, 5, DOTSTAR_RGB, seqs1, 5);
 	strips[0].stripUpdateRet = &sRets[0];
 
 	LightingSequence* seqs2 = (LightingSequence*)calloc(5, sizeof(LightingSequence));
-	seqs2[0] = { LOADCOLOR, 5, "1,2,3,4,5", "5,4,3,2,1", 0, 5000, 0, 0 };//load color effect
-	seqs2[1] = { FLOWTHROUGH, 5, "1,2,3,4,5", "5,4,3,2,1", 4000, 5000, 0, 2 };//flowthrough effect
-	seqs2[2] = { CLEAR, 5, "", "", 0, 0, 0, 0 };//clear effect
-	seqs2[3] = { BOUNCEBACK, 5, "1,2,3,4,5", "5,4,3,2,1", 4000, 2000, 0, 2 };//bounceback effect
-	seqs2[4] = { RAINBOW, 5, "1,2,3,4,5", "5,4,3,2,1", 4000, 6000, 1, 2 };//rainbow effect
+	seqs2[0] = { LOADCOLOR, 5, "1,2,3,4,5 ", "5,4,3,2,1 ", 0, 5000, 0, 0 };//load color effect
+	seqs2[1] = { FLOWTHROUGH, 5, "1,2,3,4,5 ", "5,4,3,2,1 ", 4000, 5000, 0, 2 };//flowthrough effect
+	seqs2[2] = { CLEAR, 5, " ", " ", 0, 0, 0, 0 };//clear effect
+	seqs2[3] = { BOUNCEBACK, 5, "1,2,3,4,5 ", "5,4,3,2,1 ", 4000, 2000, 0, 2 };//bounceback effect
+	seqs2[4] = { RAINBOW, 5, "1,2,3,4,5 ", "5,4,3,2,1 ", 4000, 6000, 1, 2 };//rainbow effect
 
 	strips[1] = Strip(30, 8, 6, DOTSTAR_RGB, seqs2, 5);
 	strips[1].stripUpdateRet = &sRets[1];

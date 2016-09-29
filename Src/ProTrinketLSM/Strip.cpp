@@ -94,11 +94,11 @@ void Strip::Update(unsigned long currentPerformanceTime) {
 				stripUpdateRet->effectNum = RAINBOW;
 				break;
 			case LOADCOLOR:
-				Effects::loadColor(&strip, lseqs, &currentSequence);
+				Effects::loadColor(&strip, lseqs, &currentSequence, 0, false, false);
 				stripUpdateRet->effectNum = LOADCOLOR;
 				break;
 			case BOUNCEBACK:
-				//Effects::bounceBack(lseqs[currentSequence].colors, lseqs[currentSequence].delayTime, lseqs[currentSequence].bounces, lseqs[currentSequence].effectedPixels);
+				Effects::bounceBack(&strip, lseqs, &currentSequence,&init, &forward, &i, &tail, &head, &bounces, getHeadofLED(), getTailofLED());
 				stripUpdateRet->effectNum = BOUNCEBACK;
 				break;
 			case FLOWTHROUGH:
@@ -133,14 +133,54 @@ uint8_t Strip::getEffectNum() {
 	return lseqs[currentSequence].lightsequence;
 }
 
+uint16_t Strip::getHeadofLED() {
+	//Declare variables
+	char *pixelElem, *SavePtr, *tName;//Hold pixelElem and string placement from strtok_r
+	uint16_t head = -1;
+
+	//Set first pixelElem and color elems
+	pixelElem = strtok_r((char*)lseqs[currentSequence].effectedPixels, ",", &SavePtr);
+
+	//Exit if pixelElem or colorElem is null
+	if (pixelElem == NULL) {
+		return head;
+	}
+
+	//Loop through tokens and set struct values as needed
+	do
+	{
+		head = atoi(pixelElem);
+	} while ((pixelElem = strtok_r(NULL, ",", &SavePtr)) != NULL);
+
+	return head;
+}
+
+uint16_t Strip::getTailofLED() {
+	//Declare variables
+	char *pixelElem, *SavePtr, *tName;//Hold pixelElem and string placement from strtok_r
+	uint16_t tail = -1;
+
+	//Set first pixelElem and color elems
+	pixelElem = strtok_r((char*)lseqs[currentSequence].effectedPixels, ",", &SavePtr);
+
+	//Exit if pixelElem or colorElem is null
+	if (pixelElem == NULL) {
+		return tail;
+	}
+
+	tail = atoi(pixelElem);
+
+	return tail;
+}
+
 /*
 	Should i always be resetting the p values?
 */
 bool Strip::resetGlobalVars() {
 	//currentSequence = 0;
 	countSeqs = 0, currentDuration = 0, prevDuration = -1, prevSeqTimesAccumulated = 0;
-	proceed = false;
-	counter1 = 0, counter2 = 0, i = -1, j = -1, p0 = -1, p1 = 0, p2 = 1, p3 = 2, p4 = 3, p5 = 4;
+	proceed = false, init = true, forward = true;
+	counter1 = 0, counter2 = 0, i = -1, j = -1, p0 = -1, p1 = 0, p2 = 1, p3 = 2, p4 = 3, p5 = 4, tail = 0, head = 0, bounces = 0;
 
 	return true;
 }
