@@ -12,7 +12,6 @@
 #define _VSARDUINO_H_
 #define __AVR_ATmega328p__
 #define __AVR_ATmega328P__
-#define _VMDEBUG 1
 #define F_CPU 16000000L
 #define ARDUINO 10607
 #define ARDUINO_AVR_PROTRINKET5
@@ -85,5 +84,13 @@ extern "C" void __cxa_pure_virtual() {;}
 #define portOutputRegister(P)
 #define portInputRegister(P)
 #define portModeRegister(P)
-#include <..\ProTrinket5VSpikes(VS)\ProTrinket5VSpikes.ino>
+#include <..\ProTrinketLSM\ProTrinketLSM.ino>
+#include <..\ProTrinketLSM\Effects.cpp>
+#include <..\ProTrinketLSM\Effects.h>
+#include <..\ProTrinketLSM\EffectsManager.cpp>
+#include <..\ProTrinketLSM\EffectsManager.h>
+#include <..\ProTrinketLSM\Strip.cpp>
+#include <..\ProTrinketLSM\Strip.h>
+#include <..\ProTrinketLSM\Structs.cpp>
+#include <..\ProTrinketLSM\Structs.h>
 #endif

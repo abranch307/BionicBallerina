@@ -2,7 +2,7 @@
 #include <Adafruit_DotStar.h>
 #include <avr/power.h>
 
-#define NUMPIXELS 30
+#define NUMPIXELS 180
 #define DATAPIN    4
 #define CLOCKPIN   5
 #define DATAPIN2   8
@@ -48,7 +48,7 @@ void setup() {
 
   strip1.dpin = 4;
   strip1.cpin = 5;
-  strip1.nled = 30;
+  strip1.nled = 180;
   strip1.cscheme = DOTSTAR_RGB;
   
   /*Adafruit_DotStar*/ strip = Adafruit_DotStar( strip1.nled, strip1.dpin, strip1.cpin, strip1.cscheme);
