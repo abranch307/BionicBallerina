@@ -70,7 +70,6 @@ void Strip::Update(unsigned long currentPerformanceTime) {
 	//Set effectNum in info return struct
 	stripUpdateRet->effectNum = -1;
 
-
 	////Do i need to keep track of last currentDuration so that when currentDuration is changed to int, we don't update more than 1?
 	////If currentDuration is .5, this would round up to 1.  If the next time in, the currentDuration is 1.2, this would round up to 1 as well...
 	////I may need to keep track of lass duration processed (being 1), so once .5 is done, it won't do 1.2 as one...
@@ -112,7 +111,6 @@ void Strip::Update(unsigned long currentPerformanceTime) {
 				break;
 			case LOADCOLOR:
 				Effects::loadColor(&strip, lseqs, currentSequence, 0, false, false, this);
-				//strip.show();
 				stripUpdateRet->effectNum = LOADCOLOR;
 				break;
 			case BOUNCEBACK:
