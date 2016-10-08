@@ -28,8 +28,8 @@ struct LightingSequence {
 	uint8_t lightsequence;
 	uint8_t totalPixels;
 	const char* effectedPixels; //Comma delimited
-	const char* colors; //Comma delimited
-	uint32_t delayTime; //In milliseconds
+	const char* colors; //Comma delimited and are single digit numbers that have to be compared to get actual color
+	uint32_t delayTime; //In milliseconds - will do as low as 200 milliseconds per second
 	uint16_t duration; //In milliseconds
 	uint8_t bounces;
 	uint8_t iterations;
@@ -37,10 +37,11 @@ struct LightingSequence {
 
 struct StripUpdateReturn {
 	uint8_t effectNum;
-	uint16_t currentSequence;
+	uint32_t currentSequence;
 	unsigned long currentDuration;
 	unsigned long performanceElapsedTime;
 	unsigned long prevSeqTimesAccumulated;
+	int8_t effectSuccess;
 };
 
 struct EffectsManagerUpdateReturn {

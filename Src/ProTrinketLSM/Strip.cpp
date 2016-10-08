@@ -2,6 +2,10 @@
 // 
 // 
 
+#ifndef _EFFECTS_h
+	#include <Effects.h>
+#endif
+
 #include "Strip.h"
 
 Strip::Strip(void) {
@@ -13,7 +17,7 @@ Strip::~Strip() {
 }
 
 Strip::Strip(uint16_t NumPixels, uint8_t Datapin, uint8_t ClockPin, uint8_t RGB, LightingSequence* initSeq, uint16_t numSeqs) {
-	strip = Adafruit_DotStar(NumPixels, Datapin, ClockPin, DOTSTAR_RBG);
+	strip = Adafruit_DotStar(NumPixels, Datapin, ClockPin, DOTSTAR_RGB);
 	lseqs = initSeq;
 	countSeqs = numSeqs;
 }
@@ -33,10 +37,10 @@ void Strip::Update(unsigned long currentPerformanceTime) {
 
 	//Exit if currentSequence is > total sequences (call allClear function for strip)
 	if (currentSequence >= countSeqs) {
-		//Call allClear for Strip
-		Effects::allClear(&strip, lseqs, &currentSequence);
-
 		if (!proceed) {
+			//Call allClear for Strip
+			Effects::allClear(&strip, lseqs, (currentSequence - 1), this);
+
 			//Reset global variables
 			resetGlobalVars();
 
@@ -63,50 +67,75 @@ void Strip::Update(unsigned long currentPerformanceTime) {
 		prevDuration = -1;
 	}
 
+	//Set effectNum in info return struct
+	stripUpdateRet->effectNum = -1;
+
+
 	////Do i need to keep track of last currentDuration so that when currentDuration is changed to int, we don't update more than 1?
 	////If currentDuration is .5, this would round up to 1.  If the next time in, the currentDuration is 1.2, this would round up to 1 as well...
 	////I may need to keep track of lass duration processed (being 1), so once .5 is done, it won't do 1.2 as one...
 	////Or, since currentDuration is milliseconds, will it never = 0?  delaytime = 2000, currentDuration = 2001, won't % to 0...
 	//
 	//Round duration down to thousandths and compare against last duration
-	roundedDuration = (unsigned long)((float)currentDuration/(float)1000) * 1000;
+	roundedDuration = (unsigned long)((float)currentDuration/(float)200) * 200;
 	if (prevDuration == -1) {
 		proceed = true;
 		prevDuration = roundedDuration;
+
+		stripUpdateRet->effectNum = 555;
 	}
 	else if (roundedDuration != prevDuration) {
 		proceed = true;
 		prevDuration = roundedDuration;
+
+		stripUpdateRet->effectNum = 555;
 	}
 
-	//Set effectNum in info return struct
-	stripUpdateRet->effectNum = -1;
+	//Set current duration to rounded duration
+	currentDuration = roundedDuration;
+
+	//Set values to return
+	stripUpdateRet->currentDuration = roundedDuration;
+	stripUpdateRet->effectSuccess = -5;
 
 	//If delaytime % counter is zero, then perform next peformance of lighting effect
-	if ((lseqs[currentSequence].delayTime % roundedDuration) == 0 && proceed) {
+	if ((roundedDuration % lseqs[currentSequence].delayTime) == 0 && proceed) {
+		stripUpdateRet->currentSequence = 999;
 		switch (lseqs[currentSequence].lightsequence) {
 			case ALLCLEAR:
-				Effects::allClear(&strip, lseqs, &currentSequence);
+				Effects::allClear(&strip, lseqs, currentSequence, this);
 				stripUpdateRet->effectNum = ALLCLEAR;
 				break;
 			case RAINBOW:
-				Effects::rainbow(&strip, lseqs, &currentSequence, &i, &p0, &p1, &p2, &p3, &p4, &p5);
+				Effects::rainbow(&strip, lseqs, currentSequence, &i, &p0, &p1, &p2, &p3, &p4, &p5, this);
 				stripUpdateRet->effectNum = RAINBOW;
 				break;
 			case LOADCOLOR:
-				Effects::loadColor(&strip, lseqs, &currentSequence, 0, false, false);
+				Effects::loadColor(&strip, lseqs, currentSequence, 0, false, false, this);
+				//strip.show();
 				stripUpdateRet->effectNum = LOADCOLOR;
 				break;
 			case BOUNCEBACK:
-				Effects::bounceBack(&strip, lseqs, &currentSequence,&init, &forward, &i, &tail, &head, &bounces, getHeadofLED(), getTailofLED());
+				Effects::bounceBack(&strip, lseqs, currentSequence, &init, &forward, &i, &tail, &head, &bounces, getHeadofLED(), getTailofLED(), this);
 				stripUpdateRet->effectNum = BOUNCEBACK;
 				break;
 			case FLOWTHROUGH:
-				//Effects::flowThrough(lseqs[currentSequence].colors, lseqs[currentSequence].delayTime, lseqs[currentSequence].iterations, lseqs[currentSequence].effectedPixels);
+				//Effects::flowThrough(lseqs[currentSequence].colors, lseqs[currentSequence].delayTime, lseqs[currentSequence].iterations, lseqs[currentSequence].effectedPixels this);
 				stripUpdateRet->effectNum = FLOWTHROUGH;
 				break;
 		}
+
+		//Reset proceed to false (works with exiting if current sequence is greater and this placement is important)
+		proceed = false;
 	}
+}
+
+Adafruit_DotStar* Strip::getStrip() {
+	return &strip;
+}
+
+bool Strip::getProceed() {
+	return proceed;
 }
 
 uint16_t Strip::getCurrentSeq() {
@@ -231,4 +260,8 @@ bool Strip::findCurrentSeqFromPerformanceTime(unsigned long performanceTime) {
 
 LightingSequence* Strip::getCurrentLightingSequence() {
 	return &lseqs[currentSequence];
+}
+
+LightingSequence* Strip::getLightingSequences() {
+	return lseqs;
 }

@@ -13,10 +13,6 @@
 	#include "Structs.h"
 #endif
 
-#ifndef _EFFECTS_h
-	#include <Effects.h>
-#endif
-
 #ifndef _ADAFRUIT_DOT_STAR_H_
 	#include <Adafruit_DotStar\Adafruit_DotStar.h>
 #endif
@@ -36,10 +32,13 @@ class Strip {
 		uint8_t getEffectNum();
 		uint16_t getHeadofLED();
 		uint16_t getTailofLED();
+		Adafruit_DotStar* getStrip();
+		bool getProceed();
 		bool resetGlobalVars();
 		bool resetPerformance();
 		bool findCurrentSeqFromPerformanceTime(unsigned long performanceTime);
 		LightingSequence* getCurrentLightingSequence();
+		LightingSequence* getLightingSequences();
 
 		StripUpdateReturn* stripUpdateRet; //Holds information to return from Update method
 	private:
@@ -48,7 +47,7 @@ class Strip {
 		uint16_t currentSequence = 0, countSeqs = 0;
 		bool proceed = false, init = true, forward = true;
 		unsigned long currentDuration = 0, // so elapsedtime - this = time within this sequence
-			prevDuration = 0, //Makes sure duration isn't processed more than once for sequence
+			prevDuration = -1, //Makes sure duration isn't processed more than once for sequence
 			prevSeqTimesAccumulated = 0; //As sequences change, the duration times are accumulated to here (used to find current effect's duration)
 		uint16_t counter1 = 0, counter2 = 0, i = -1, j = -1, p0 = -1, p1 = 0, p2 = 1, p3 = 2, p4 = 3, p5 = 4, tail = 0, head = 0, bounces = 0;
 	protected:
