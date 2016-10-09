@@ -25,15 +25,16 @@ Strip::Strip(uint16_t NumPixels, uint8_t Datapin, uint8_t ClockPin, uint8_t RGB,
 void Strip::Update(unsigned long currentPerformanceTime) {
 	//Declare variables
 	unsigned long roundedDuration = 0;
+	uint16_t hd = 0, tl = 0;  //temporary head and tail placement for bounces
 
 	//Get current Duration
 	currentDuration = currentPerformanceTime - prevSeqTimesAccumulated;
 
 	//Set return values
-	stripUpdateRet->currentDuration = currentDuration;
-	stripUpdateRet->currentSequence = currentSequence;
-	stripUpdateRet->performanceElapsedTime = currentPerformanceTime;
-	stripUpdateRet->prevSeqTimesAccumulated = prevSeqTimesAccumulated;
+	//stripUpdateRet->currentDuration = currentDuration;
+	//stripUpdateRet->currentSequence = currentSequence;
+	//stripUpdateRet->performanceElapsedTime = currentPerformanceTime;
+	//stripUpdateRet->prevSeqTimesAccumulated = prevSeqTimesAccumulated;
 
 	//Exit if currentSequence is > total sequences (call allClear function for strip)
 	if (currentSequence >= countSeqs) {
@@ -45,7 +46,7 @@ void Strip::Update(unsigned long currentPerformanceTime) {
 			resetGlobalVars();
 
 			//Set effectNum in return struct
-			stripUpdateRet->effectNum = -1;
+			//stripUpdateRet->effectNum = -1;
 
 			//Set proceed to true so we don't do this over and over again after effects has stopped
 			proceed = true;
@@ -81,25 +82,25 @@ void Strip::Update(unsigned long currentPerformanceTime) {
 		proceed = true;
 		prevDuration = roundedDuration;
 
-		stripUpdateRet->effectNum = 555;
+		//stripUpdateRet->effectNum = 555;
 	}
 	else if (roundedDuration != prevDuration) {
 		proceed = true;
 		prevDuration = roundedDuration;
 
-		stripUpdateRet->effectNum = 555;
+		//stripUpdateRet->effectNum = 555;
 	}
 
 	//Set current duration to rounded duration
 	currentDuration = roundedDuration;
 
 	//Set values to return
-	stripUpdateRet->currentDuration = roundedDuration;
-	stripUpdateRet->effectSuccess = -5;
+	//stripUpdateRet->currentDuration = roundedDuration;
+	//stripUpdateRet->effectSuccess = -5;
 
 	//If delaytime % counter is zero, then perform next peformance of lighting effect
 	if ((roundedDuration % lseqs[currentSequence].delayTime) == 0 && proceed) {
-		stripUpdateRet->currentSequence = 999;
+		//stripUpdateRet->currentSequence = 999;
 		switch (lseqs[currentSequence].lightsequence) {
 			case ALLCLEAR:
 				Effects::allClear(&strip, lseqs, currentSequence, this);
@@ -107,14 +108,16 @@ void Strip::Update(unsigned long currentPerformanceTime) {
 				break;
 			case RAINBOW:
 				Effects::rainbow(&strip, lseqs, currentSequence, &i, &p0, &p1, &p2, &p3, &p4, &p5, this);
-				stripUpdateRet->effectNum = RAINBOW;
+				//stripUpdateRet->effectNum = RAINBOW;
 				break;
 			case LOADCOLOR:
 				Effects::loadColor(&strip, lseqs, currentSequence, 0, false, false, this);
 				stripUpdateRet->effectNum = LOADCOLOR;
 				break;
 			case BOUNCEBACK:
-				Effects::bounceBack(&strip, lseqs, currentSequence, &init, &forward, &i, &tail, &head, &bounces, getHeadofLED(), getTailofLED(), this);
+				hd = getHeadofLED();
+				tl = getTailofLED();
+				Effects::bounceBack(&strip, lseqs, currentSequence, &init, &forward, &i, &tail, &head, &bounces, hd, tl, this);
 				stripUpdateRet->effectNum = BOUNCEBACK;
 				break;
 			case FLOWTHROUGH:
@@ -162,40 +165,53 @@ uint8_t Strip::getEffectNum() {
 
 uint16_t Strip::getHeadofLED() {
 	//Declare variables
-	char *pixelElem, *SavePtr, *tName;//Hold pixelElem and string placement from strtok_r
+	char *pixelElems = (char*)calloc((strlen(lseqs[currentSequence].effectedPixels) + 1), sizeof(char));
 	uint16_t head = -1;
 
-	//Set first pixelElem and color elems
-	pixelElem = strtok_r((char*)lseqs[currentSequence].effectedPixels, ",", &SavePtr);
+	//Copy effected pixels and colorElems strings
+	strncpy(pixelElems, lseqs[currentSequence].effectedPixels, strlen(lseqs[currentSequence].effectedPixels));
 
-	//Exit if pixelElem or colorElem is null
-	if (pixelElem == NULL) {
+	//Set first pixelElems and color elems
+	pixelElems = strtok(pixelElems, ",");
+
+	//Exit if pixelElems is null
+	if (pixelElems == NULL) {
 		return head;
 	}
 
-	//Loop through tokens and set struct values as needed
 	do
 	{
-		head = atoi(pixelElem);
-	} while ((pixelElem = strtok_r(NULL, ",", &SavePtr)) != NULL);
+		head = atoi(pixelElems);
+	} while ((pixelElems = strtok(NULL, ",")) != NULL);
+
+	if (pixelElems != NULL) {
+		free(pixelElems);
+	}
 
 	return head;
 }
 
 uint16_t Strip::getTailofLED() {
 	//Declare variables
-	char *pixelElem, *SavePtr, *tName;//Hold pixelElem and string placement from strtok_r
+	char *pixelElems = (char*)calloc((strlen(lseqs[currentSequence].effectedPixels) + 1), sizeof(char));
 	uint16_t tail = -1;
 
-	//Set first pixelElem and color elems
-	pixelElem = strtok_r((char*)lseqs[currentSequence].effectedPixels, ",", &SavePtr);
+	//Copy effected pixels and colorElems strings
+	strncpy(pixelElems, lseqs[currentSequence].effectedPixels, strlen(lseqs[currentSequence].effectedPixels));
 
-	//Exit if pixelElem or colorElem is null
-	if (pixelElem == NULL) {
+	//Set first pixelElems and color elems
+	pixelElems = strtok(pixelElems, ",");
+
+	//Exit if pixelElems is null
+	if (pixelElems == NULL) {
 		return tail;
 	}
 
-	tail = atoi(pixelElem);
+	tail = atoi(pixelElems);
+
+	if (pixelElems != NULL) {
+		free(pixelElems);
+	}
 
 	return tail;
 }

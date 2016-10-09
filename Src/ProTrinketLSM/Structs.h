@@ -36,11 +36,11 @@ struct LightingSequence {
 };
 
 struct StripUpdateReturn {
-	uint8_t effectNum;
-	uint32_t currentSequence;
-	unsigned long currentDuration;
-	unsigned long performanceElapsedTime;
-	unsigned long prevSeqTimesAccumulated;
+	int8_t effectNum;
+	int32_t currentSequence;
+	long currentDuration;
+	long performanceElapsedTime;
+	long prevSeqTimesAccumulated;
 	int8_t effectSuccess;
 };
 

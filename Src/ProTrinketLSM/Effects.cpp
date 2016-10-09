@@ -63,9 +63,9 @@ void Effects::allClear(Adafruit_DotStar* strip, LightingSequence* lseqs, uint16_
 	//PassedStripClass->stripUpdateRet->effectSuccess = 1;
 }
 
-void Effects::rainbow(Adafruit_DotStar* strip, LightingSequence* lseqs, uint16_t currentSequence, uint16_t* i, uint16_t* p0, uint16_t* p1, uint16_t* p2, uint16_t* p3, uint16_t* p4, uint16_t* p5, Strip* PassedStripClass) {
+void Effects::rainbow(Adafruit_DotStar* strip, LightingSequence* lseqs, uint16_t currentSequence, int16_t* i, int16_t* p0, int16_t* p1, int16_t* p2, int16_t* p3, int16_t* p4, int16_t* p5, Strip* PassedStripClass) {
 	//Set strip success to -1 by default
-	PassedStripClass->stripUpdateRet->effectSuccess = -1;
+	//PassedStripClass->stripUpdateRet->effectSuccess = -1;
 
 	//Exit if invalid pointers passed
 	if (strip == NULL) {
@@ -81,28 +81,46 @@ void Effects::rainbow(Adafruit_DotStar* strip, LightingSequence* lseqs, uint16_t
 
 	//Add 1 to shiftPixelsBy if shiftPixelsBy is -1 and reset ps
 	if (*i < 0) {
-		*i++;
+		*i = *i + 1;
 
 		//Reset p values
 		*p0 = -1, *p1 = 0, *p2 = 1, *p3 = 2, *p4 = 3, *p5 = 4;
+
+		//Set strip success to 0 to show we've made it through invalid pointers
+		//PassedStripClass->stripUpdateRet->effectSuccess = 1;
 	}
+
+	/*PassedStripClass->stripUpdateRet->currentSequence = *p0;
+	PassedStripClass->stripUpdateRet->currentDuration = *p1;
+	PassedStripClass->stripUpdateRet->prevSeqTimesAccumulated = *p2;
+	PassedStripClass->stripUpdateRet->effectNum = *i;*/
 
 	//Verify if p0 is greater than numPixels, and if so add 1 to shiftPixelsBy
 	if (*p0 >= lseqs[currentSequence].totalPixels) {
 		//Add 1 to shiftPixelsBy and reset j
-		*i++;
+		*i = *i + 1;
 
 		//Reset p values
 		*p0 = -1, *p1 = 0, *p2 = 1, *p3 = 2, *p4 = 3, *p5 = 4;
+
+		//Set strip success to 0 to show we've made it through invalid pointers
+		//PassedStripClass->stripUpdateRet->effectSuccess = 2;
 	}
 
 	if (*i <= lseqs[currentSequence].iterations) {
-		strip->setPixelColor(*p0++, CLEAR);
-		strip->setPixelColor(*p1++, RED);
-		strip->setPixelColor(*p2++, ORANGE);
-		strip->setPixelColor(*p3++, YELLOW);
-		strip->setPixelColor(*p4++, GREEN);
-		strip->setPixelColor(*p5++, BLUE);
+		*p0 = *p0 + 1;
+		*p1 = *p1 + 1;
+		*p2 = *p2 + 1;
+		*p3 = *p3 + 1;
+		*p4 = *p4 + 1;
+		*p5 = *p5 + 1;
+
+		strip->setPixelColor(*p0, CLEAR);
+		strip->setPixelColor(*p1, RED);
+		strip->setPixelColor(*p2, ORANGE);
+		strip->setPixelColor(*p3, YELLOW);
+		strip->setPixelColor(*p4, GREEN);
+		strip->setPixelColor(*p5, BLUE);
 		strip->setPixelColor(*p1 - 2, CLEAR);
 
 		if (*p0 == lseqs[currentSequence].totalPixels)
@@ -129,12 +147,12 @@ void Effects::rainbow(Adafruit_DotStar* strip, LightingSequence* lseqs, uint16_t
 		{
 			*p5 = 0;
 		}
+
+		//Set strip success to 1 to show effect completed successfully
+		//PassedStripClass->stripUpdateRet->effectSuccess = 3;
 	}
 
 	strip->show();
-
-	//Set strip success to 1 to show effect completed successfully
-	PassedStripClass->stripUpdateRet->effectSuccess = 1;
 }
 
 void Effects::loadColor(Adafruit_DotStar* strip, LightingSequence* lseqs, uint16_t currentSequence, uint16_t shiftPixelToLoad, bool clearLastTailPixel, bool clearLastHeadPixel, Strip* PassedStripClass) {
@@ -274,7 +292,7 @@ void Effects::loadColor(Adafruit_DotStar* strip, LightingSequence* lseqs, uint16
 	//PassedStripClass->stripUpdateRet->effectSuccess = 1;
 }
 
-void Effects::bounceBack(Adafruit_DotStar* strip, LightingSequence* lseqs, uint16_t currentSequence, bool* init, bool* forward, uint16_t *shiftPixelsBy, uint16_t* tail, uint16_t* head, uint16_t* bounces, uint16_t initHead, uint16_t initTail, Strip* PassedStripClass) {
+void Effects::bounceBack(Adafruit_DotStar* strip, LightingSequence* lseqs, uint16_t currentSequence, bool* init, bool* forward, int16_t *shiftPixelsBy, int16_t* tail, int16_t* head, uint16_t* bounces, uint16_t initHead, uint16_t initTail, Strip* PassedStripClass) {
 	//Set strip success to -1 by default
 	PassedStripClass->stripUpdateRet->effectSuccess = -1;
 
@@ -290,6 +308,11 @@ void Effects::bounceBack(Adafruit_DotStar* strip, LightingSequence* lseqs, uint1
 	//Set strip success to 0 to show we've made it through invalid pointers
 	PassedStripClass->stripUpdateRet->effectSuccess = 0;
 
+	PassedStripClass->stripUpdateRet->currentSequence = *init;
+	PassedStripClass->stripUpdateRet->currentDuration = *shiftPixelsBy;
+	PassedStripClass->stripUpdateRet->prevSeqTimesAccumulated = *head;
+	PassedStripClass->stripUpdateRet->effectNum = *tail;
+
 	//Initilialize if first time in
 	if (*init) {
 		//Simply set colors, setup values, and exit
@@ -297,11 +320,9 @@ void Effects::bounceBack(Adafruit_DotStar* strip, LightingSequence* lseqs, uint1
 
 		*init = false;
 		*bounces = lseqs[currentSequence].bounces;
+		*shiftPixelsBy = 0;
 		*head = initHead;
 		*tail = initTail;
-		*shiftPixelsBy = 0;
-
-		strip->show();
 
 		//Set strip success to 1 to show effect completed successfully
 		PassedStripClass->stripUpdateRet->effectSuccess = 1;
@@ -312,9 +333,9 @@ void Effects::bounceBack(Adafruit_DotStar* strip, LightingSequence* lseqs, uint1
 	if (*bounces > 0) {
 		if (*forward) {
 			//Add 1 to shiftPixelsBy
-			*shiftPixelsBy++;
-			*head++;
-			*tail++;
+			*shiftPixelsBy = *shiftPixelsBy + 1;
+			*head = *head + 1;
+			*tail = *tail + 1;
 
 			if (*head < lseqs[currentSequence].totalPixels) {
 				//Load color with a shift and clear previous tail pixel
@@ -322,14 +343,14 @@ void Effects::bounceBack(Adafruit_DotStar* strip, LightingSequence* lseqs, uint1
 			}
 			else {
 				*forward = false;
-				*bounces++;
+				*bounces = *bounces + 1;
 			}
 		}
 		else {
 			//Subtract 1 from shiftPixelsBy
-			*shiftPixelsBy--;
-			*head--;
-			*tail--;
+			*shiftPixelsBy = *shiftPixelsBy - 1;
+			*head = *head - 1;
+			*tail = *tail - 1;
 
 			if (*tail >= 0) {
 				//Load color with a shift and clear previous head pixel
@@ -337,7 +358,7 @@ void Effects::bounceBack(Adafruit_DotStar* strip, LightingSequence* lseqs, uint1
 			}
 			else {
 				*forward = true;
-				*bounces--;
+				*bounces = *bounces - 1;
 			}
 		}
 	}
@@ -345,7 +366,7 @@ void Effects::bounceBack(Adafruit_DotStar* strip, LightingSequence* lseqs, uint1
 	strip->show();
 
 	//Set strip success to 1 to show effect completed successfully
-	PassedStripClass->stripUpdateRet->effectSuccess = 1;
+	PassedStripClass->stripUpdateRet->effectSuccess = 2;
 }
 
 void Effects::flowThrough(Adafruit_DotStar* strip, LightingSequence* lseqs, uint16_t currentSequence, Strip* PassedStripClass) {

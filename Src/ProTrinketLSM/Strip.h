@@ -49,7 +49,8 @@ class Strip {
 		unsigned long currentDuration = 0, // so elapsedtime - this = time within this sequence
 			prevDuration = -1, //Makes sure duration isn't processed more than once for sequence
 			prevSeqTimesAccumulated = 0; //As sequences change, the duration times are accumulated to here (used to find current effect's duration)
-		uint16_t counter1 = 0, counter2 = 0, i = -1, j = -1, p0 = -1, p1 = 0, p2 = 1, p3 = 2, p4 = 3, p5 = 4, tail = 0, head = 0, bounces = 0;
+		int16_t i = -1, j = -1, p0 = -1, p1 = 0, p2 = 1, p3 = 2, p4 = 3, p5 = 4, tail = 0, head = 3;
+		uint16_t counter1 = 0, counter2 = 0, bounces = 0;
 	protected:
 
 };

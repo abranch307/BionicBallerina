@@ -11,7 +11,6 @@
 #include "EffectsManager.h"
 #include "Effects.h"
 
-//int8_t numStrips = 2;
 int8_t numStrips = 1, numEffects = 7;
 uint16_t numPixels = 5;
 Strip *strips;
@@ -32,19 +31,18 @@ void setup()
 
 	//Setup lighting sequences
 	LightingSequence* seqs1 = (LightingSequence*)calloc(numEffects, sizeof(LightingSequence));
-	seqs1[0] = { CLEAR, numPixels, "0,1,2,3,4 ", "0,0,0,0,0 ", 0, 0, 0, 0 };//load color effect
-	seqs1[1] = { LOADCOLOR, numPixels, "0,1,2,3,4 ", "0,0,0,0,0 ", 4000, 4000, 0, 0 };//load color effect
-	//seqs1[1] = { FLOWTHROUGH, 5, "1,2,3,4,5 ", "1,2,3,4,5 ", 200, 4000, 0, 2 };//flowthrough effect
-	//seqs1[2] = { CLEAR, 5, "0,1,2,3,4 ", " ", 4, 4, 0, 0 };//clear effect
-	//seqs1[3] = { BOUNCEBACK, 5, "0,1,2,3,4 ", "1,2,3,4,5 ", 200, 4000, 0, 2 };//bounceback effect
-	//seqs1[4] = { RAINBOW, 5, "0,1,2,3,4 ", "1,2,3,4,5 ", 200, 5000, 1, 2 };//rainbow effect
-	seqs1[2] = { LOADCOLOR, numPixels, "0,1,2,3,4 ", "1,1,1,1,1 ", 4000, 4000, 0, 0 };//load color effect
-	seqs1[3] = { LOADCOLOR, numPixels, "0,1,2,3,4 ", "2,0,2,0,2 ", 4000, 4000, 0, 0 };//load color effect
+	seqs1[0] = { LOADCOLOR, numPixels, "0,1,2,3,4 ", "0,0,0,0,0 ", 1000, 1000, 0, 0 };//load color effect
+	//seqs1[1] = { FLOWTHROUGH, numPixels, "1,2,3,4,5 ", "1,2,3,4,5 ", 200, 4000, 0, 2 };//flowthrough effect
+	//seqs1[2] = { CLEAR, numPixels, "0,1,2,3,4 ", " ", 4, 4, 0, 0 };//clear effect
+	seqs1[1] = { BOUNCEBACK, numPixels, "0,1 ", "1,2 ", 200, 4000, 2, 2 };//bounceback effect
+	seqs1[2] = { RAINBOW, numPixels, "0,1,2,3,4 ", "1,2,3,4,5 ", 200, 7000, 1, 2 };//rainbow effect
+	//seqs1[2] = { LOADCOLOR, numPixels, "0,1,2,3,4 ", "1,1,1,1,1 ", 4000, 4000, 0, 0 };//load color effect
+	seqs1[3] = { RAINBOW, numPixels, "0,1,2,3,4 ", "2,2,0,2,2 ", 200, 4000, 1, 2 };//rainbow effect
 	seqs1[4] = { LOADCOLOR, numPixels, "0,1,2,3,4 ", "0,3,3,3,0 ", 4000, 4000, 0, 0 };//load color effect
 	seqs1[5] = { LOADCOLOR, numPixels, "0,1,2,3,4 ", "4,4,0,4,4 ", 4000, 4000, 0, 0 };//load color effect
 	seqs1[6] = { LOADCOLOR, numPixels, "0,1,2,3,4 ", "5,5,5,5,5 ", 4000, 4000, 0, 0 };//load color effect
-	//seqs1[1] = { CLEAR, 5, "0,1,2,3,4 ", " ", 4000, 4000, 0, 0 };//clear effect
-	//seqs1[3] = { CLEAR, 5, "0,1,2,3,4 ", " ", 4000, 4000, 0, 0 };//clear effect
+	//seqs1[1] = { CLEAR, numPixels, "0,1,2,3,4 ", " ", 4000, 4000, 0, 0 };//clear effect
+	//seqs1[3] = { CLEAR, numPixels, "0,1,2,3,4 ", " ", 4000, 4000, 0, 0 };//clear effect
 
 	//Initialize strip
 	strips[0] = Strip(numPixels, 8, 6, DOTSTAR_RGB, seqs1, numEffects);
@@ -52,14 +50,14 @@ void setup()
 	strips[0].getStrip()->show();
 	strips[0].stripUpdateRet = &sRets[0];
 
-	//LightingSequence* seqs2 = (LightingSequence*)calloc(5, sizeof(LightingSequence));
-	//seqs2[0] = { LOADCOLOR, 5, "0,1,2,3,4 ", "5,4,3,2,1 ", 5000, 5000, 0, 0 };//load color effect
-	//seqs2[1] = { FLOWTHROUGH, 5, "0,1,2,3,4 ", "5,4,3,2,1 ", 200, 5000, 0, 2 };//flowthrough effect
-	//seqs2[2] = { CLEAR, 5, "0,1,2,3,4 ", " ", 0, 0, 0, 0 };//clear effect
-	//seqs2[3] = { BOUNCEBACK, 5, "0,1,2,3,4 ", "5,4,3,2,1 ", 200, 2000, 0, 2 };//bounceback effect
-	//seqs2[4] = { RAINBOW, 5, "0,1,2,3,4 ", "5,4,3,2,1 ", 200, 6000, 1, 2 };//rainbow effect
+	//LightingSequence* seqs2 = (LightingSequence*)calloc(numPixels, sizeof(LightingSequence));
+	//seqs2[0] = { LOADCOLOR, numPixels, "0,1,2,3,4 ", "5,4,3,2,1 ", 5000, 5000, 0, 0 };//load color effect
+	//seqs2[1] = { FLOWTHROUGH, numPixels, "0,1,2,3,4 ", "5,4,3,2,1 ", 200, 5000, 0, 2 };//flowthrough effect
+	//seqs2[2] = { CLEAR, numPixels, "0,1,2,3,4 ", " ", 0, 0, 0, 0 };//clear effect
+	//seqs2[3] = { BOUNCEBACK, numPixels, "0,1,2,3,4 ", "5,4,3,2,1 ", 200, 2000, 0, 2 };//bounceback effect
+	//seqs2[4] = { RAINBOW, numPixels, "0,1,2,3,4 ", "5,4,3,2,1 ", 200, 6000, 1, 2 };//rainbow effect
 
-	//strips[1] = Strip(5, 8, 6, DOTSTAR_RGB, seqs2, 5);
+	//strips[1] = Strip(numPixels, 8, 6, DOTSTAR_RGB, seqs2, numEffects);
 	//strips[1].getStrip()->begin();
 	//strips[1].getStrip()->show();
 	//strips[1].stripUpdateRet = &sRets[1];
@@ -146,6 +144,17 @@ void loop()
 					//Serial.println(effectsManager.effectsManagerUpdateRet->sURet[i].effectSuccess);
 					//Serial.print("Effect Duration is ");
 					//Serial.println(effectsManager.getStrips()[i].getCurrentLightingSequence()->duration);
+					Serial.print("Init = ");
+					Serial.println(effectsManager.effectsManagerUpdateRet->sURet[i].currentSequence);
+					Serial.print("Shift Pixels By = ");
+					Serial.println(effectsManager.effectsManagerUpdateRet->sURet[i].currentDuration);
+					Serial.print("Head = ");
+					Serial.println(effectsManager.effectsManagerUpdateRet->sURet[i].prevSeqTimesAccumulated);
+					Serial.print("Tail = ");
+					Serial.println(effectsManager.effectsManagerUpdateRet->sURet[i].effectNum);
+					Serial.print("Effect success = ");
+					Serial.println(effectsManager.effectsManagerUpdateRet->sURet[i].effectSuccess);
+
 					Serial.println();
 				}
 			}
