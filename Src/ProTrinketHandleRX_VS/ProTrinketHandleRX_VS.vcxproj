@@ -74,8 +74,8 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino;C:\Program Files (x86)\Arduino\hardware\arduino\avr\variants\eightanaloginputs;C:\Users\Abranch\Documents\Arduino\ProTrinketHandleRX_VS;C:\Program Files (x86)\Arduino\libraries;C:\Program Files (x86)\Arduino\hardware\arduino\avr\libraries;C:\Users\Abranch\AppData\Local\arduino15\packages\adafruit\hardware\avr\1.4.5\libraries;C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\ldcei204.zxj\Micro Platforms\default\debuggers;C:\Users\Abranch\Documents\Arduino\libraries;C:\Users\Abranch\Documents\Arduino\ProTrinketHandleRX_VS;C:\Program Files (x86)\Arduino\libraries\Adafruit_DotStar;C:\Program Files (x86)\Arduino\hardware\arduino\avr\libraries\SPI;C:\Program Files (x86)\Arduino\libraries;C:\Program Files (x86)\Arduino\hardware\arduino\avr\libraries;C:\Users\Abranch\AppData\Local\arduino15\packages\adafruit\hardware\avr\1.4.5\libraries;C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\ldcei204.zxj\Micro Platforms\default\debuggers;C:\Users\Abranch\Documents\Arduino\libraries;C:\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino;C:\Program Files (x86)\Arduino\hardware\arduino\avr\variants\eightanaloginputs;C:\Program Files (x86)\Arduino\hardware\tools\avr/avr/include/;C:\Program Files (x86)\Arduino\hardware\tools\avr//avr/include/avr/;C:\Program Files (x86)\Arduino\hardware\tools\avr/lib\gcc\avr\4.8.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <ForcedIncludeFiles>C:\Users\Abranch\Documents\Arduino\ProTrinketHandleRX_VS\__vm\.ProTrinketHandleRX_VS.vsarduino.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <AdditionalIncludeDirectories>C:\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino;C:\Program Files (x86)\Arduino\hardware\arduino\avr\variants\eightanaloginputs;C:\Users\Abranch\Source\Repos\BionicBallerina\Src\ProTrinketHandleRX_VS;C:\Program Files (x86)\Arduino\libraries;C:\Program Files (x86)\Arduino\hardware\arduino\avr\libraries;C:\Users\Abranch\AppData\Local\arduino15\packages\adafruit\hardware\avr\1.4.5\libraries;C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\ldcei204.zxj\Micro Platforms\default\debuggers;C:\Users\Abranch\Documents\Arduino\libraries;C:\Users\Abranch\Source\Repos\BionicBallerina\Src\ProTrinketHandleRX_VS;C:\Program Files (x86)\Arduino\libraries;C:\Program Files (x86)\Arduino\hardware\arduino\avr\libraries;C:\Users\Abranch\AppData\Local\arduino15\packages\adafruit\hardware\avr\1.4.5\libraries;C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\ldcei204.zxj\Micro Platforms\default\debuggers;C:\Users\Abranch\Documents\Arduino\libraries;C:\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino;C:\Program Files (x86)\Arduino\hardware\arduino\avr\variants\eightanaloginputs;C:\Program Files (x86)\Arduino\hardware\tools\avr/avr/include/;C:\Program Files (x86)\Arduino\hardware\tools\avr//avr/include/avr/;C:\Program Files (x86)\Arduino\hardware\tools\avr/lib\gcc\avr\4.8.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ForcedIncludeFiles>C:\Users\Abranch\Source\Repos\BionicBallerina\Src\ProTrinketHandleRX_VS\__vm\.ProTrinketHandleRX_VS.vsarduino.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <PreprocessorDefinitions>__AVR_ATmega328p__;__AVR_ATmega328P__;F_CPU=16000000L;ARDUINO=10607;ARDUINO_AVR_PROTRINKET5;ARDUINO_ARCH_AVR;__cplusplus=201103L;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -126,16 +126,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="SequenceScheduler.h" />
-    <ClInclude Include="Strip.h" />
     <ClInclude Include="WiFiModuleRXHandler.h" />
     <ClInclude Include="__vm\.ProTrinketHandleRX_VS.vsarduino.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="SequenceScheduler.cpp" />
-    <ClCompile Include="Strip.cpp">
-      <PreprocessToFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</PreprocessToFile>
-    </ClCompile>
     <ClCompile Include="WiFiModuleRXHandler.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

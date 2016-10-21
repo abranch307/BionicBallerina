@@ -85,10 +85,6 @@ extern "C" void __cxa_pure_virtual() {;}
 #define portInputRegister(P)
 #define portModeRegister(P)
 #include <..\ProTrinketHandleRX_VS\ProTrinketHandleRX_VS.ino>
-#include <..\ProTrinketHandleRX_VS\SequenceScheduler.cpp>
-#include <..\ProTrinketHandleRX_VS\SequenceScheduler.h>
-#include <..\ProTrinketHandleRX_VS\Strip.cpp>
-#include <..\ProTrinketHandleRX_VS\Strip.h>
 #include <..\ProTrinketHandleRX_VS\WiFiModuleRXHandler.cpp>
 #include <..\ProTrinketHandleRX_VS\WiFiModuleRXHandler.h>
 #endif

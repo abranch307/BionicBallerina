@@ -24,21 +24,9 @@
     <ClInclude Include="WiFiModuleRXHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SequenceScheduler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Strip.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WiFiModuleRXHandler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SequenceScheduler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Strip.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
