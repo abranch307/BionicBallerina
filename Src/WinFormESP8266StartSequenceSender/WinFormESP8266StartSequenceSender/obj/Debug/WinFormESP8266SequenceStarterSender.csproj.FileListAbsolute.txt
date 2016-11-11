@@ -12,3 +12,6 @@ C:\Users\Abranch\Documents\Visual Studio 2015\Projects\WinFormESP8266StartSequen
 C:\Users\Abranch\Source\Repos\VSSeniorProject2016\Src\WinFormESP8266StartSequenceSender\WinFormESP8266StartSequenceSender\bin\Debug\WinFormESP8266StartSequenceSender.exe.config
 C:\Users\Abranch\Source\Repos\VSSeniorProject2016\Src\WinFormESP8266StartSequenceSender\WinFormESP8266StartSequenceSender\obj\Debug\WinFormESP8266StartSequenceSender.exe
 C:\Users\Abranch\Source\Repos\VSSeniorProject2016\Src\WinFormESP8266StartSequenceSender\WinFormESP8266StartSequenceSender\obj\Debug\WinFormESP8266StartSequenceSender.pdb
+C:\Users\Abranch\Source\Repos\BionicBallerina\Src\WinFormESP8266StartSequenceSender\WinFormESP8266StartSequenceSender\bin\Debug\WinFormESP8266StartSequenceSender.exe.config
+C:\Users\Abranch\Source\Repos\BionicBallerina\Src\WinFormESP8266StartSequenceSender\WinFormESP8266StartSequenceSender\obj\Debug\WinFormESP8266StartSequenceSender.exe
+C:\Users\Abranch\Source\Repos\BionicBallerina\Src\WinFormESP8266StartSequenceSender\WinFormESP8266StartSequenceSender\obj\Debug\WinFormESP8266StartSequenceSender.pdb

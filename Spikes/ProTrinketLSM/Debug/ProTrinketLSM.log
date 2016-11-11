@@ -1,0 +1,86 @@
+﻿  Structs.cpp
+c1xx : warning C4117: macro name '__cplusplus' is reserved, '#define' ignored
+c:\users\abranch\documents\arduino\libraries\protrinketlsm\__vm\.protrinketlsm.vsarduino.h(13): warning C4005: '__AVR_ATmega328p__': macro redefinition
+  c:\users\abranch\documents\arduino\libraries\protrinketlsm\__vm\.protrinketlsm.vsarduino.h(13): note: command-line arguments:  see previous definition of '__AVR_ATmega328p__'
+c:\users\abranch\documents\arduino\libraries\protrinketlsm\__vm\.protrinketlsm.vsarduino.h(14): warning C4005: '__AVR_ATmega328P__': macro redefinition
+  c:\users\abranch\documents\arduino\libraries\protrinketlsm\__vm\.protrinketlsm.vsarduino.h(14): note: command-line arguments:  see previous definition of '__AVR_ATmega328P__'
+c:\users\abranch\documents\arduino\libraries\protrinketlsm\__vm\.protrinketlsm.vsarduino.h(18): warning C4005: 'ARDUINO_AVR_PROTRINKET5FTDI': macro redefinition
+  c:\users\abranch\documents\arduino\libraries\protrinketlsm\__vm\.protrinketlsm.vsarduino.h(18): note: command-line arguments:  see previous definition of 'ARDUINO_AVR_PROTRINKET5FTDI'
+c:\users\abranch\documents\arduino\libraries\protrinketlsm\__vm\.protrinketlsm.vsarduino.h(19): warning C4005: 'ARDUINO_ARCH_AVR': macro redefinition
+  c:\users\abranch\documents\arduino\libraries\protrinketlsm\__vm\.protrinketlsm.vsarduino.h(19): note: command-line arguments:  see previous definition of 'ARDUINO_ARCH_AVR'
+c:\users\abranch\documents\arduino\libraries\protrinketlsm\__vm\.protrinketlsm.vsarduino.h(20): warning C4117: macro name '__cplusplus' is reserved, '#define' ignored
+c:\program files (x86)\arduino\hardware\tools\avr\lib\gcc\avr\4.8.1\include\stddef.h(212): error C2371: 'size_t': redefinition; different basic types
+  c:\users\abranch\documents\arduino\libraries\protrinketlsm\predefined c++ types (compiler internal)(16): note: see declaration of 'size_t'
+c:\program files (x86)\arduino\hardware\tools\avr\avr\include\math.h(364): warning C4002: too many actual parameters for macro '__asm__'
+c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\pgmspace.h(1187): error C2446: ':': no conversion from 'std::size_t' to 'const char *'
+  c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\pgmspace.h(1187): note: Conversion from integral type to pointer type requires reinterpret_cast, C-style cast or function-style cast
+c:\program files (x86)\arduino\hardware\arduino\avr\cores\arduino\hardwareserial.h(132): error C2535: 'size_t HardwareSerial::write(uint8_t)': member function already defined or declared
+  c:\program files (x86)\arduino\hardware\arduino\avr\cores\arduino\hardwareserial.h(129): note: see declaration of 'HardwareSerial::write'
+c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\delay_basic.h(88): error C2065: '__asm__': undeclared identifier
+c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\delay_basic.h(110): error C2065: '__asm__': undeclared identifier
+c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\delay.h(95): fatal error C1021: invalid preprocessor command 'warning'
+  Strip.cpp
+c1xx : warning C4117: macro name '__cplusplus' is reserved, '#define' ignored
+c:\users\abranch\documents\arduino\libraries\protrinketlsm\__vm\.protrinketlsm.vsarduino.h(13): warning C4005: '__AVR_ATmega328p__': macro redefinition
+  c:\users\abranch\documents\arduino\libraries\protrinketlsm\__vm\.protrinketlsm.vsarduino.h(13): note: command-line arguments:  see previous definition of '__AVR_ATmega328p__'
+c:\users\abranch\documents\arduino\libraries\protrinketlsm\__vm\.protrinketlsm.vsarduino.h(14): warning C4005: '__AVR_ATmega328P__': macro redefinition
+  c:\users\abranch\documents\arduino\libraries\protrinketlsm\__vm\.protrinketlsm.vsarduino.h(14): note: command-line arguments:  see previous definition of '__AVR_ATmega328P__'
+c:\users\abranch\documents\arduino\libraries\protrinketlsm\__vm\.protrinketlsm.vsarduino.h(18): warning C4005: 'ARDUINO_AVR_PROTRINKET5FTDI': macro redefinition
+  c:\users\abranch\documents\arduino\libraries\protrinketlsm\__vm\.protrinketlsm.vsarduino.h(18): note: command-line arguments:  see previous definition of 'ARDUINO_AVR_PROTRINKET5FTDI'
+c:\users\abranch\documents\arduino\libraries\protrinketlsm\__vm\.protrinketlsm.vsarduino.h(19): warning C4005: 'ARDUINO_ARCH_AVR': macro redefinition
+  c:\users\abranch\documents\arduino\libraries\protrinketlsm\__vm\.protrinketlsm.vsarduino.h(19): note: command-line arguments:  see previous definition of 'ARDUINO_ARCH_AVR'
+c:\users\abranch\documents\arduino\libraries\protrinketlsm\__vm\.protrinketlsm.vsarduino.h(20): warning C4117: macro name '__cplusplus' is reserved, '#define' ignored
+c:\program files (x86)\arduino\hardware\tools\avr\lib\gcc\avr\4.8.1\include\stddef.h(212): error C2371: 'size_t': redefinition; different basic types
+  c:\users\abranch\documents\arduino\libraries\protrinketlsm\predefined c++ types (compiler internal)(16): note: see declaration of 'size_t'
+c:\program files (x86)\arduino\hardware\tools\avr\avr\include\math.h(364): warning C4002: too many actual parameters for macro '__asm__'
+c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\pgmspace.h(1187): error C2446: ':': no conversion from 'std::size_t' to 'const char *'
+  c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\pgmspace.h(1187): note: Conversion from integral type to pointer type requires reinterpret_cast, C-style cast or function-style cast
+c:\program files (x86)\arduino\hardware\arduino\avr\cores\arduino\hardwareserial.h(132): error C2535: 'size_t HardwareSerial::write(uint8_t)': member function already defined or declared
+  c:\program files (x86)\arduino\hardware\arduino\avr\cores\arduino\hardwareserial.h(129): note: see declaration of 'HardwareSerial::write'
+c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\delay_basic.h(88): error C2065: '__asm__': undeclared identifier
+c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\delay_basic.h(110): error C2065: '__asm__': undeclared identifier
+c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\delay.h(95): fatal error C1021: invalid preprocessor command 'warning'
+  EffectsManager.cpp
+c1xx : warning C4117: macro name '__cplusplus' is reserved, '#define' ignored
+c:\users\abranch\documents\arduino\libraries\protrinketlsm\__vm\.protrinketlsm.vsarduino.h(13): warning C4005: '__AVR_ATmega328p__': macro redefinition
+  c:\users\abranch\documents\arduino\libraries\protrinketlsm\__vm\.protrinketlsm.vsarduino.h(13): note: command-line arguments:  see previous definition of '__AVR_ATmega328p__'
+c:\users\abranch\documents\arduino\libraries\protrinketlsm\__vm\.protrinketlsm.vsarduino.h(14): warning C4005: '__AVR_ATmega328P__': macro redefinition
+  c:\users\abranch\documents\arduino\libraries\protrinketlsm\__vm\.protrinketlsm.vsarduino.h(14): note: command-line arguments:  see previous definition of '__AVR_ATmega328P__'
+c:\users\abranch\documents\arduino\libraries\protrinketlsm\__vm\.protrinketlsm.vsarduino.h(18): warning C4005: 'ARDUINO_AVR_PROTRINKET5FTDI': macro redefinition
+  c:\users\abranch\documents\arduino\libraries\protrinketlsm\__vm\.protrinketlsm.vsarduino.h(18): note: command-line arguments:  see previous definition of 'ARDUINO_AVR_PROTRINKET5FTDI'
+c:\users\abranch\documents\arduino\libraries\protrinketlsm\__vm\.protrinketlsm.vsarduino.h(19): warning C4005: 'ARDUINO_ARCH_AVR': macro redefinition
+  c:\users\abranch\documents\arduino\libraries\protrinketlsm\__vm\.protrinketlsm.vsarduino.h(19): note: command-line arguments:  see previous definition of 'ARDUINO_ARCH_AVR'
+c:\users\abranch\documents\arduino\libraries\protrinketlsm\__vm\.protrinketlsm.vsarduino.h(20): warning C4117: macro name '__cplusplus' is reserved, '#define' ignored
+c:\program files (x86)\arduino\hardware\tools\avr\lib\gcc\avr\4.8.1\include\stddef.h(212): error C2371: 'size_t': redefinition; different basic types
+  c:\users\abranch\documents\arduino\libraries\protrinketlsm\predefined c++ types (compiler internal)(16): note: see declaration of 'size_t'
+c:\program files (x86)\arduino\hardware\tools\avr\avr\include\math.h(364): warning C4002: too many actual parameters for macro '__asm__'
+c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\pgmspace.h(1187): error C2446: ':': no conversion from 'std::size_t' to 'const char *'
+  c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\pgmspace.h(1187): note: Conversion from integral type to pointer type requires reinterpret_cast, C-style cast or function-style cast
+c:\program files (x86)\arduino\hardware\arduino\avr\cores\arduino\hardwareserial.h(132): error C2535: 'size_t HardwareSerial::write(uint8_t)': member function already defined or declared
+  c:\program files (x86)\arduino\hardware\arduino\avr\cores\arduino\hardwareserial.h(129): note: see declaration of 'HardwareSerial::write'
+c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\delay_basic.h(88): error C2065: '__asm__': undeclared identifier
+c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\delay_basic.h(110): error C2065: '__asm__': undeclared identifier
+c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\delay.h(95): fatal error C1021: invalid preprocessor command 'warning'
+  Effects.cpp
+c1xx : warning C4117: macro name '__cplusplus' is reserved, '#define' ignored
+c:\users\abranch\documents\arduino\libraries\protrinketlsm\__vm\.protrinketlsm.vsarduino.h(13): warning C4005: '__AVR_ATmega328p__': macro redefinition
+  c:\users\abranch\documents\arduino\libraries\protrinketlsm\__vm\.protrinketlsm.vsarduino.h(13): note: command-line arguments:  see previous definition of '__AVR_ATmega328p__'
+c:\users\abranch\documents\arduino\libraries\protrinketlsm\__vm\.protrinketlsm.vsarduino.h(14): warning C4005: '__AVR_ATmega328P__': macro redefinition
+  c:\users\abranch\documents\arduino\libraries\protrinketlsm\__vm\.protrinketlsm.vsarduino.h(14): note: command-line arguments:  see previous definition of '__AVR_ATmega328P__'
+c:\users\abranch\documents\arduino\libraries\protrinketlsm\__vm\.protrinketlsm.vsarduino.h(18): warning C4005: 'ARDUINO_AVR_PROTRINKET5FTDI': macro redefinition
+  c:\users\abranch\documents\arduino\libraries\protrinketlsm\__vm\.protrinketlsm.vsarduino.h(18): note: command-line arguments:  see previous definition of 'ARDUINO_AVR_PROTRINKET5FTDI'
+c:\users\abranch\documents\arduino\libraries\protrinketlsm\__vm\.protrinketlsm.vsarduino.h(19): warning C4005: 'ARDUINO_ARCH_AVR': macro redefinition
+  c:\users\abranch\documents\arduino\libraries\protrinketlsm\__vm\.protrinketlsm.vsarduino.h(19): note: command-line arguments:  see previous definition of 'ARDUINO_ARCH_AVR'
+c:\users\abranch\documents\arduino\libraries\protrinketlsm\__vm\.protrinketlsm.vsarduino.h(20): warning C4117: macro name '__cplusplus' is reserved, '#define' ignored
+c:\program files (x86)\arduino\hardware\tools\avr\lib\gcc\avr\4.8.1\include\stddef.h(212): error C2371: 'size_t': redefinition; different basic types
+  c:\users\abranch\documents\arduino\libraries\protrinketlsm\predefined c++ types (compiler internal)(16): note: see declaration of 'size_t'
+c:\program files (x86)\arduino\hardware\tools\avr\avr\include\math.h(364): warning C4002: too many actual parameters for macro '__asm__'
+c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\pgmspace.h(1187): error C2446: ':': no conversion from 'std::size_t' to 'const char *'
+  c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\pgmspace.h(1187): note: Conversion from integral type to pointer type requires reinterpret_cast, C-style cast or function-style cast
+c:\program files (x86)\arduino\hardware\arduino\avr\cores\arduino\hardwareserial.h(132): error C2535: 'size_t HardwareSerial::write(uint8_t)': member function already defined or declared
+  c:\program files (x86)\arduino\hardware\arduino\avr\cores\arduino\hardwareserial.h(129): note: see declaration of 'HardwareSerial::write'
+c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\delay_basic.h(88): error C2065: '__asm__': undeclared identifier
+c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\delay_basic.h(110): error C2065: '__asm__': undeclared identifier
+c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\delay.h(95): fatal error C1021: invalid preprocessor command 'warning'
+  Running Code Analysis for C/C++...
+  Generating Code...
