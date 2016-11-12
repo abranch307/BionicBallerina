@@ -11,7 +11,7 @@
 #include "EffectsManager.h"
 #include "Effects.h"
 
-int8_t numStrips = 1, numEffects = 2;
+int8_t numStrips = 1, numEffects = 4;
 uint16_t numPixels = 5;
 Strip *strips;
 EffectsManager effectsManager;
@@ -39,15 +39,15 @@ void setup()
 	//seqs1[1] = { FLOWTHROUGH, numPixels, "1,2,3,4,5 ", 200, 4000, 0, 2 };//flowthrough effect
 	//seqs1[2] = { CLEAR, numPixels, " ", 4, 4, 0, 0 };//clear effect
 	//seqs1[1] = { BOUNCEBACK, numPixels, "0,0,1,2,0 ", 200, 5000, 2, 2 };//bounceback effect
-	seqs1[0] = { FLOWTHROUGH, numPixels, "1,2,0,2,1 ", 200, 11000, 0, 2 };//flowthrough effect
-	seqs1[1] = { RAINBOW, numPixels, "3,3,3,3,3 ", 200, 7000, 1, 2 };//rainbow effect
-	//seqs1[1] = { RAINBOW, numPixels, "1,2,3,4,5 ", 1000, 7000, 1, 2 };//rainbow effect
-	//seqs1[1] = { RAINBOW, numPixels, "1,2,3,4,5 ", 200, 7000, 1, 2 };//rainbow effect
-	//seqs1[6] = { LOADCOLOR, numPixels, "4,4,4,4,4 ", 4000, 4000, 0, 0 };//load color effect
-	//seqs1[6] = { RAINBOW, numPixels, "2,2,0,2,2 ", 200, 6000, 1, 2 };//rainbow effect
+	seqs1[0] = { RAINBOW, numPixels, "0,0,0,0,0 ", 200, 7000, 1, 2 };//rainbow effect
+	seqs1[1] = { FLOWTHROUGH, numPixels, "1,2,0,2,1 ", 200, 11000, 0, 44 };//flowthrough effect
+	//seqs1[1] = { RAINBOW, numPixels, " ", 1000, 7000, 1, 2 };//rainbow effect
+	//seqs1[1] = { RAINBOW, numPixels, " ", 200, 7000, 1, 2 };//rainbow effect
+	seqs1[2] = { LOADCOLOR, numPixels, "0,4,0,4,0 ", 4000, 4000, 0, 0 };//load color effect
+	//seqs1[6] = { RAINBOW, numPixels, " ", 200, 6000, 1, 2 };//rainbow effect
 	//seqs1[6] = { CLEAR, numPixels"0,0,0,0,0 ", 1000, 1000, 1, 2 };//Clear
 	//seqs1[4] = { LOADCOLOR, numPixels, "0,4,4,4,0 ", 4000, 4000, 0, 0 };//load color effect
-	//seqs1[1] = { BOUNCEBACK, numPixels, "0,0,1,2,0 ", 200, 4000, 4, 2 };//bounceback effect
+	seqs1[3] = { BOUNCEBACK, numPixels, "0,0,1,2,0 ", 200, 4000, 4, 2 };//bounceback effect
 	//seqs1[5] = { LOADCOLOR, numPixels, "4,4,0,4,4 ", 4000, 4000, 0, 0 };//load color effect
 	//seqs1[6] = { LOADCOLOR, numPixels, "5,5,5,5,5 ", 4000, 4000, 0, 0 };//load color effect
 	//seqs1[1] = { CLEAR, numPixels, " ", 4000, 4000, 0, 0 };//clear effect

@@ -62,6 +62,9 @@ void Strip::Update(unsigned long currentPerformanceTime) {
 		currentSequence++;
 		currentDuration = 0;
 		prevDuration = -1;
+
+		//Reset necessary global variables
+		i = -1;
 	}
 
 	////Do i need to keep track of last currentDuration so that when currentDuration is changed to int, we don't update more than 1?
@@ -74,14 +77,10 @@ void Strip::Update(unsigned long currentPerformanceTime) {
 	if (prevDuration == -1) {
 		proceed = true;
 		prevDuration = roundedDuration;
-
-		//stripUpdateRet->effectNum = 555;
 	}
 	else if (roundedDuration != prevDuration) {
 		proceed = true;
 		prevDuration = roundedDuration;
-
-		//stripUpdateRet->effectNum = 555;
 	}
 
 	//Set current duration to rounded duration
@@ -107,28 +106,23 @@ void Strip::Update(unsigned long currentPerformanceTime) {
 				break;
 			case FLOWTHROUGH:
 				if (i == -1) {
-					if (virtualPixelIndexArray != NULL) {
+					/*if (virtualPixelIndexArray != NULL) {
 						free(virtualPixelIndexArray);
+					}*/
+					//virtualPixelIndexArray = (int16_t*)calloc(lseqs[currentSequence].totalPixels, sizeof(int16_t));
+
+					//Set virual pixel elements to default element indexes
+					for (int elem = 0; elem < lseqs[currentSequence].totalPixels; elem++) {
+						//Add 1 to pixel's shift value
+						virtualPixelIndexArray[elem] = elem - 1;
+
+						Serial.print("Pixel elem: ");
+						Serial.print(elem);
+						Serial.print(" is Virtual Pixel elem: ");
+						Serial.println(virtualPixelIndexArray[elem]);
+						Serial.println();
 					}
-					virtualPixelIndexArray = (int16_t*)calloc(lseqs[currentSequence].totalPixels, sizeof(int16_t));
-					
-					////Set default values
-					//for (int elem = 0; elem < lseqs[currentSequence].totalPixels; elem++) {
-					//	Serial.print("Pixel elem: ");
-					//	Serial.print(elem);
-					//	Serial.print(" is Virtual Pixel elem: ");
-					//	Serial.print(virtualPixelIndexArray[elem]);
-					//	Serial.println();
-					//}
 				}
-				//List all values
-				/*for (int elem = 0; elem < lseqs[currentSequence].totalPixels; elem++) {
-					Serial.print("Pixel elem: ");
-					Serial.print(elem);
-					Serial.print(" is Virtual Pixel elem: ");
-					Serial.print(virtualPixelIndexArray[elem]);
-					Serial.println();
-				}*/
 
 				Effects::flowThrough(&strip, lseqs, currentSequence, &i, false, &p0, &p1, &p2, &p3, &p4, &p5, virtualPixelIndexArray, this);
 				break;

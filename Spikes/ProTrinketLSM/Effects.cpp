@@ -222,16 +222,16 @@ void Effects::flowThrough(Adafruit_DotStar* strip, LightingSequence* lseqs, uint
 			//Reset p values
 			*p0 = -1, *p1 = 0, *p2 = 1, *p3 = 2, *p4 = 3, *p5 = 4;
 		}
-		else {
-			//Reset nextBegPositions then continue
-			cdrColor.nextBegPosition = 0;
+		//else {
+		//	//Reset nextBegPositions then continue
+		//	cdrColor.nextBegPosition = 0;
 
-			//Set virual pixel elements to default element indexes
-			for (elem = 0; elem < lseqs[currentSequence].totalPixels; elem++) {
-				//Add 1 to pixel's shift value
-				virtualPixelIndexArray[elem] = elem - 1;
-			}
-		}
+		//	//Set virual pixel elements to default element indexes
+		//	for (elem = 0; elem < lseqs[currentSequence].totalPixels; elem++) {
+		//		//Add 1 to pixel's shift value
+		//		virtualPixelIndexArray[elem] = elem - 1;
+		//	}
+		//}
 	}
 
 	if (isRainbow) {
@@ -291,14 +291,14 @@ void Effects::flowThrough(Adafruit_DotStar* strip, LightingSequence* lseqs, uint
 			cdrColor.nextBegPosition = 0;
 
 			for (elem = 0; elem < lseqs[currentSequence].totalPixels; elem++) {
-				//Serial.print("Pixel elem: ");
-				//Serial.print(elem);
-				//Serial.print(" is Virtual Pixel elem: ");
-				//Serial.print(virtualPixelIndexArray[elem]);
-				//Serial.println();
-
 				//Add 1 to pixel's shift value
 				virtualPixelIndexArray[elem] = virtualPixelIndexArray[elem] + 1;
+
+				Serial.print("Pixel elem: ");
+				Serial.print(elem);
+				Serial.print(" is Virtual Pixel elem: ");
+				Serial.println(virtualPixelIndexArray[elem]);
+				Serial.println();
 
 				//Verify pixel shift is not over end of led strip
 				if (virtualPixelIndexArray[elem] >= lseqs[currentSequence].totalPixels) {
@@ -309,17 +309,20 @@ void Effects::flowThrough(Adafruit_DotStar* strip, LightingSequence* lseqs, uint
 				//Set nextBegPoistion for colors and get next color
 				getNextCommaDelimitedColorToken(lseqs[currentSequence].colors, cdrColor.nextBegPosition);
 
-				//Serial.print("Pixel elem: ");
-				//Serial.print(elem);
-				//Serial.print(" is Virtual Pixel elem: ");
-				//Serial.print(virtualPixelIndexArray[elem]);
-				//Serial.print(" and Color value is: ");
-				//Serial.print(cdrColor.value);
-				//Serial.println();
+				Serial.print("Pixel elem: ");
+				Serial.print(elem);
+				Serial.print(" is Virtual Pixel elem: ");
+				Serial.print(virtualPixelIndexArray[elem]);
+				Serial.print(" and the color value is ");
+				Serial.println(cdrColor.value);
+				Serial.println();
 
 				//Set pixel color
 				setSinglePixelColor(strip, lseqs, currentSequence, virtualPixelIndexArray[elem], cdrColor.value);
 			}
+		}
+		else {
+			allClear(strip, lseqs, currentSequence, PassedStripClass);
 		}
 	}
 
