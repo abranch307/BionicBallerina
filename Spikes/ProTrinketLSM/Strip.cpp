@@ -65,6 +65,7 @@ void Strip::Update(unsigned long currentPerformanceTime) {
 
 		//Reset necessary global variables
 		i = -1;
+		init = true;
 	}
 
 	////Do i need to keep track of last currentDuration so that when currentDuration is changed to int, we don't update more than 1?
@@ -99,31 +100,9 @@ void Strip::Update(unsigned long currentPerformanceTime) {
 				Effects::loadColor(&strip, lseqs, currentSequence, 0, this);
 				break;
 			case BOUNCEBACK:
-				hd = getHeadTailofLED("HEAD");
-				tl = getHeadTailofLED("TAIL");
-
 				Effects::bounceBack(&strip, lseqs, currentSequence, &init, &forward, &i, &tail, &head, &bounces, hd, tl, this);
 				break;
 			case FLOWTHROUGH:
-				if (i == -1) {
-					/*if (virtualPixelIndexArray != NULL) {
-						free(virtualPixelIndexArray);
-					}*/
-					//virtualPixelIndexArray = (int16_t*)calloc(lseqs[currentSequence].totalPixels, sizeof(int16_t));
-
-					//Set virual pixel elements to default element indexes
-					for (int elem = 0; elem < lseqs[currentSequence].totalPixels; elem++) {
-						//Add 1 to pixel's shift value
-						virtualPixelIndexArray[elem] = elem - 1;
-
-						Serial.print("Pixel elem: ");
-						Serial.print(elem);
-						Serial.print(" is Virtual Pixel elem: ");
-						Serial.println(virtualPixelIndexArray[elem]);
-						Serial.println();
-					}
-				}
-
 				Effects::flowThrough(&strip, lseqs, currentSequence, &i, false, &p0, &p1, &p2, &p3, &p4, &p5, virtualPixelIndexArray, this);
 				break;
 		}
@@ -167,34 +146,6 @@ unsigned long Strip::getPrevSeqTimesAccumulated() {
 
 uint8_t Strip::getEffectNum() {
 	return lseqs[currentSequence].lightsequence;
-}
-
-uint16_t Strip::getHeadTailofLED(const char* Type) {
-	//Declare variables
-	int elem = 0, tailOrHead = -1;
-
-	//Exit if lseq is null or colors is null
-	if (lseqs[currentSequence].colors == NULL) {
-		return tailOrHead;
-	}
-
-	//Set nextBegPosition to 0
-	Effects::cdrColor.nextBegPosition = 0;
-
-	for (elem = 0; elem < lseqs[currentSequence].totalPixels; elem++) {
-		//Get next color token from comma delimited string
-		Effects::getNextCommaDelimitedColorToken(lseqs[currentSequence].colors, Effects::cdrColor.nextBegPosition);
-
-		if (Effects::cdrColor.value != 0) {
-			tailOrHead = elem;
-
-			if (strcmp(Type, "TAIL") == 0) {
-				break;
-			}
-		}
-	}
-
-	return tailOrHead;
 }
 
 /*

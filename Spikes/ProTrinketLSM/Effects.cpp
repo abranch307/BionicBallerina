@@ -8,7 +8,7 @@
 
 #include <string.h>
 
-CommaDelimitReturn Effects::cdrPixel, Effects::cdrColor;
+CommaDelimitReturn Effects::cdrColor;
 
 void Effects::allClear(Adafruit_DotStar* strip, LightingSequence* lseqs, uint16_t currentSequence, Strip* PassedStripClass) {
 	//Exit if invalid pointers passed
@@ -151,8 +151,8 @@ void Effects::bounceBack(Adafruit_DotStar* strip, LightingSequence* lseqs, uint1
 		*init = false;
 		*bounces = lseqs[currentSequence].bounces;
 		*shiftPixelsBy = 0;
-		*head = initHead;
-		*tail = initTail;
+		*head = getHeadTailofLED("HEAD", lseqs[currentSequence].colors, lseqs[currentSequence].totalPixels);
+		*tail = getHeadTailofLED("TAIL", lseqs[currentSequence].colors, lseqs[currentSequence].totalPixels);
 
 		return;
 	}
@@ -222,16 +222,16 @@ void Effects::flowThrough(Adafruit_DotStar* strip, LightingSequence* lseqs, uint
 			//Reset p values
 			*p0 = -1, *p1 = 0, *p2 = 1, *p3 = 2, *p4 = 3, *p5 = 4;
 		}
-		//else {
-		//	//Reset nextBegPositions then continue
-		//	cdrColor.nextBegPosition = 0;
+		else {
+			//Reset nextBegPositions then continue
+			cdrColor.nextBegPosition = 0;
 
-		//	//Set virual pixel elements to default element indexes
-		//	for (elem = 0; elem < lseqs[currentSequence].totalPixels; elem++) {
-		//		//Add 1 to pixel's shift value
-		//		virtualPixelIndexArray[elem] = elem - 1;
-		//	}
-		//}
+			//Set virual pixel elements to default element indexes
+			for (elem = 0; elem < lseqs[currentSequence].totalPixels; elem++) {
+				//Add 1 to pixel's shift value
+				virtualPixelIndexArray[elem] = elem - 1;
+			}
+		}
 	}
 
 	if (isRainbow) {
@@ -294,12 +294,6 @@ void Effects::flowThrough(Adafruit_DotStar* strip, LightingSequence* lseqs, uint
 				//Add 1 to pixel's shift value
 				virtualPixelIndexArray[elem] = virtualPixelIndexArray[elem] + 1;
 
-				Serial.print("Pixel elem: ");
-				Serial.print(elem);
-				Serial.print(" is Virtual Pixel elem: ");
-				Serial.println(virtualPixelIndexArray[elem]);
-				Serial.println();
-
 				//Verify pixel shift is not over end of led strip
 				if (virtualPixelIndexArray[elem] >= lseqs[currentSequence].totalPixels) {
 					//Change virtual index to 0
@@ -308,14 +302,6 @@ void Effects::flowThrough(Adafruit_DotStar* strip, LightingSequence* lseqs, uint
 
 				//Set nextBegPoistion for colors and get next color
 				getNextCommaDelimitedColorToken(lseqs[currentSequence].colors, cdrColor.nextBegPosition);
-
-				Serial.print("Pixel elem: ");
-				Serial.print(elem);
-				Serial.print(" is Virtual Pixel elem: ");
-				Serial.print(virtualPixelIndexArray[elem]);
-				Serial.print(" and the color value is ");
-				Serial.println(cdrColor.value);
-				Serial.println();
 
 				//Set pixel color
 				setSinglePixelColor(strip, lseqs, currentSequence, virtualPixelIndexArray[elem], cdrColor.value);
@@ -427,6 +413,34 @@ void Effects::getNextCommaDelimitedColorToken(const char* String, uint16_t BegPo
 		}
 	}
 
-	Effects::cdrColor.nextBegPosition = iret.nextBegPosition;
-	Effects::cdrColor.value = iret.value;
+	cdrColor.nextBegPosition = iret.nextBegPosition;
+	cdrColor.value = iret.value;
+}
+
+uint16_t Effects::getHeadTailofLED(const char* Type, const char* Colors, uint16_t TotalPixels) {
+	//Declare variables
+	int elem = 0, tailOrHead = -1;
+
+	//Exit if lseq is null or colors is null
+	if (Colors == NULL) {
+		return tailOrHead;
+	}
+
+	//Set nextBegPosition to 0
+	cdrColor.nextBegPosition = 0;
+
+	for (elem = 0; elem < TotalPixels; elem++) {
+		//Get next color token from comma delimited string
+		getNextCommaDelimitedColorToken(Colors, cdrColor.nextBegPosition);
+
+		if (cdrColor.value != 0) {
+			tailOrHead = elem;
+
+			if (strcmp(Type, "TAIL") == 0) {
+				break;
+			}
+		}
+	}
+
+	return tailOrHead;
 }

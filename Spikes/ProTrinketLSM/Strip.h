@@ -31,7 +31,6 @@ class Strip {
 		unsigned long getPrevDuration();
 		unsigned long getPrevSeqTimesAccumulated();
 		uint8_t getEffectNum();
-		uint16_t getHeadTailofLED(const char* Type);
 		Adafruit_DotStar* getStrip();
 		bool getProceed();
 		bool resetGlobalVars();

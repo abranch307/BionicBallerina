@@ -49,7 +49,8 @@ class Effects {
 		static void flowThrough(Adafruit_DotStar* strip, LightingSequence* lseqs, uint16_t currentSequence, int16_t* i, bool isRainbow, int16_t* p0, int16_t* p1, int16_t* p2, int16_t* p3, int16_t* p4, int16_t* p5, int16_t* virtualPixelIndexArray, Strip* PassedStripClass);
 		static void setSinglePixelColor(Adafruit_DotStar* strip, LightingSequence* lseqs, uint16_t currentSequence, uint16_t pixelElem, uint16_t color);
 		static void getNextCommaDelimitedColorToken(const char* String, uint16_t BegPosition);
-		static CommaDelimitReturn cdrPixel, cdrColor;
+		static uint16_t getHeadTailofLED(const char* Type, const char* Colors, uint16_t TotalPixels);
+		static CommaDelimitReturn cdrColor;
 	private:
 		//Disallow creating instance of object
 		Effects() {};
