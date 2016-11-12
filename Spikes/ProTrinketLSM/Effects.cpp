@@ -53,7 +53,7 @@ void Effects::allClear(Adafruit_DotStar* strip, LightingSequence* lseqs, uint16_
 //		*p0 = -1, *p1 = 0, *p2 = 1, *p3 = 2, *p4 = 3, *p5 = 4;
 //	}
 //
-//	//Verify if p0 is greater than numPixels, and if so add 1 to shiftPixelsBy
+//	//Verify if p0 is greater than numPixels1, and if so add 1 to shiftPixelsBy
 //	if (*p0 >= lseqs[currentSequence].totalPixels) {
 //		//Add 1 to shiftPixelsBy and reset j
 //		*i = *i + 1;
@@ -235,7 +235,7 @@ void Effects::flowThrough(Adafruit_DotStar* strip, LightingSequence* lseqs, uint
 	}
 
 	if (isRainbow) {
-		//Verify if p0 is greater than numPixels, and if so add 1 to shiftPixelsBy
+		//Verify if p0 is greater than numPixels1, and if so add 1 to shiftPixelsBy
 		if (*p0 >= lseqs[currentSequence].totalPixels) {
 			//Add 1 to shiftPixelsBy and reset j
 			*i = *i + 1;

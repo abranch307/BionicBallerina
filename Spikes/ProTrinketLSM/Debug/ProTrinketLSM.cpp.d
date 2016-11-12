@@ -19,4 +19,4 @@ C:\Users\Abranch\AppData\Local\Temp\VMicroBuilds\ProTrinketLSM\adafruit_adafruit
  C:\Users\Abranch\AppData\Local\Temp\VMicroBuilds\ProTrinketLSM\adafruit_adafruit_avr_protrinket5ftdi\Strip.h \
  C:\Users\Abranch\AppData\Local\Temp\VMicroBuilds\ProTrinketLSM\adafruit_adafruit_avr_protrinket5ftdi\EffectsManager.h \
  C:\Users\Abranch\AppData\Local\Temp\VMicroBuilds\ProTrinketLSM\adafruit_adafruit_avr_protrinket5ftdi\Effects.h \
- C:\Program\ Files\ (x86)\Microsoft\ Visual\ Studio\ 14.0\Common7\IDE\Extensions\ggxlu10y.4cm\Micro\ Platforms\default\debuggers\VM_DBG/VM_DBG.h
+ C:\Program\ Files\ (x86)\Microsoft\ Visual\ Studio\ 14.0\Common7\IDE\Extensions\owephfn2.g1h\Micro\ Platforms\default\debuggers\VM_DBG/VM_DBG.h

@@ -74,7 +74,7 @@ void Strip::Update(unsigned long currentPerformanceTime) {
 	////Or, since currentDuration is milliseconds, will it never = 0?  delaytime = 2000, currentDuration = 2001, won't % to 0...
 	//
 	//Round duration down to thousandths and compare against last duration
-	roundedDuration = (unsigned long)((float)currentDuration/(float)200) * 200;
+	roundedDuration = (unsigned long)((float)currentDuration/(float)10) * 10;
 	if (prevDuration == -1) {
 		proceed = true;
 		prevDuration = roundedDuration;

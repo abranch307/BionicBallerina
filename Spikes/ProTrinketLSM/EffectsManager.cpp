@@ -32,6 +32,9 @@ void EffectsManager::Update(unsigned long elapsedTime) {
 	for (int i = 0; i < countStrips; i++) {
 		//Update strip and track information return (effectNum and performance information)
 		strips2Manage[i].Update(performanceElapsedTime);
+
+		//Serial.print("Just updated strip ");
+		//Serial.println(i + 1);
 	}
 }
 
@@ -57,7 +60,9 @@ bool EffectsManager::resetPerformance() {
 	prevTime = -1;
 
 	//Reset strips' global variables
-	
+	for (int i = 0; i < countStrips; i++) {
+		strips2Manage[i].resetGlobalVars();
+	}
 }
 
 bool EffectsManager::findCurrentSeqFromPerformanceTime(unsigned long performanceTime) {
@@ -65,7 +70,7 @@ bool EffectsManager::findCurrentSeqFromPerformanceTime(unsigned long performance
 	performanceElapsedTime = performanceTime;
 	prevTime = performanceTime;
 
-	//Reset strips' global variables
+	//Find current sequence time based on performance time
 	for (int i = 0; i < countStrips; i++) {
 		strips2Manage[i].findCurrentSeqFromPerformanceTime(performanceTime);
 	}
