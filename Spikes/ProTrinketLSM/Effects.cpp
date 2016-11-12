@@ -25,82 +25,80 @@ void Effects::allClear(Adafruit_DotStar* strip, LightingSequence* lseqs, uint16_
 		return;
 	}
 
-	//int tot = lseqs[currentSequence].totalPixels;
-	
 	//Loop through all pixels and set color to clear
 	for (int i = 0; i < lseqs[currentSequence].totalPixels; i++) {
-		strip->setPixelColor(i, CLEAR);
+		setSinglePixelColor(strip, lseqs, currentSequence, i, 0);
 	}
 
 	//Show new effects
 	strip->show();
 }
 
-void Effects::rainbow(Adafruit_DotStar* strip, LightingSequence* lseqs, uint16_t currentSequence, int16_t* i, int16_t* p0, int16_t* p1, int16_t* p2, int16_t* p3, int16_t* p4, int16_t* p5, Strip* PassedStripClass) {
-	//Exit if invalid pointers passed
-	if (strip == NULL) {
-		return;
-	}
-	else if (lseqs == NULL)
-	{
-		return;
-	}
-
-	//Add 1 to shiftPixelsBy if shiftPixelsBy is -1 and reset ps
-	if (*i < 0) {
-		//Add 1 to i making i = 0
-		*i = *i + 1;
-
-		//Reset p values
-		*p0 = -1, *p1 = 0, *p2 = 1, *p3 = 2, *p4 = 3, *p5 = 4;
-	}
-
-	//Verify if p0 is greater than numPixels, and if so add 1 to shiftPixelsBy
-	if (*p0 >= lseqs[currentSequence].totalPixels) {
-		//Add 1 to shiftPixelsBy and reset j
-		*i = *i + 1;
-
-		//Reset p values
-		*p0 = 0, *p1 = 1, *p2 = 2, *p3 = 3, *p4 = 4, *p5 = 5;
-	}
-
-	if (*i <= lseqs[currentSequence].iterations) {
-		strip->setPixelColor((*p0)++, CLEAR);
-		strip->setPixelColor((*p1)++, RED);
-		strip->setPixelColor((*p2)++, ORANGE);
-		strip->setPixelColor((*p3)++, YELLOW);
-		strip->setPixelColor((*p4)++, GREEN);
-		strip->setPixelColor((*p5)++, BLUE);
-		strip->setPixelColor(*p1 - 2, CLEAR);
-
-		if (*p0 >= lseqs[currentSequence].totalPixels)
-		{
-			*p0 = 0;
-		}
-		if (*p1 >= lseqs[currentSequence].totalPixels)
-		{
-			*p1 = 0;
-		}
-		if (*p2 >= lseqs[currentSequence].totalPixels)
-		{
-			*p2 = 0;
-		}
-		if (*p3 >= lseqs[currentSequence].totalPixels)
-		{
-			*p3 = 0;
-		}
-		if (*p4 >= lseqs[currentSequence].totalPixels)
-		{
-			*p4 = 0;
-		}
-		if (*p5 >= lseqs[currentSequence].totalPixels)
-		{
-			*p5 = 0;
-		}
-	}
-
-	strip->show();
-}
+//void Effects::rainbow(Adafruit_DotStar* strip, LightingSequence* lseqs, uint16_t currentSequence, int16_t* i, int16_t* p0, int16_t* p1, int16_t* p2, int16_t* p3, int16_t* p4, int16_t* p5, Strip* PassedStripClass) {
+//	//Exit if invalid pointers passed
+//	if (strip == NULL) {
+//		return;
+//	}
+//	else if (lseqs == NULL)
+//	{
+//		return;
+//	}
+//
+//	//Add 1 to i if i is -1 and reset ps
+//	if (*i < 0) {
+//		//Add 1 to i making i = 0
+//		*i = *i + 1;
+//
+//		//Reset p values
+//		*p0 = -1, *p1 = 0, *p2 = 1, *p3 = 2, *p4 = 3, *p5 = 4;
+//	}
+//
+//	//Verify if p0 is greater than numPixels, and if so add 1 to shiftPixelsBy
+//	if (*p0 >= lseqs[currentSequence].totalPixels) {
+//		//Add 1 to shiftPixelsBy and reset j
+//		*i = *i + 1;
+//
+//		//Reset p values
+//		*p0 = 0, *p1 = 1, *p2 = 2, *p3 = 3, *p4 = 4, *p5 = 5;
+//	}
+//
+//	if (*i <= lseqs[currentSequence].iterations) {
+//		strip->setPixelColor((*p0)++, CLEAR);
+//		strip->setPixelColor((*p1)++, RED);
+//		strip->setPixelColor((*p2)++, ORANGE);
+//		strip->setPixelColor((*p3)++, YELLOW);
+//		strip->setPixelColor((*p4)++, GREEN);
+//		strip->setPixelColor((*p5)++, BLUE);
+//		strip->setPixelColor(*p1 - 2, CLEAR);
+//
+//		if (*p0 >= lseqs[currentSequence].totalPixels)
+//		{
+//			*p0 = 0;
+//		}
+//		if (*p1 >= lseqs[currentSequence].totalPixels)
+//		{
+//			*p1 = 0;
+//		}
+//		if (*p2 >= lseqs[currentSequence].totalPixels)
+//		{
+//			*p2 = 0;
+//		}
+//		if (*p3 >= lseqs[currentSequence].totalPixels)
+//		{
+//			*p3 = 0;
+//		}
+//		if (*p4 >= lseqs[currentSequence].totalPixels)
+//		{
+//			*p4 = 0;
+//		}
+//		if (*p5 >= lseqs[currentSequence].totalPixels)
+//		{
+//			*p5 = 0;
+//		}
+//	}
+//
+//	strip->show();
+//}
 
 void Effects::loadColor(Adafruit_DotStar* strip, LightingSequence* lseqs, uint16_t currentSequence, uint16_t shiftPixelToLoad, Strip* PassedStripClass) {
 	//Exit if invalid pointers passed
@@ -128,44 +126,7 @@ void Effects::loadColor(Adafruit_DotStar* strip, LightingSequence* lseqs, uint16
 		getNextCommaDelimitedColorToken(lseqs[currentSequence].colors, cdrColor.nextBegPosition);
 
 		//Convert return color index to actual color
-		switch (cdrColor.value)
-		{
-		case 0:
-			strip->setPixelColor(elem + shiftPixelToLoad, CLEAR);
-			break;
-		case 1:
-			strip->setPixelColor(elem + shiftPixelToLoad, WHITE);
-			break;
-		case 2:
-			strip->setPixelColor(elem + shiftPixelToLoad, RED);
-			break;
-		case 3:
-			strip->setPixelColor(elem + shiftPixelToLoad, GREEN);
-			break;
-		case 4:
-			strip->setPixelColor(elem + shiftPixelToLoad, BLUE);
-			break;
-		case 5:
-			strip->setPixelColor(elem + shiftPixelToLoad, YELLOW);
-			break;
-		case 6:
-			strip->setPixelColor(elem + shiftPixelToLoad, CYAN);
-			break;
-		case 7:
-			strip->setPixelColor(elem + shiftPixelToLoad, MAGENTA);
-			break;
-		case 8:
-			strip->setPixelColor(elem + shiftPixelToLoad, ORANGE);
-			break;
-		default:
-			strip->setPixelColor(elem + shiftPixelToLoad, CLEAR);
-			break;
-		}
-
-		Serial.print("Pixel elem and color equal: ");
-		Serial.print(elem);
-		Serial.print(", ");
-		Serial.println(colorValue);
+		setSinglePixelColor(strip, lseqs, currentSequence, (elem + shiftPixelToLoad), cdrColor.value);
 	}
 
 	//Show new effects
@@ -239,7 +200,7 @@ void Effects::bounceBack(Adafruit_DotStar* strip, LightingSequence* lseqs, uint1
 	strip->show();
 }
 
-void Effects::flowThrough(Adafruit_DotStar* strip, LightingSequence* lseqs, uint16_t currentSequence, int16_t* i, bool isRainbow, int16_t* p0, int16_t* p1, int16_t* p2, int16_t* p3, int16_t* p4, int16_t* p5, Strip* PassedStripClass) {
+void Effects::flowThrough(Adafruit_DotStar* strip, LightingSequence* lseqs, uint16_t currentSequence, int16_t* i, bool isRainbow, int16_t* p0, int16_t* p1, int16_t* p2, int16_t* p3, int16_t* p4, int16_t* p5, int16_t* virtualPixelIndexArray, Strip* PassedStripClass) {
 	//Exit if invalid pointers passed
 	if (strip == NULL) {
 		return;
@@ -249,7 +210,10 @@ void Effects::flowThrough(Adafruit_DotStar* strip, LightingSequence* lseqs, uint
 		return;
 	}
 
-	//Add 1 to shiftPixelsBy if shiftPixelsBy is -1 and reset ps
+	//Declare variables
+	int elem = 0, colorValue = 0;
+
+	//Add 1 to i if i is -1 and reset ps
 	if (*i < 0) {
 		//Add 1 to i making i = 0
 		*i = *i + 1;
@@ -257,6 +221,16 @@ void Effects::flowThrough(Adafruit_DotStar* strip, LightingSequence* lseqs, uint
 		if (isRainbow) {
 			//Reset p values
 			*p0 = -1, *p1 = 0, *p2 = 1, *p3 = 2, *p4 = 3, *p5 = 4;
+		}
+		else {
+			//Reset nextBegPositions then continue
+			cdrColor.nextBegPosition = 0;
+
+			//Set virual pixel elements to default element indexes
+			for (elem = 0; elem < lseqs[currentSequence].totalPixels; elem++) {
+				//Add 1 to pixel's shift value
+				virtualPixelIndexArray[elem] = elem - 1;
+			}
 		}
 	}
 
@@ -267,7 +241,7 @@ void Effects::flowThrough(Adafruit_DotStar* strip, LightingSequence* lseqs, uint
 			*i = *i + 1;
 
 			//Reset p values
-			*p0 = 0, *p1 = 1, *p2 = 2, *p3 = 3, *p4 = 4, *p5 = 5;
+			//*p0 = -1, *p1 = 0, *p2 = 1, *p3 = 2, *p4 = 3, *p5 = 4;
 		}
 
 		if (*i <= lseqs[currentSequence].iterations) {
@@ -277,7 +251,7 @@ void Effects::flowThrough(Adafruit_DotStar* strip, LightingSequence* lseqs, uint
 			strip->setPixelColor((*p3)++, YELLOW);
 			strip->setPixelColor((*p4)++, GREEN);
 			strip->setPixelColor((*p5)++, BLUE);
-			strip->setPixelColor(*p1 - 2, CLEAR);
+			//strip->setPixelColor(*p1 - 2, CLEAR);
 
 			if (*p0 >= lseqs[currentSequence].totalPixels)
 			{
@@ -305,8 +279,99 @@ void Effects::flowThrough(Adafruit_DotStar* strip, LightingSequence* lseqs, uint
 			}
 		}
 	}
+	else {
+		//Verify if first element is greater than total pixels, and if so add 1 to shiftPixelsBy
+		if (virtualPixelIndexArray[0] >= lseqs[currentSequence].totalPixels) {
+			//Add 1 to shiftPixelsBy and reset j
+			*i = *i + 1;
+		}
+
+		if (*i <= lseqs[currentSequence].iterations) {
+			//Reset nextBegPositions then continue
+			cdrColor.nextBegPosition = 0;
+
+			for (elem = 0; elem < lseqs[currentSequence].totalPixels; elem++) {
+				//Serial.print("Pixel elem: ");
+				//Serial.print(elem);
+				//Serial.print(" is Virtual Pixel elem: ");
+				//Serial.print(virtualPixelIndexArray[elem]);
+				//Serial.println();
+
+				//Add 1 to pixel's shift value
+				virtualPixelIndexArray[elem] = virtualPixelIndexArray[elem] + 1;
+
+				//Verify pixel shift is not over end of led strip
+				if (virtualPixelIndexArray[elem] >= lseqs[currentSequence].totalPixels) {
+					//Change virtual index to 0
+					virtualPixelIndexArray[elem] = 0;
+				}
+
+				//Set nextBegPoistion for colors and get next color
+				getNextCommaDelimitedColorToken(lseqs[currentSequence].colors, cdrColor.nextBegPosition);
+
+				//Serial.print("Pixel elem: ");
+				//Serial.print(elem);
+				//Serial.print(" is Virtual Pixel elem: ");
+				//Serial.print(virtualPixelIndexArray[elem]);
+				//Serial.print(" and Color value is: ");
+				//Serial.print(cdrColor.value);
+				//Serial.println();
+
+				//Set pixel color
+				setSinglePixelColor(strip, lseqs, currentSequence, virtualPixelIndexArray[elem], cdrColor.value);
+			}
+		}
+	}
 
 	strip->show();
+}
+
+/*
+*/
+void Effects::setSinglePixelColor(Adafruit_DotStar* strip, LightingSequence* lseqs, uint16_t currentSequence, uint16_t pixelElem, uint16_t color) {
+	//Exit if invalid pointers passed
+	if (strip == NULL) {
+		return;
+	}
+	else if (lseqs == NULL)
+	{
+		return;
+	}
+
+	//Convert return color index to actual color
+	switch (color)
+	{
+	case 0:
+		strip->setPixelColor(pixelElem, CLEAR);
+		break;
+	case 1:
+		strip->setPixelColor(pixelElem, WHITE);
+		break;
+	case 2:
+		strip->setPixelColor(pixelElem, RED);
+		break;
+	case 3:
+		strip->setPixelColor(pixelElem, GREEN);
+		break;
+	case 4:
+		strip->setPixelColor(pixelElem, BLUE);
+		break;
+	case 5:
+		strip->setPixelColor(pixelElem, YELLOW);
+		break;
+	case 6:
+		strip->setPixelColor(pixelElem, CYAN);
+		break;
+	case 7:
+		strip->setPixelColor(pixelElem, MAGENTA);
+		break;
+	case 8:
+		strip->setPixelColor(pixelElem, ORANGE);
+		break;
+	default:
+		strip->setPixelColor(pixelElem, CLEAR);
+		break;
+	}
 }
 
 /*

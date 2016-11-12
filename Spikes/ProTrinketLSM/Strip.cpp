@@ -94,7 +94,7 @@ void Strip::Update(unsigned long currentPerformanceTime) {
 				Effects::allClear(&strip, lseqs, currentSequence, this);
 				break;
 			case RAINBOW:
-				Effects::flowThrough(&strip, lseqs, currentSequence, &i, true, &p0, &p1, &p2, &p3, &p4, &p5, this);
+				Effects::flowThrough(&strip, lseqs, currentSequence, &i, true, &p0, &p1, &p2, &p3, &p4, &p5, NULL, this);
 				break;
 			case LOADCOLOR:
 				Effects::loadColor(&strip, lseqs, currentSequence, 0, this);
@@ -106,7 +106,31 @@ void Strip::Update(unsigned long currentPerformanceTime) {
 				Effects::bounceBack(&strip, lseqs, currentSequence, &init, &forward, &i, &tail, &head, &bounces, hd, tl, this);
 				break;
 			case FLOWTHROUGH:
-				Effects::flowThrough(&strip, lseqs, currentSequence, &i, false, &p0, &p1, &p2, &p3, &p4, &p5, this);
+				if (i == -1) {
+					if (virtualPixelIndexArray != NULL) {
+						free(virtualPixelIndexArray);
+					}
+					virtualPixelIndexArray = (int16_t*)calloc(lseqs[currentSequence].totalPixels, sizeof(int16_t));
+					
+					////Set default values
+					//for (int elem = 0; elem < lseqs[currentSequence].totalPixels; elem++) {
+					//	Serial.print("Pixel elem: ");
+					//	Serial.print(elem);
+					//	Serial.print(" is Virtual Pixel elem: ");
+					//	Serial.print(virtualPixelIndexArray[elem]);
+					//	Serial.println();
+					//}
+				}
+				//List all values
+				/*for (int elem = 0; elem < lseqs[currentSequence].totalPixels; elem++) {
+					Serial.print("Pixel elem: ");
+					Serial.print(elem);
+					Serial.print(" is Virtual Pixel elem: ");
+					Serial.print(virtualPixelIndexArray[elem]);
+					Serial.println();
+				}*/
+
+				Effects::flowThrough(&strip, lseqs, currentSequence, &i, false, &p0, &p1, &p2, &p3, &p4, &p5, virtualPixelIndexArray, this);
 				break;
 		}
 

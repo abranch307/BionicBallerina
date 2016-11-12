@@ -16,5 +16,4 @@ C:\Users\Abranch\AppData\Local\Temp\VMicroBuilds\ProTrinketLSM\adafruit_adafruit
  C:\Program\ Files\ (x86)\Arduino\libraries\Adafruit_DotStar/Adafruit_DotStar.h \
  C:\Program\ Files\ (x86)\Arduino\hardware\arduino\avr\cores\arduino/Arduino.h \
  C:\Users\Abranch\AppData\Local\Temp\VMicroBuilds\ProTrinketLSM\adafruit_adafruit_avr_protrinket5ftdi\Structs.h \
- C:\Users\Abranch\AppData\Local\Temp\VMicroBuilds\ProTrinketLSM\adafruit_adafruit_avr_protrinket5ftdi\Strip.h \
- C:\Program\ Files\ (x86)\Microsoft\ Visual\ Studio\ 14.0\Common7\IDE\Extensions\ggxlu10y.4cm\Micro\ Platforms\default\debuggers\VM_DBG/VM_DBG.h
+ C:\Users\Abranch\AppData\Local\Temp\VMicroBuilds\ProTrinketLSM\adafruit_adafruit_avr_protrinket5ftdi\Strip.h

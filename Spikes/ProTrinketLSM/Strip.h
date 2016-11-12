@@ -50,6 +50,7 @@ class Strip {
 			prevSeqTimesAccumulated = 0; //As sequences change, the duration times are accumulated to here (used to find current effect's duration)
 		int16_t i = -1, j = -1, p0 = -1, p1 = 0, p2 = 1, p3 = 2, p4 = 3, p5 = 4, tail = 0, head = 3;
 		uint16_t currentSequence = 0, countSeqs = 0, counter1 = 0, counter2 = 0, bounces = 0;
+		int16_t* virtualPixelIndexArray;
 	protected:
 
 };
