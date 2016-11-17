@@ -25,8 +25,15 @@
 	#include <ESP8266WiFi.h>
 #endif
 
+//Define http parameters and args
 #define PINSETUPARG "PINSETUP"
 #define CHANGEPIXELCOLORARG "CHANGEPIXELCOLOR"
+#define INITLEDSEQS "INITLEDSEQS"
+#define READY "READY"
+#define ACTION "ACTION"
+#define START 0
+#define STOP 1
+#define RESTART 2
 
 typedef struct {
 	uint16_t numPixels; //Number of dotstar pixels linked
@@ -54,6 +61,8 @@ class PassStructViaWiFiClass
  private:
 	void setupWebURIs();
 	void handleRoot(void);
+	void handleReady();
+	void handleInitLEDSeqs();
 	void handleAddStruct();
 	void handleRemoveStruct();
 	void handleListStructs();

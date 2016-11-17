@@ -11,14 +11,14 @@ namespace LEDLightingComposer
     public class DrawingManager
     {
         //Declare global variables
-        private List<LEDStripEffect> ledStrips;
+        private List<DrawableObject> drawableObjects;
 
         /*
         */
         public DrawingManager()
         {
             //Initialize drawing objects List
-            ledStrips = new List<LEDStripEffect>();
+            drawableObjects = new List<DrawableObject>();
         }
 
         /*
@@ -46,24 +46,57 @@ namespace LEDLightingComposer
             //}
 
             //Draw all strip effects
-            foreach(LEDStripEffect lse in ledStrips)
+            foreach(DrawableObject dbo in drawableObjects)
             {
-                lse.drawLEDEffect(g);
+                dbo.drawLEDEffect(g);
             }
+
+            //Draw line for track bar
+
         }
 
         /*
         */
-        internal List<LEDStripEffect> LedStrips
+        public DrawableObject getDrawableObject(String Type, String Value1)
+        {
+            //Declare variables
+            DrawableObject doRet = null;
+
+            try
+            {
+                //Loop through drawable objects and find object according to parameters
+                if (Type.Equals("PINSETUP"))
+                {
+                    foreach (DrawableObject d in drawableObjects)
+                    {
+                        if (d.PinSetup == int.Parse(Value1))
+                        {
+                            //Set return 
+                            doRet = d;
+                            break;
+                        }
+                    }
+                }
+            }catch(Exception ex)
+            {
+                //Simply allow returning of null object
+            }
+
+            return doRet;
+        }
+
+        /*
+        */
+        internal List<DrawableObject> DrawableObjects
         {
             get
             {
-                return ledStrips;
+                return drawableObjects;
             }
 
             set
             {
-                ledStrips = value;
+                drawableObjects = value;
             }
         }
     }

@@ -1,0 +1,373 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Drawing;
+
+namespace LEDLightingComposer
+{
+    public static class Effects
+    {
+        //Colors
+        public const byte CLEAR = 0;
+        public const byte WHITE = 1;
+        public const byte RED = 2;
+        public const byte GREEN = 3;
+        public const byte BLUE = 4;
+        public const byte YELLOW = 5;
+        public const byte CYAN = 6;
+        public const byte MAGENTA = 7;
+        public const byte ORANGE = 8;
+
+        //Lighting Effect Types
+        public const short FILLER = -1;
+        public const byte ALLCLEAR = 0;
+        public const byte RAINBOW = 1;
+        public const byte LOADCOLOR = 2;
+        public const byte BOUNCEBACK = 3;
+        public const byte FLOWTHROUGH = 4;
+
+        public static bool allClear(Strip strip, DrawingManager DrawManager)
+        {
+            //Declare variables
+            DrawableObject dbo = null;
+            bool bRet = false;
+            int i = 0, currentSequence = strip.CurrentSequence;
+            Structs.LightingSequence seq;
+
+            try
+            {
+                seq = strip.LSeqs[currentSequence];
+            }catch(Exception ex)
+            {
+                try
+                {
+                    //CurrentSequence possibly past all sequences so try last sequence
+                    seq = strip.LSeqs[(currentSequence-1)];
+                }
+                catch (Exception ex2)
+                {
+                    return bRet;
+                }
+            }
+
+            //Find drawable object that matches this strip's pin setup for manipulating LEDs onscreen
+            dbo = DrawManager.getDrawableObject("PINSETUP", strip.PinSetup.ToString());
+
+            if(dbo == null)
+            {
+                return bRet;
+            }
+
+            //Set all of Drawable Object's LEDS to clear
+            for (i = 0; i < seq.totalPixels; i++)
+            {
+                dbo.Leds[i].LEDColor = Color.Transparent;
+            }
+
+            return bRet;
+        }
+
+        public static bool rainbow(Strip strip, DrawingManager DrawManager)
+        {
+            //Declare variables
+            bool bRet = false;
+            DrawableObject dbo = null;
+            int i = 0, currentSequence = strip.CurrentSequence;
+            Structs.LightingSequence seq;
+
+            try
+            {
+                seq = strip.LSeqs[currentSequence];
+            }
+            catch (Exception ex)
+            {
+                return bRet;
+            }
+
+            //Exit if invalid pointers passed
+            if (strip == null)
+            {
+                return bRet;
+            }
+
+            //Add 1 to I for next iteration and reset ps
+            if (strip.I < 0)
+            {
+                strip.I++;
+
+                //Reset p values
+                strip.P0 = 0; strip.P1 = 1; strip.P2 = 2; strip.P3 = 3; strip.P4 = 4; strip.P5 = 5;
+            }
+
+            //Verify if p0 is greater than numPixels, and if so add 1 to shiftPixelsBy
+            if (strip.P0 >= seq.totalPixels)
+            {
+                //Add 1 to shiftPixelsBy and reset j
+                strip.I++;
+
+                //Reset p values
+                strip.P0 = 0; strip.P1 = 1; strip.P2 = 2; strip.P3 = 3; strip.P4 = 4; strip.P5 = 5;
+            }
+
+            if (strip.I < seq.iterations)
+            {
+                //Find drawable object that matches this strip's pin setup for manipulating LEDs onscreen
+                dbo = DrawManager.getDrawableObject("PINSETUP", strip.PinSetup.ToString());
+
+                if (dbo == null)
+                {
+                    return bRet;
+                }
+
+                //Set all of Drawable Object's LEDS to clear
+                allClear(strip, DrawManager);
+
+                //Set specific pixels to rainbow colors
+                try { dbo.Leds[strip.P0++].LEDColor = Effects.getColorFromCode(CLEAR); } catch (Exception ex) { }
+                try { dbo.Leds[strip.P1++].LEDColor = Effects.getColorFromCode(RED); }catch(Exception ex) { }
+                try { dbo.Leds[strip.P2++].LEDColor = Effects.getColorFromCode(ORANGE); }catch(Exception ex) { }
+                try { dbo.Leds[strip.P3++].LEDColor = Effects.getColorFromCode(YELLOW); }catch(Exception ex) { }
+                try { dbo.Leds[strip.P4++].LEDColor = Effects.getColorFromCode(GREEN); }catch(Exception ex) { }
+                try { dbo.Leds[strip.P5++].LEDColor = Effects.getColorFromCode(BLUE); }catch(Exception ex) { }
+
+                if (strip.P0 >= seq.totalPixels)
+                {
+                    strip.P0 = 0;
+                }
+                if (strip.P1 >= seq.totalPixels)
+                {
+                    strip.P1 = 0;
+                }
+                if (strip.P2 >= seq.totalPixels)
+                {
+                    strip.P2 = 0;
+                }
+                if (strip.P3 >= seq.totalPixels)
+                {
+                    strip.P3 = 0;
+                }
+                if (strip.P4 >= seq.totalPixels)
+                {
+                    strip.P4 = 0;
+                }
+                if (strip.P5 >= seq.totalPixels)
+                {
+                    strip.P5 = 0;
+                }
+            }
+
+            return bRet;
+        }
+
+        public static bool loadColor(Strip strip, DrawingManager DrawManager)
+        {
+            //Declare variables
+            bool bRet = false;
+            DrawableObject dbo = null;
+            int i = 0, currentSequence = strip.CurrentSequence;
+            Structs.LightingSequence seq;
+
+            try
+            {
+                seq = strip.LSeqs[currentSequence];
+            }
+            catch (Exception ex)
+            {
+                return bRet;
+            }
+
+            //Exit if invalid pointers passed
+            if (strip == null)
+            {
+                return bRet;
+            }
+
+            //Find drawable object that matches this strip's pin setup for manipulating LEDs onscreen
+            dbo = DrawManager.getDrawableObject("PINSETUP", strip.PinSetup.ToString());
+
+            if (dbo == null)
+            {
+                return bRet;
+            }
+
+            //Clear all pixels first
+            allClear(strip, DrawManager);
+
+            //Set all of Drawable Object's LEDS to clear
+            for (i = 0; i < seq.totalPixels; i++)
+            {
+                try
+                {
+                    dbo.Leds[(i + strip.ShiftPixelBy)].LEDColor = getColorFromCode(int.Parse(seq.colors[i].Split('-')[0].Trim()));
+                }catch(Exception ex)
+                {
+
+                }
+            }
+
+            return bRet;
+        }
+
+        public static bool bounceBack(Strip strip, DrawingManager DrawManager, int initHead, int initTail)
+        {
+            //Declare variables
+            bool bRet = false;
+            DrawableObject dbo = null;
+            int i = 0, currentSequence = strip.CurrentSequence;
+            Structs.LightingSequence seq;
+
+            try
+            {
+                seq = strip.LSeqs[currentSequence];
+            }
+            catch (Exception ex)
+            {
+                return bRet;
+            }
+
+            //Exit if invalid pointers passed
+            if (strip == null)
+            {
+                return bRet;
+            }
+
+            try
+            {
+                //Clear all pixels first
+                Effects.allClear(strip, DrawManager);
+
+                //Initilialize if first time in
+                if (strip.Init)
+                {
+                    //Simply set colors, setup values, and exit
+                    loadColor(strip, DrawManager);
+
+                    strip.Init = false;
+                    strip.Bounces = seq.bounces;
+                    strip.ShiftPixelBy = 0;
+                    strip.Head = initHead;
+                    strip.Tail = initTail;
+
+                    bRet = true;
+
+                    return bRet;
+                }
+
+                if (strip.Bounces > 0)
+                {
+                    if (strip.Forward)
+                    {
+                        //Add 1 to shiftPixelsBy
+                        strip.ShiftPixelBy++;
+                        strip.Head++;
+                        strip.Tail++;
+
+                        if (strip.Head < seq.totalPixels)
+                        {
+                            //Load color with a shift and clear previous tail pixel
+                            loadColor(strip, DrawManager);
+                        }
+                        else
+                        {
+                            strip.Forward = false;
+                            strip.Bounces++;
+                        }
+                    }
+                    else
+                    {
+                        //Subtract 1 from shiftPixelsBy
+                        strip.ShiftPixelBy--;
+                        strip.Head--;
+                        strip.Tail--;
+
+                        if (strip.Tail >= 0)
+                        {
+                            //Load color with a shift and clear previous head pixel
+                            loadColor(strip, DrawManager);
+                        }
+                        else
+                        {
+                            strip.Forward = true;
+                            strip.Bounces++;
+                        }
+                    }
+                }
+                //Set return value to true
+                bRet = true;
+            }catch(Exception ex)
+            {
+                
+            }
+
+            return bRet;
+        }
+
+        public static bool flowThrough(Strip strip, DrawingManager DrawManager)
+        {
+            //Declare variables
+            bool bRet = false;
+            DrawableObject dbo = null;
+            int i = 0, currentSequence = strip.CurrentSequence;
+            Structs.LightingSequence seq;
+
+            try
+            {
+                seq = strip.LSeqs[currentSequence];
+            }
+            catch (Exception ex)
+            {
+                return bRet;
+            }
+
+            //Exit if invalid pointers passed
+            if (strip == null)
+            {
+                return bRet;
+            }
+
+            return bRet;
+        }
+
+        /*
+        */
+        public static Color getColorFromCode(int ColorCode)
+        {
+            Color clr = Color.Transparent;
+
+            switch (ColorCode)
+            {
+                case CLEAR:
+                    clr = Color.Transparent;
+                    break;
+                case WHITE:
+                    clr = Color.White;
+                    break;
+                case RED:
+                    clr = Color.Red;
+                    break;
+                case GREEN:
+                    clr = Color.Green;
+                    break;
+                case BLUE:
+                    clr = Color.Blue;
+                    break;
+                case YELLOW:
+                    clr = Color.Yellow;
+                    break;
+                case CYAN:
+                    clr = Color.Cyan;
+                    break;
+                case MAGENTA:
+                    clr = Color.Magenta;
+                    break;
+                case ORANGE:
+                    clr = Color.Orange;
+                    break;
+            }
+
+            return clr;
+        }
+    }
+}

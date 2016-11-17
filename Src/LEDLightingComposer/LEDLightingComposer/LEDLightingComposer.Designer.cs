@@ -47,18 +47,26 @@
             this.btnClearGrid = new System.Windows.Forms.Button();
             this.btnOpenProject = new System.Windows.Forms.Button();
             this.btnSend2LocalFile = new System.Windows.Forms.Button();
+            this.tBarTimer = new System.Windows.Forms.TrackBar();
+            this.pnlTBar = new System.Windows.Forms.Panel();
+            this.pnlDraw = new System.Windows.Forms.Panel();
+            this.chkSynchronizeMCUs = new System.Windows.Forms.CheckBox();
+            this.chkSkipIPSetup = new System.Windows.Forms.CheckBox();
+            this.btnMCUIPSetup = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgvProjectData)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.WMPlayer)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.tBarTimer)).BeginInit();
+            this.pnlTBar.SuspendLayout();
             this.SuspendLayout();
             // 
             // dgvProjectData
             // 
             this.dgvProjectData.AllowUserToAddRows = false;
             this.dgvProjectData.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvProjectData.Location = new System.Drawing.Point(12, 300);
+            this.dgvProjectData.Location = new System.Drawing.Point(12, 317);
             this.dgvProjectData.Name = "dgvProjectData";
             this.dgvProjectData.ReadOnly = true;
-            this.dgvProjectData.Size = new System.Drawing.Size(760, 206);
+            this.dgvProjectData.Size = new System.Drawing.Size(760, 189);
             this.dgvProjectData.TabIndex = 0;
             this.dgvProjectData.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvProjectData_CellDoubleClick);
             // 
@@ -225,11 +233,75 @@
             this.btnSend2LocalFile.UseVisualStyleBackColor = true;
             this.btnSend2LocalFile.Click += new System.EventHandler(this.btnSend2LocalFile_Click);
             // 
+            // tBarTimer
+            // 
+            this.tBarTimer.LargeChange = 1;
+            this.tBarTimer.Location = new System.Drawing.Point(3, 3);
+            this.tBarTimer.Name = "tBarTimer";
+            this.tBarTimer.Size = new System.Drawing.Size(757, 45);
+            this.tBarTimer.TabIndex = 24;
+            this.tBarTimer.Visible = false;
+            // 
+            // pnlTBar
+            // 
+            this.pnlTBar.AutoScroll = true;
+            this.pnlTBar.Controls.Add(this.tBarTimer);
+            this.pnlTBar.Location = new System.Drawing.Point(15, 314);
+            this.pnlTBar.Name = "pnlTBar";
+            this.pnlTBar.Size = new System.Drawing.Size(757, 100);
+            this.pnlTBar.TabIndex = 25;
+            this.pnlTBar.Visible = false;
+            // 
+            // pnlDraw
+            // 
+            this.pnlDraw.AutoScroll = true;
+            this.pnlDraw.BackColor = System.Drawing.Color.Transparent;
+            this.pnlDraw.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pnlDraw.Location = new System.Drawing.Point(15, 13);
+            this.pnlDraw.Name = "pnlDraw";
+            this.pnlDraw.Size = new System.Drawing.Size(374, 252);
+            this.pnlDraw.TabIndex = 26;
+            // 
+            // chkSynchronizeMCUs
+            // 
+            this.chkSynchronizeMCUs.AutoSize = true;
+            this.chkSynchronizeMCUs.Location = new System.Drawing.Point(394, 9);
+            this.chkSynchronizeMCUs.Name = "chkSynchronizeMCUs";
+            this.chkSynchronizeMCUs.Size = new System.Drawing.Size(116, 17);
+            this.chkSynchronizeMCUs.TabIndex = 27;
+            this.chkSynchronizeMCUs.Text = "Synchronize MCUs";
+            this.chkSynchronizeMCUs.UseVisualStyleBackColor = true;
+            // 
+            // chkSkipIPSetup
+            // 
+            this.chkSkipIPSetup.AutoSize = true;
+            this.chkSkipIPSetup.Location = new System.Drawing.Point(394, 32);
+            this.chkSkipIPSetup.Name = "chkSkipIPSetup";
+            this.chkSkipIPSetup.Size = new System.Drawing.Size(91, 17);
+            this.chkSkipIPSetup.TabIndex = 28;
+            this.chkSkipIPSetup.Text = "Skip IP Setup";
+            this.chkSkipIPSetup.UseVisualStyleBackColor = true;
+            // 
+            // btnMCUIPSetup
+            // 
+            this.btnMCUIPSetup.Location = new System.Drawing.Point(398, 55);
+            this.btnMCUIPSetup.Name = "btnMCUIPSetup";
+            this.btnMCUIPSetup.Size = new System.Drawing.Size(75, 34);
+            this.btnMCUIPSetup.TabIndex = 29;
+            this.btnMCUIPSetup.Text = "MCU IP Setup";
+            this.btnMCUIPSetup.UseVisualStyleBackColor = true;
+            this.btnMCUIPSetup.Click += new System.EventHandler(this.btnMCUIPSetup_Click);
+            // 
             // LEDLightingComposerCS
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(784, 561);
+            this.Controls.Add(this.btnMCUIPSetup);
+            this.Controls.Add(this.chkSkipIPSetup);
+            this.Controls.Add(this.chkSynchronizeMCUs);
+            this.Controls.Add(this.pnlDraw);
+            this.Controls.Add(this.pnlTBar);
             this.Controls.Add(this.btnSend2LocalFile);
             this.Controls.Add(this.btnOpenProject);
             this.Controls.Add(this.btnClearGrid);
@@ -253,6 +325,9 @@
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.LEDLightingComposer_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.dgvProjectData)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.WMPlayer)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.tBarTimer)).EndInit();
+            this.pnlTBar.ResumeLayout(false);
+            this.pnlTBar.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -278,6 +353,12 @@
         private System.Windows.Forms.Button btnClearGrid;
         private System.Windows.Forms.Button btnOpenProject;
         private System.Windows.Forms.Button btnSend2LocalFile;
+        private System.Windows.Forms.TrackBar tBarTimer;
+        private System.Windows.Forms.Panel pnlTBar;
+        private System.Windows.Forms.Panel pnlDraw;
+        private System.Windows.Forms.CheckBox chkSynchronizeMCUs;
+        private System.Windows.Forms.CheckBox chkSkipIPSetup;
+        private System.Windows.Forms.Button btnMCUIPSetup;
     }
 }
 

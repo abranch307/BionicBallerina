@@ -37,6 +37,8 @@ void PassStructViaWiFiClass::handleClient() {
 void PassStructViaWiFiClass::setupWebURIs() {
 	/*Setup Web request naming*/
 	server.on("/", std::bind(&PassStructViaWiFiClass::handleRoot,this));
+	server.on("/ready", std::bind(&PassStructViaWiFiClass::handleReady, this));
+	server.on("/init_led_seqs", std::bind(&PassStructViaWiFiClass::handleInitLEDSeqs, this));
 	server.on("/add_struct", std::bind(&PassStructViaWiFiClass::handleAddStruct,this));
 	server.on("/remove_struct", std::bind(&PassStructViaWiFiClass::handleRemoveStruct,this));
 	server.on("/list_structs", std::bind(&PassStructViaWiFiClass::handleListStructs,this));
@@ -55,6 +57,98 @@ void PassStructViaWiFiClass::handleRoot(void) {
 	String response = "";
 	response += "<h1>Welcome to ESP8266 Struct Passing Testing</h1><br><br>";
 	response += "Test using these subdirectories: /add_struct, /remove_struct, list_structs, ";
+	server.send(200, "text/html", response);
+}
+
+/*
+	Function handleReady
+	This method will send "YES" as an http response to the calling user
+
+	Parameters: none
+
+	Returns: nothing to calling method, response to http user
+*/
+
+void PassStructViaWiFiClass::handleReady() {
+	/*Declare variables*/
+	String response = "";
+
+	/*Verify arg READY is present*/
+	if (server.hasArg(READY)) {
+		String sret = READY;
+		String received = "";
+
+		/*Get passed argument*/
+		received = server.arg(READY);;
+
+		Serial.println(sret);
+		Serial.println(received);
+
+		/*Notify user ESP8266 is ready by sending YES*/
+		response = "YES";
+
+		/*Free malloc'd data*/
+		//free(&dBytes);
+		//free(ps);
+	}
+	else {
+		return;
+	}
+
+	//Send response to user
+	server.send(200, "text/plain", response);
+}
+/*
+	Function handleInitLEDSeqs
+	This method will send a struct to the attached microcontroller via serial interface which
+	gives a signal to start LED Lighting Sequences (0 for start, 2 for restart, 1 for stop
+
+	Parameters: none
+
+	Returns: nothing to calling method, response to http user
+*/
+void PassStructViaWiFiClass::handleInitLEDSeqs() {
+	/*Declare variables*/
+	String response = "";
+
+	/*Verify arg INITLEDSEQS is present*/
+	if (server.hasArg(INITLEDSEQS)) {
+		String sret = INITLEDSEQS;
+		String received = "";
+		int action = -1;
+
+		/*Get passed argument and convert to int*/
+		received = server.arg(INITLEDSEQS);
+		action = received.toInt();
+
+		//Send specific command to connected microcrontoller depending on passed action
+		switch (action) {
+			case START:
+				received = "0";
+				break;
+			case STOP:
+				received = "1";
+				break;
+			case RESTART:
+				received = "2";
+				break;
+		}
+
+		Serial.println(sret);
+		Serial.println(received);
+
+		/*Notify user of what data was received*/
+		response = "<h1>" + sret + " - " + received + " - processed by handleInitLEDSeqs()</h1><br><br>";
+
+		/*Free malloc'd data*/
+		//free(&dBytes);
+		//free(ps);
+	}
+	else {
+		return;
+	}
+
+	//Send http response to user
 	server.send(200, "text/html", response);
 }
 

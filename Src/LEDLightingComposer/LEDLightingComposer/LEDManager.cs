@@ -6,14 +6,8 @@ using System.Threading.Tasks;
 
 namespace LEDLightingComposer
 {
-    public class LEDManager
+    public static class LEDManager
     {
-        //Declare global variables
-        List<LED> ledArray = new List<LED>();
         
-        public LEDManager()
-        {
-
-        }
     }
 }

@@ -16,7 +16,7 @@ namespace LEDLightingComposer
         private DatabaseManager dbmanager;
         private List<int> ledPArray = new List<int>();
         private List<String> ledCArray = new List<string>();
-        private int effectNum;
+        private int effectNum, lastNumLEDs = 0;
         private bool add;
         
         public Project(DatabaseManager DBManager, bool Add)
@@ -56,13 +56,13 @@ namespace LEDLightingComposer
             this.add = Add;
 
             //Load Project Names from LED_Project table
-            dbmanager.loadCBoxByType("PROJECTNAMES",this.cBoxProjectName,"","");
+            dbmanager.loadCBoxByType("PROJECTNAMES",this.cBoxProjectName,"");
 
             //Load MCU Names from MCU table
-            dbmanager.loadCBoxByType("MCUNAMES",this.cBoxMCUName,"","");
+            dbmanager.loadCBoxByType("MCUNAMES",this.cBoxMCUName,"");
 
             //Load Lighting Effects from Lighting_Effects table
-            dbmanager.loadCBoxByType("LIGHTINGEFFECTS",this.cBoxLEffect,"","");
+            dbmanager.loadCBoxByType("LIGHTINGEFFECTS",this.cBoxLEffect,"");
 
             //Setup screen values
             setupScreenValues();
@@ -89,7 +89,7 @@ namespace LEDLightingComposer
             }
         }
 
-        public Project(DatabaseManager DBManager, String ProjectName, String MCUName, String PinSetup, int NumOfLEDs, List<int> LEDPArray, List<String> LEDCArray, String LightingEffect, int EffectStart, int EffectDuration, int EffectNum, String CurrentSongPath, bool Add)
+        public Project(DatabaseManager DBManager, String ProjectName, String MCUName, String PinSetup, int NumOfLEDs, List<int> LEDPArray, List<String> LEDCArray, String LightingEffect, float EffectStart, float EffectDuration, float DelayTime, int Iterations, int Bounces, int EffectNum, String CurrentSongPath, bool Add)
         {
             //Initialize Components
             InitializeComponent();
@@ -103,13 +103,13 @@ namespace LEDLightingComposer
             this.add = Add;
 
             //Load Project Names from LED_Project table
-            dbmanager.loadCBoxByType("PROJECTNAMES", this.cBoxProjectName, "", "");
+            dbmanager.loadCBoxByType("PROJECTNAMES", this.cBoxProjectName, "");
 
             //Load MCU Names from MCU table
-            dbmanager.loadCBoxByType("MCUNAMES", this.cBoxMCUName, "", "");
+            dbmanager.loadCBoxByType("MCUNAMES", this.cBoxMCUName, "");
 
             //Load Lighting Effects from Lighting_Effects table
-            dbmanager.loadCBoxByType("LIGHTINGEFFECTS", this.cBoxLEffect, "", "");
+            dbmanager.loadCBoxByType("LIGHTINGEFFECTS", this.cBoxLEffect, "");
 
             //Set fields on-screen
             this.cBoxProjectName.Text = ProjectName;
@@ -120,6 +120,9 @@ namespace LEDLightingComposer
             this.txtNumLEDs.Text = NumOfLEDs.ToString();
             this.txtEffectStartTime.Text = EffectStart.ToString();
             this.txtEffectDuration.Text = EffectDuration.ToString();
+            this.txtDelayTime.Text = DelayTime.ToString();
+            this.txtIterations.Text = Iterations.ToString();
+            this.txtBounces.Text = Bounces.ToString();
             this.txtSongPath.Text = CurrentSongPath;
 
             this.ledPArray = LEDPArray;
@@ -164,7 +167,7 @@ namespace LEDLightingComposer
 
                 //Verify if project exists, and if not create
                 pName = pName[0].Split('-');
-                if (!dbmanager.verifyNameExistsInDatabase(dbmanager.LED_Project,"", pName[0].Trim(), "", "", ""))
+                if (!dbmanager.verifyNameExistsInDatabase(dbmanager.LED_Project,"", pName[0].Trim(), "", ""))
                 {
                     if(dbmanager.insertRecordIntoDB(dbmanager.LED_Project, pName[0].Trim(), pName[1].Trim(), "", "") < 1)
                     {
@@ -210,7 +213,7 @@ namespace LEDLightingComposer
                 {
                     //Create MCU Name in database if necessary
                     mcuName = mcuName[0].Split('-');
-                    if (!dbmanager.verifyNameExistsInDatabase(dbmanager.Mcu,"", mcuName[0].Trim(), "", "", ""))
+                    if (!dbmanager.verifyNameExistsInDatabase(dbmanager.Mcu,"", mcuName[0].Trim(), "", ""))
                     {
                         if(dbmanager.insertRecordIntoDB(dbmanager.Mcu, mcuName[0].Trim(), mcuName[1].Trim(), "", "") < 1)
                         {
@@ -260,9 +263,10 @@ namespace LEDLightingComposer
                 {
                     //Create MCU Name in database
                     pinSetup = pinSetup[0].Split(';');
-                    if (!dbmanager.verifyNameExistsInDatabase(dbmanager.MCU_Pins,"", projectName, mcuName, pinSetup[0].Trim(), pinSetup[1].Trim()))
+                    if (!dbmanager.verifyNameExistsInDatabase(dbmanager.MCU_Pins,"", mcuName, pinSetup[0].Trim(), pinSetup[1].Trim()))
                     {
-                        if(dbmanager.insertRecordIntoDBReturnIncr(dbmanager.MCU_Pins, pinSetup[2].Trim(), projectName, mcuName, pinSetup[0].Trim(), pinSetup[1].Trim(), "", "", null, null) < 1)
+                        if(dbmanager.insertRecordIntoDBReturnIncr(dbmanager.MCU_Pins, pinSetup[2].Trim(), mcuName, 
+                            pinSetup[0].Trim(), pinSetup[1].Trim(), "", "", "", null, null, null, null, null) < 1)
                         {
                             //Set bret to false since insert was not successful
                             bret = false;
@@ -348,7 +352,7 @@ namespace LEDLightingComposer
                 {
                     //Create MCU Name in database if necessary
                     lEffect = lEffect[0].Split('-');
-                    if (!dbmanager.verifyNameExistsInDatabase(dbmanager.Lighting_Effects,"", lEffect[0].Trim(), "", "", ""))
+                    if (!dbmanager.verifyNameExistsInDatabase(dbmanager.Lighting_Effects,"", lEffect[0].Trim(), "", ""))
                     {
                         if(dbmanager.insertRecordIntoDB(dbmanager.Lighting_Effects, lEffect[0].Trim(), lEffect[1].Trim(), "", "") < 1)
                         {
@@ -395,6 +399,25 @@ namespace LEDLightingComposer
             return iret;
         }
 
+        /*
+        */
+        private float veriFloatTextbox(TextBox txt)
+        {
+            //Declare variables
+            float fret = -1;
+
+            try
+            {
+                fret = float.Parse(txt.Text.ToString().Trim());
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error verifying int in textbox...: " + ex.Message);
+            }
+
+            return fret;
+        }
+
         #endregion Verification Methods
 
         #region Private Methods
@@ -428,6 +451,12 @@ namespace LEDLightingComposer
             this.txtEffectStartTime.Update();
             this.txtEffectDuration.Text = "0";
             this.txtEffectDuration.Update();
+            this.txtDelayTime.Text = "0";
+            this.txtDelayTime.Update();
+            this.txtIterations.Text = "0";
+            this.txtIterations.Update();
+            this.txtBounces.Text = "0";
+            this.txtBounces.Update();
 
             //Reset btns
             this.btnSave2Project.Text = "Save 2 Project";
@@ -487,16 +516,16 @@ namespace LEDLightingComposer
 
         /*
         */
-        private int getEffectStart()
+        private float getEffectStart()
         {
-            return int.Parse(this.txtEffectStartTime.Text.Trim());
+            return float.Parse(this.txtEffectStartTime.Text.Trim());
         }
 
         /*
         */
-        private int getEffectDuration()
+        private float getEffectDuration()
         {
-            return int.Parse(this.txtEffectDuration.Text.ToString());
+            return float.Parse(this.txtEffectDuration.Text.ToString());
         }
 
         /*
@@ -513,7 +542,7 @@ namespace LEDLightingComposer
                 }
                 else
                 {
-                    sret += ledPArray[i].ToString().Trim() + ";";
+                    sret += ledPArray[i].ToString().Trim() + ",";
                 }
             }
 
@@ -534,7 +563,7 @@ namespace LEDLightingComposer
                 }
                 else
                 {
-                    sret += ledCArray[i].ToString().Trim() + ";";
+                    sret += ledCArray[i].ToString().Trim() + ",";
                 }
             }
 
@@ -569,7 +598,7 @@ namespace LEDLightingComposer
                 }
             }
 
-            LEDPosition ledp = new LEDPosition(leds, ledPArray);
+            ScreenArraySelections ledp = new ScreenArraySelections("LED", leds, ledPArray, null, null);
             ledp.Owner = this;
             ledp.Show();
         }
@@ -599,7 +628,7 @@ namespace LEDLightingComposer
                 }
             }
 
-            LEDColor ledc = new LEDColor(leds, ledCArray);
+            ScreenArraySelections ledc = new ScreenArraySelections("COLOR", leds, null, ledCArray, null);
             ledc.Owner = this;
             ledc.Show();
         }
@@ -611,7 +640,8 @@ namespace LEDLightingComposer
             //Declare variables
             String projectName = "", mcuName = "", ledPArray = "", ledCArray = "";
             String[] pinSetup = { "" };
-            int numLEDs = 0, lightingEffect, effectNum = 0, effectStart = 0, effectDuration = 0, truePinSetupVal = 0;
+            int numLEDs = 0, lightingEffect, effectNum = 0, iterations = 0, bounces = 0, truePinSetupVal = 0;
+            float effectStart = 0, effectDuration = 0, delayTime = 0;
 
             //Verify Project Name has been entered (if yes, verify if Project Name exists in database and if not, create in database)
             if (!veriProjectName()) { return; }
@@ -638,12 +668,12 @@ namespace LEDLightingComposer
             if (!veriLightingEffect()) { return; }
 
             //Verify Effect_Start has been entered
-            if (veriIntTextbox(this.txtEffectStartTime) < 0) {
+            if (veriFloatTextbox(this.txtEffectStartTime) < 0) {
                 MessageBox.Show("Your entered effect start time must be at least 0...");
                 return; }
 
             //Verify Effect_Duration has been entered
-            if (veriIntTextbox(this.txtEffectDuration) < 1) {
+            if (veriFloatTextbox(this.txtEffectDuration) < 1) {
                 MessageBox.Show("Your entered effect duration must be greater than 0...");
                 return;
             }
@@ -658,28 +688,42 @@ namespace LEDLightingComposer
             effectDuration = getEffectDuration();
             ledPArray = getLEDPArray();
             ledCArray = getLEDCArray();
-            truePinSetupVal = dbmanager.getPinSetupValue(projectName, mcuName, pinSetup);
+            truePinSetupVal = dbmanager.getPinSetupValue(mcuName, pinSetup);
 
-            //Verify no overlapping effect times for Project Name - Pin Setup pair
-            if(dbmanager.verifyOverlappingLightingEffects(projectName, truePinSetupVal, effectStart, effectDuration))
-            {
-                //Notify user there is an overlapping lighting effect record
-                MessageBox.Show("There is an overlapping lighting effect.  Please review and modify if necessary.  NOTHING CHANGED...");
-                return;
-            }
+            //Set delay time
+            try { delayTime = float.Parse(this.txtDelayTime.Text.ToString().Trim()); }
+            catch (Exception ex) { delayTime = effectDuration; }
 
-            if (truePinSetupVal < 0)
-            {
-                //Notify user that pinsetup was not created successfully
-                MessageBox.Show("Your Pin Setup was not created successfully. Please try to save again...");
-                return;
-            }
+            //Set iterations
+            try { iterations = int.Parse(this.txtIterations.Text.ToString().Trim()); }
+            catch (Exception ex) { iterations = 1; }
+
+            //Set bounces
+            try { bounces = int.Parse(this.txtBounces.Text.ToString().Trim()); }
+            catch (Exception ex) { bounces = 2; }
 
             //Insert or update record according to add value
             if (add)
             {
+                //Verify no overlapping effect times for Project Name - Pin Setup pair
+                if (dbmanager.verifyOverlappingLightingEffects(projectName, truePinSetupVal, effectStart, effectDuration))
+                {
+                    //Notify user there is an overlapping lighting effect record
+                    MessageBox.Show("There is an overlapping lighting effect.  Please review and modify if necessary.  NOTHING CHANGED...");
+                    return;
+                }
+
+                if (truePinSetupVal < 0)
+                {
+                    //Notify user that pinsetup was not created successfully
+                    MessageBox.Show("Your Pin Setup was not created successfully. Please try to save again...");
+                    return;
+                }
+
                 //Insert records into LED_Effect table
-                if ((effectNum = dbmanager.insertRecordIntoDBReturnIncr("LED_EFFECT", projectName, mcuName, truePinSetupVal.ToString(), numLEDs.ToString(), lightingEffect.ToString(), effectStart.ToString(), effectDuration.ToString(), ledPArray, ledCArray)) < 0)
+                if ((effectNum = dbmanager.insertRecordIntoDBReturnIncr("LED_EFFECT", projectName, mcuName, 
+                    truePinSetupVal.ToString(), numLEDs.ToString(), lightingEffect.ToString(), effectStart.ToString(), 
+                    effectDuration.ToString(), ledPArray, ledCArray, delayTime.ToString(), iterations.ToString(), bounces.ToString())) < 0)
                 {
                     //Notify user effect was not created successfully
                     MessageBox.Show("The effect was not created successfully.  Please try again...");
@@ -692,7 +736,9 @@ namespace LEDLightingComposer
             else
             {
                 //Update record in LED_Effect table
-                if (dbmanager.updateRecordInDB("LED_EFFECT", this.effectNum.ToString(), ledPArray, ledCArray, lightingEffect.ToString(), effectStart.ToString(), effectDuration.ToString()) > 0)
+                if (dbmanager.updateRecordInDB("LED_EFFECT", this.effectNum.ToString(), ledPArray, ledCArray, 
+                    lightingEffect.ToString(), effectStart.ToString(), effectDuration.ToString(), delayTime.ToString(), 
+                    iterations.ToString(), bounces.ToString()) > 0)
                 {
 
                     //Notify user that record was not edited successfully
@@ -748,7 +794,7 @@ namespace LEDLightingComposer
             this.cBoxPinSetup.Items.Clear();
 
             //Load Pin Setups from MCU_Pins table
-            dbmanager.loadCBoxByType("MCUPINS", this.cBoxPinSetup, getProjectName(), getMCUName());
+            dbmanager.loadCBoxByType("MCUPINS", this.cBoxPinSetup, getMCUName());
         }
 
         private void cBoxPinSetup_SelectedIndexChanged(object sender, EventArgs e)
@@ -759,7 +805,7 @@ namespace LEDLightingComposer
             String[] pinSetup = getPinSetup(), temp = { "" };
             String projectName = (this.cBoxProjectName.Text.ToString().Trim().ToUpper().Split('-'))[0].Trim(),
                 mcuName = (this.cBoxMCUName.Text.ToString().Trim().ToUpper().Split('-'))[0].Trim();
-            int pinRec = -1;
+            int pinRec = -1, numLEDs = -1;
 
             //Exit if Pin Setup cBox is empty, ubound is less than 1, or pins are not numbers
             if (pinSetup[0].Equals(""))
@@ -787,51 +833,50 @@ namespace LEDLightingComposer
 
             //Verify Project Name and MCU Name are valid MCU_Pins table
             //If so, # of LEDs and lock Project Name, MCU Name, Pin Setup, # of LEDs
-            if ((pinRec = dbmanager.getPinSetupValue(projectName, mcuName, pinSetup)) > -1)
+            if ((pinRec = dbmanager.getPinSetupValue(mcuName, pinSetup)) > -1)
             {
                 //Get number of LEDs from LED_Effect table
-                if (pinRec > -1)
+
+                //Set Number of LEDs
+                if((numLEDs = int.Parse(dbmanager.getNumLEDs(projectName, mcuName, pinRec).ToString())) < 0)
                 {
-                    //Set Number of LEDs
-                    this.txtNumLEDs.Text = dbmanager.getNumLEDs(projectName, mcuName, pinRec).ToString();
-
-                    //Load LED Position Array values from last
-                    ledPArray.Clear();
-                    temp = dbmanager.getValueFromDB("LED_EFFECT","LEDPARRAY", projectName, mcuName, pinRec.ToString()).Split(';');
-                    try
-                    {
-                        foreach (String s in temp)
-                        {
-                            ledPArray.Add(int.Parse(s));
-                        }
-                    }catch(Exception ex)
-                    {
-
-                    }
-
-                    //Load LED Color Array values from last
-                    ledCArray.Clear();
-                    temp = dbmanager.getValueFromDB("LED_EFFECT", "LEDCARRAY", projectName, mcuName, pinRec.ToString()).Split(';');
-                    try
-                    {
-                        foreach (String s in temp)
-                        {
-                            ledCArray.Add(s);
-                        }
-                    }catch(Exception ex)
-                    {
-
-                    }
-
-                    //Lock fields
-                    lockFields();
+                    //Exit
+                    return;
                 }
+                this.txtNumLEDs.Text = numLEDs.ToString();
+                this.txtNumLEDs.Update();
+
+                //Load LED Position Array values from last
+                ledPArray.Clear();
+                temp = dbmanager.getValueFromDB("LED_EFFECT","LEDPARRAY", projectName, mcuName, pinRec.ToString()).Split(';');
+                try
+                {
+                    foreach (String s in temp)
+                    {
+                        ledPArray.Add(int.Parse(s));
+                    }
+                }catch(Exception ex)
+                {
+
+                }
+
+                //Load LED Color Array values from last
+                ledCArray.Clear();
+                temp = dbmanager.getValueFromDB("LED_EFFECT", "LEDCARRAY", projectName, mcuName, pinRec.ToString()).Split(';');
+                try
+                {
+                    foreach (String s in temp)
+                    {
+                        ledCArray.Add(s);
+                    }
+                }catch(Exception ex)
+                {
+
+                }
+
+                //Lock fields
+                lockFields();
             }
-        }
-
-        private void cBoxLEffect_DropDownClosed(object sender, EventArgs e)
-        {
-
         }
 
         private void btnResetScreen_Click(object sender, EventArgs e)
@@ -842,5 +887,69 @@ namespace LEDLightingComposer
 
         #endregion Screen events
 
+        private void cBoxLEffect_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            //Declare variables
+            String effect = "";
+            int iEffect = -1;
+
+            //Show or Hide Iterations and Bounces depending on Lighting Effects
+            if (!(effect = this.cBoxLEffect.Text.ToString().Trim().ToUpper().Split('-')[0].Trim()).Equals(""))
+            {
+                iEffect = int.Parse(effect);
+                if(iEffect == 1 || iEffect == 3 || iEffect == 4)
+                {
+                    //Show iterations and bounces labels and textboxes
+                    this.lblIterations.Visible = true;
+                    this.lblBounces.Visible = true;
+                    this.txtIterations.Visible = true;
+                    this.txtBounces.Visible = true;
+                }else
+                {
+                    //Hide iterations and bounces labels and textboxes
+                    this.lblIterations.Visible = false;
+                    this.lblBounces.Visible = false;
+                    this.txtIterations.Visible = false;
+                    this.txtBounces.Visible = false;
+                }
+            }
+        }
+
+        private void txtNumLEDs_Leave(object sender, EventArgs e)
+        {
+            //Declare variables
+            String curNumLEDs = "";
+            int iCurNumLEDs = 0, i = 0;
+
+            if (!(curNumLEDs = this.txtNumLEDs.Text.ToString().Trim()).Equals(""))
+            {
+                iCurNumLEDs = int.Parse(curNumLEDs);
+            }else
+            {
+                //Clear arrays
+                ledCArray.Clear();
+                ledPArray.Clear();
+
+                //Exit method without proceeding since no # of LEDs present
+                return;
+            }
+
+            if(iCurNumLEDs != lastNumLEDs)
+            {
+                //Clear arrays
+                ledCArray.Clear();
+                ledPArray.Clear();
+
+                if (iCurNumLEDs > 0)
+                {
+                    //Create LEDPArray & LEDCArray (default all to 0 for clear) from number of LEDs
+                    for (i = 0; i < iCurNumLEDs; i++)
+                    {
+                        ledPArray.Add(i);
+                        ledCArray.Add("0 - Clear");
+                    }
+                }
+            }
+        }
     }
 }

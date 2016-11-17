@@ -52,6 +52,12 @@
             this.txtSongPath = new System.Windows.Forms.TextBox();
             this.btnResetScreen = new System.Windows.Forms.Button();
             this.btnDelete = new System.Windows.Forms.Button();
+            this.lblIterations = new System.Windows.Forms.Label();
+            this.lblBounces = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
+            this.txtDelayTime = new System.Windows.Forms.TextBox();
+            this.txtIterations = new System.Windows.Forms.TextBox();
+            this.txtBounces = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // label1
@@ -114,6 +120,7 @@
             this.txtNumLEDs.Name = "txtNumLEDs";
             this.txtNumLEDs.Size = new System.Drawing.Size(52, 20);
             this.txtNumLEDs.TabIndex = 6;
+            this.txtNumLEDs.Leave += new System.EventHandler(this.txtNumLEDs_Leave);
             // 
             // label4
             // 
@@ -158,7 +165,7 @@
             this.cBoxLEffect.Name = "cBoxLEffect";
             this.cBoxLEffect.Size = new System.Drawing.Size(102, 21);
             this.cBoxLEffect.TabIndex = 11;
-            this.cBoxLEffect.DropDownClosed += new System.EventHandler(this.cBoxLEffect_DropDownClosed);
+            this.cBoxLEffect.SelectedIndexChanged += new System.EventHandler(this.cBoxLEffect_SelectedIndexChanged);
             // 
             // label8
             // 
@@ -194,7 +201,7 @@
             // 
             // btnSave2Project
             // 
-            this.btnSave2Project.Location = new System.Drawing.Point(162, 168);
+            this.btnSave2Project.Location = new System.Drawing.Point(157, 182);
             this.btnSave2Project.Name = "btnSave2Project";
             this.btnSave2Project.Size = new System.Drawing.Size(125, 25);
             this.btnSave2Project.TabIndex = 16;
@@ -204,7 +211,7 @@
             // 
             // btnExit
             // 
-            this.btnExit.Location = new System.Drawing.Point(459, 168);
+            this.btnExit.Location = new System.Drawing.Point(459, 182);
             this.btnExit.Name = "btnExit";
             this.btnExit.Size = new System.Drawing.Size(125, 25);
             this.btnExit.TabIndex = 17;
@@ -235,7 +242,7 @@
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(376, 77);
+            this.label10.Location = new System.Drawing.Point(421, 123);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(57, 13);
             this.label10.TabIndex = 20;
@@ -244,14 +251,14 @@
             // txtSongPath
             // 
             this.txtSongPath.Enabled = false;
-            this.txtSongPath.Location = new System.Drawing.Point(379, 96);
+            this.txtSongPath.Location = new System.Drawing.Point(308, 139);
             this.txtSongPath.Name = "txtSongPath";
-            this.txtSongPath.Size = new System.Drawing.Size(205, 20);
+            this.txtSongPath.Size = new System.Drawing.Size(276, 20);
             this.txtSongPath.TabIndex = 21;
             // 
             // btnResetScreen
             // 
-            this.btnResetScreen.Location = new System.Drawing.Point(16, 168);
+            this.btnResetScreen.Location = new System.Drawing.Point(16, 182);
             this.btnResetScreen.Name = "btnResetScreen";
             this.btnResetScreen.Size = new System.Drawing.Size(125, 25);
             this.btnResetScreen.TabIndex = 22;
@@ -261,7 +268,7 @@
             // 
             // btnDelete
             // 
-            this.btnDelete.Location = new System.Drawing.Point(308, 168);
+            this.btnDelete.Location = new System.Drawing.Point(308, 182);
             this.btnDelete.Name = "btnDelete";
             this.btnDelete.Size = new System.Drawing.Size(125, 25);
             this.btnDelete.TabIndex = 23;
@@ -270,11 +277,69 @@
             this.btnDelete.Visible = false;
             this.btnDelete.Click += new System.EventHandler(this.btnDelete_Click);
             // 
+            // lblIterations
+            // 
+            this.lblIterations.AutoSize = true;
+            this.lblIterations.Location = new System.Drawing.Point(13, 139);
+            this.lblIterations.Name = "lblIterations";
+            this.lblIterations.Size = new System.Drawing.Size(56, 13);
+            this.lblIterations.TabIndex = 24;
+            this.lblIterations.Text = "Iterations: ";
+            this.lblIterations.Visible = false;
+            // 
+            // lblBounces
+            // 
+            this.lblBounces.AutoSize = true;
+            this.lblBounces.Location = new System.Drawing.Point(148, 139);
+            this.lblBounces.Name = "lblBounces";
+            this.lblBounces.Size = new System.Drawing.Size(49, 13);
+            this.lblBounces.TabIndex = 25;
+            this.lblBounces.Text = "Bounces";
+            this.lblBounces.Visible = false;
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(376, 77);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(142, 13);
+            this.label13.TabIndex = 26;
+            this.label13.Text = "Effect Delay Time (Seconds)";
+            // 
+            // txtDelayTime
+            // 
+            this.txtDelayTime.Location = new System.Drawing.Point(424, 95);
+            this.txtDelayTime.Name = "txtDelayTime";
+            this.txtDelayTime.Size = new System.Drawing.Size(52, 20);
+            this.txtDelayTime.TabIndex = 27;
+            // 
+            // txtIterations
+            // 
+            this.txtIterations.Location = new System.Drawing.Point(69, 139);
+            this.txtIterations.Name = "txtIterations";
+            this.txtIterations.Size = new System.Drawing.Size(52, 20);
+            this.txtIterations.TabIndex = 28;
+            this.txtIterations.Visible = false;
+            // 
+            // txtBounces
+            // 
+            this.txtBounces.Location = new System.Drawing.Point(203, 139);
+            this.txtBounces.Name = "txtBounces";
+            this.txtBounces.Size = new System.Drawing.Size(52, 20);
+            this.txtBounces.TabIndex = 29;
+            this.txtBounces.Visible = false;
+            // 
             // Project
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(600, 205);
+            this.ClientSize = new System.Drawing.Size(600, 224);
+            this.Controls.Add(this.txtBounces);
+            this.Controls.Add(this.txtIterations);
+            this.Controls.Add(this.txtDelayTime);
+            this.Controls.Add(this.label13);
+            this.Controls.Add(this.lblBounces);
+            this.Controls.Add(this.lblIterations);
             this.Controls.Add(this.btnDelete);
             this.Controls.Add(this.btnResetScreen);
             this.Controls.Add(this.txtSongPath);
@@ -332,5 +397,11 @@
         private System.Windows.Forms.TextBox txtSongPath;
         private System.Windows.Forms.Button btnResetScreen;
         private System.Windows.Forms.Button btnDelete;
+        private System.Windows.Forms.Label lblIterations;
+        private System.Windows.Forms.Label lblBounces;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.TextBox txtDelayTime;
+        private System.Windows.Forms.TextBox txtIterations;
+        private System.Windows.Forms.TextBox txtBounces;
     }
 }

@@ -50,8 +50,11 @@ namespace LEDLightingComposer
                 //Load project into Project Grid
                 if (dbmanager.loadProjects2ProjectGrid(dataGridView1.Rows[dataGridView1.CurrentRow.Index].Cells[0].Value.ToString().Trim(), projectGrid) > -1)
                 {
+                    //Update Effect Manager's strips
+                    EffectsManager.replaceStrips(projectGrid);
+
                     //Clear drawing manager's led strip array
-                    dmanager.LedStrips.Clear();
+                    dmanager.DrawableObjects.Clear();
 
                     //Load led strips and effects into drawing manager
                     dbmanager.loadLEDStripEffectsIntoDrawingManager(projectGrid, dmanager, llc.getDrawingBottom(), llc.getDrawingRight());

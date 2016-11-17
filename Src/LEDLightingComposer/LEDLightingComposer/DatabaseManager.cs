@@ -39,7 +39,7 @@ namespace LEDLightingComposer
            Function loadCBoxByType:
 
         */
-        public void loadCBoxByType(String Type, ComboBox CBox, String Value1, String Value2)
+        public void loadCBoxByType(String Type, ComboBox CBox, String Value1)
         {
             //Declare variables
             MySqlCommand cmd;
@@ -61,9 +61,8 @@ namespace LEDLightingComposer
                         cmd.CommandText = "Select MCU_Name, Description from MCU";
                         break;
                     case "MCUPINS":
-                        cmd.CommandText = "Select Data_Pin, Clock_Pin, Description from MCU_Pins where Project_Name = @PName and MCU_Name = @MName";
-                        cmd.Parameters.AddWithValue("@PName", Value1);
-                        cmd.Parameters.AddWithValue("@MName", Value2);
+                        cmd.CommandText = "Select Data_Pin, Clock_Pin, Description from MCU_Pins where MCU_Name = @MName";
+                        cmd.Parameters.AddWithValue("@MName", Value1);
                         break;
                     case "LIGHTINGEFFECTS":
                         cmd.CommandText = "Select Lighting_Effect, Description from Lighting_Effects";
@@ -135,13 +134,16 @@ namespace LEDLightingComposer
 
             try
             {
+                //Add fillers to database before loading project to grid
+                addFillerEffectsToProject(ProjectName);
+
                 //Open db connection
                 OpenDBConnection();
 
                 cmd = con.CreateCommand();
                 cmd.CommandText = "Select LE.EFFECT_NUM, LE.PROJECT_NAME, LP.Description as PROJECT_DESC, LE.MCU_NAME, M.Description as MCU_DESC, LE.PIN_SETUP, MP.DATA_PIN, MP.CLOCK_PIN, " +
-                    "LE.NUM_LEDS, LE.LIGHTING_EFFECT, LES.DESCRIPTION, LE.EFFECT_START, LE.EFFECT_DURATION, (LE.Effect_Start + LE.Effect_Duration) as ENDOFEFFECT, LE.LED_POSITION_ARRAY, LE.LED_COLOR_ARRAY " +
-                    "from Led_Effect LE, MCU_Pins MP, Lighting_Effects LES, MCU M, LED_Project LP where MP.PIN_SETUP = LE.PIN_SETUP and LES.Lighting_Effect = LE.Lighting_Effect "+
+                    "LE.NUM_LEDS, LE.LIGHTING_EFFECT, LES.DESCRIPTION, LE.EFFECT_START, LE.EFFECT_DURATION, (LE.Effect_Start + LE.Effect_Duration) as ENDOFEFFECT, LE.DELAY_TIME, LE.LED_POSITION_ARRAY, LE.LED_COLOR_ARRAY, LE.ITERATIONS, LE.BOUNCES " +
+                    "from Led_Effect LE, MCU_Pins MP, Lighting_Effects LES, MCU M, LED_Project LP where MP.PIN_SETUP = LE.PIN_SETUP and LES.Lighting_Effect = LE.Lighting_Effect " +
                     "and M.MCU_NAME = LE.MCU_NAME and LP.Project_Name = LE.Project_Name and LE.Project_Name = @PName order by LE.Pin_Setup, LE.Effect_Start";
                 cmd.Parameters.AddWithValue("@PName", ProjectName);
                 adap = new MySqlDataAdapter(cmd);
@@ -164,6 +166,108 @@ namespace LEDLightingComposer
 
         /*
         */
+        public int addFillerEffectsToProject(String ProjectName)
+        {
+            //Declare variables
+            MySqlCommand cmd;
+            MySqlDataReader rdr;
+            List<int> pinSetups = new List<int>();
+            int iCount = 0, lastEffectEnd = 0, effectStart = 0;
+
+            try
+            {
+                //Add fillers to database before loading project to grid
+                deleteFillerEffectsFromProject(ProjectName);
+
+                //Get list of distinct pin setups
+                pinSetups = getDistinctPinSetups(ProjectName);
+
+                //Open db connection
+                OpenDBConnection2();
+
+                //Loop through records for distinct pins
+                foreach (int pin in pinSetups)
+                {
+                    //Reset variables
+                    iCount = 0;
+                    lastEffectEnd = 0;
+
+                    cmd = con2.CreateCommand();
+                    cmd.CommandText = "Select PROJECT_NAME, MCU_NAME, PIN_SETUP, NUM_LEDS, LIGHTING_EFFECT, EFFECT_START, " + 
+                        "EFFECT_DURATION, (Effect_Start + Effect_Duration) as ENDOFEFFECT, DELAY_TIME, LED_POSITION_ARRAY, " +
+                        "LED_COLOR_ARRAY, ITERATIONS, BOUNCES from Led_Effect where Project_Name = @PName and Pin_Setup = @PinSetup "+
+                        "order by Effect_Start";
+                    cmd.Parameters.AddWithValue("@PName", ProjectName);
+                    cmd.Parameters.AddWithValue("@PinSetup", pin);
+
+                    rdr = cmd.ExecuteReader();
+                    while (rdr.Read())
+                    {
+                        //Conjure effectStart
+                        effectStart = Convert.ToInt32(rdr["EFFECT_START"].ToString());
+
+                        //If this effect's effect_start does not equal last effects end, create a filler record from last effect's end to this effect's start
+                        if (effectStart != lastEffectEnd)
+                        {
+                            insertRecordIntoDBReturnIncr("LED_EFFECT", rdr["PROJECT_NAME"].ToString(), rdr["MCU_NAME"].ToString(),
+                                rdr["PIN_SETUP"].ToString(), rdr["NUM_LEDS"].ToString(),"-1", lastEffectEnd.ToString(), 
+                                (effectStart - lastEffectEnd).ToString(), rdr["LED_POSITION_ARRAY"].ToString(), rdr["LED_COLOR_ARRAY"].ToString(), 
+                                rdr["DELAY_TIME"].ToString(), rdr["ITERATIONS"].ToString(), rdr["BOUNCES"].ToString());
+
+                            //Increment iCount to keep record of how many fillers were created...
+                            iCount++;
+                        }
+
+                        //Set lastEffectEnd to this effect's effect_start + effect_duration
+                        lastEffectEnd = Convert.ToInt32(rdr["ENDOFEFFECT"].ToString());
+                    }
+                    rdr.Close();
+                }
+
+                //Close db connection
+                CloseDBConnection2();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error creating filler effects: " + ex.Message);
+            }
+
+            return iCount;
+        }
+
+        /*
+        */
+        public int deleteFillerEffectsFromProject(String ProjectName)
+        {
+            //Declare variables
+            MySqlCommand cmd;
+            int iret = -1;
+
+            try {
+                //Open db connection
+                OpenDBConnection();
+                cmd = con.CreateCommand();
+
+                //Conjure query string depending on passed table name
+                cmd.CommandText = "Delete from LED_Effect where Project_Name = @PName and Lighting_Effect = -1";
+                cmd.Parameters.AddWithValue("@PName", ProjectName);
+
+                iret = cmd.ExecuteNonQuery();
+
+                //Close db connection
+                CloseDBConnection();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error deleting filler effect records from LED_Effect table: " + ex.Message);
+
+            }
+
+            return iret;
+        }
+
+        /*
+        */
         public bool updateProjectsInProjectGrid(String ProjectName)
         {
             //Declare variables
@@ -174,8 +278,11 @@ namespace LEDLightingComposer
                 //Update datagridview
                 loadProjects2ProjectGrid(ProjectName, projectGrid);
 
+                //Update Effect Manager's strips
+                EffectsManager.replaceStrips(projectGrid);
+
                 //Clear drawing manager's led strip array
-                llc.DrawManager.LedStrips.Clear();
+                llc.DrawManager.DrawableObjects.Clear();
 
                 //Load led strips and effects into drawing manager
                 loadLEDStripEffectsIntoDrawingManager(projectGrid, llc.DrawManager, llc.getDrawingBottom(), llc.getDrawingRight());
@@ -193,51 +300,73 @@ namespace LEDLightingComposer
         */
         public int loadLEDStripEffectsIntoDrawingManager(DataGridView dgv, DrawingManager dmanager, int bottom, int right)
         {
-            int pinSetup, iret = 0, tp = 0;
-            bool skip = false;
+            int pinSetup, iret = 0, tp = 0, numLeds = 0;
+            String[] ledColorArray = { "" }, ledPositionArray = { "" };
+            bool skip = false, add = true;
 
-            //Add all led strips from grid into drawing manager
-            foreach (DataGridViewRow row in dgv.Rows)
+            try
             {
-                iret += 1;
-
-                //Set pin setup
-                pinSetup = int.Parse(row.Cells["PIN_SETUP"].Value.ToString().Trim());
-
-                //If the Drawing Manager's led strip is empty, then start top - left at 20-20, otherwise start at last led strips' last led top + 30
-                if (dmanager.LedStrips.Count < 1)
+                //Add all led strips from grid into drawing manager
+                foreach (DataGridViewRow row in dgv.Rows)
                 {
-                    //Start at top 20, left 20
-                    tp = 20;
-                }
-                else
-                {
-                    //Start at top == last strips' led top + 30, left 20
-                    tp = dmanager.LedStrips[(dmanager.LedStrips.Count - 1)].Leds[(dmanager.LedStrips[(dmanager.LedStrips.Count - 1)].Leds.Count - 1)].Top + 30;
-                }
+                    iret += 1;
 
-                //Add LEDs to strip if strip not already added
-                skip = false;
-                foreach(LEDStripEffect lse in dmanager.LedStrips)
-                {
-                    if(lse.PinSetup == pinSetup)
+                    //Set pin setup
+                    pinSetup = int.Parse(row.Cells["PIN_SETUP"].Value.ToString().Trim());
+
+                    //If the Drawing Manager's led strip is empty, then start top - left at 20-20, otherwise start at last led strips' last led top + 30
+                    if (dmanager.DrawableObjects.Count < 1)
                     {
-                        skip = true;
-                        break;
+                        //Start at top 20, left 20
+                        tp = 20;
+                    }
+                    else
+                    {
+                        //Start at top == last strips' led top + 30, left 20
+                        tp = dmanager.DrawableObjects[(dmanager.DrawableObjects.Count - 1)].Leds[(dmanager.DrawableObjects[(dmanager.DrawableObjects.Count - 1)].Leds.Count - 1)].Top + 30;
+                    }
+
+                    //Add LEDs to strip if strip not already added
+                    skip = false;
+                    foreach (DrawableObject dbo in dmanager.DrawableObjects)
+                    {
+                        if (dbo.PinSetup == pinSetup)
+                        {
+                            skip = true;
+                            break;
+                        }
+                    }
+
+                    if (!skip)
+                    {
+                        //Get needed values
+                        numLeds = int.Parse(row.Cells["NUM_LEDS"].Value.ToString().Trim());
+                        ledColorArray = row.Cells["LED_COLOR_ARRAY"].Value.ToString().Trim().Split(',');
+                        ledPositionArray = row.Cells["LED_POSITION_ARRAY"].Value.ToString().Trim().Split(',');
+
+                        //Don't add to screen if object will be outside of designated window area
+                        if (tp > llc.getDrawingBottom())
+                        {
+                            add = false;
+                        }else
+                        {
+                            add = true;
+                        }
+
+                        //Add drawable object to drawings managers list of objects to draw
+                        dmanager.DrawableObjects.Add(new DrawableObject("LINE", pinSetup, numLeds, ledColorArray, ledPositionArray, tp, 20, bottom, right, 0, add));
                     }
                 }
-
-                if (!skip)
-                {
-                    dmanager.LedStrips.Add(new LEDStripEffect(row.Cells["MCU_NAME"].Value.ToString().Trim(), int.Parse(row.Cells["NUM_LEDS"].Value.ToString().Trim()), row.Cells["LED_COLOR_ARRAY"].Value.ToString().Trim().Split(';'), int.Parse(row.Cells["LIGHTING_EFFECT"].Value.ToString().Trim()), int.Parse(row.Cells["EFFECT_START"].Value.ToString().Trim()), int.Parse(row.Cells["EFFECT_DURATION"].Value.ToString().Trim()), pinSetup, tp, 20, bottom, right, true));
-                }
+            }catch(Exception ex)
+            {
+                MessageBox.Show("Error in DatabaseManager - loadLEDStripEffectsIntoDrawingManager: " + ex.Message);
             }
             return iret;
         }
 
         /*
         */
-        public bool verifyNameExistsInDatabase(String Table, String Option1, String Value1, String Value2, String Value3, String Value4)
+        public bool verifyNameExistsInDatabase(String Table, String Option1, String Value1, String Value2, String Value3)
         {
             //Declare variables
             MySqlCommand cmd;
@@ -268,17 +397,15 @@ namespace LEDLightingComposer
                     case "MCU_PINS":
                         if (Option1.Equals(MCU_PINS_OPTION1))
                         {
-                            cmd.CommandText = "Select Pin_Setup from MCU_Pins where Project_Name = @PName and MCU_Name = @CName";
-                            cmd.Parameters.AddWithValue("@PName", Value1);
-                            cmd.Parameters.AddWithValue("@CName", Value2);
+                            cmd.CommandText = "Select Pin_Setup from MCU_Pins where MCU_Name = @CName";
+                            cmd.Parameters.AddWithValue("@CName", Value1);
                         }
                         else
                         {
-                            cmd.CommandText = "Select Pin_Setup from MCU_Pins where Project_Name = @PName and MCU_Name = @CName and Data_Pin = @DPin and Clock_Pin = @CPin";
-                            cmd.Parameters.AddWithValue("@PName", Value1);
-                            cmd.Parameters.AddWithValue("@CName", Value2);
-                            cmd.Parameters.AddWithValue("@DPin", int.Parse(Value3));
-                            cmd.Parameters.AddWithValue("@CPin", int.Parse(Value4));
+                            cmd.CommandText = "Select Pin_Setup from MCU_Pins where MCU_Name = @CName and Data_Pin = @DPin and Clock_Pin = @CPin";
+                            cmd.Parameters.AddWithValue("@CName", Value1);
+                            cmd.Parameters.AddWithValue("@DPin", int.Parse(Value2));
+                            cmd.Parameters.AddWithValue("@CPin", int.Parse(Value3));
                         }
                         break;
                     default:
@@ -306,13 +433,13 @@ namespace LEDLightingComposer
 
         /*
         */
-        public bool verifyOverlappingLightingEffects(String ProjectName, int TruePinSetupVal, int EffectStart, int EffectDuration)
+        public bool verifyOverlappingLightingEffects(String ProjectName, int TruePinSetupVal, float EffectStart, float EffectDuration)
         {
             //Declare variables
             MySqlCommand cmd;
             MySqlDataReader rdr;
             bool bret = false;
-            int endOfEffect = EffectStart + EffectDuration, iret = 0;
+            float endOfEffect = EffectStart + EffectDuration, iret = 0;
 
             try
             {
@@ -321,13 +448,15 @@ namespace LEDLightingComposer
                 cmd = con.CreateCommand();
 
                 //Conjure query string depending on passed table name
-                cmd.CommandText = "Select Effect_Start, (Effect_Start + Effect_Duration) as EndOfEffect from LED_Effect where Project_Name = @Name and Pin_Setup = @PSetup "+
-                    "where Effect_Start between @BegEffect and @EndEffect or (Effect_Start + Effect_Duration) between @BegEffect and @EndEffect";
+                cmd.CommandText = "Select Effect_Start, (Effect_Start + Effect_Duration) as EndOfEffect from LED_Effect where Project_Name = @Name "+
+                    "and Pin_Setup = @PSetup and Effect_Start between @BegEffect and @EndEffect and Effect_Start <> @EndEffect and Lighting_Effect <> -1 "+
+                    "or Project_Name = @Name and Pin_Setup = @PSetup and (Effect_Start + Effect_Duration) between @BegEffect and @EndEffect " +
+                    "and (Effect_Start + Effect_Duration) <> @BegEffect and Lighting_Effect <> -1";
                 cmd.Parameters.AddWithValue("@Name", ProjectName);
                 cmd.Parameters.AddWithValue("@PSetup", TruePinSetupVal);
                 cmd.Parameters.AddWithValue("@BegEffect", EffectStart);
                 cmd.Parameters.AddWithValue("@EndEffect", endOfEffect);
-                
+
                 rdr = cmd.ExecuteReader();
                 if (rdr.Read())
                 {
@@ -366,7 +495,7 @@ namespace LEDLightingComposer
                 switch (Table)
                 {
                     case "LED_PROJECT":
-                        cmd.CommandText = "Insert into LED_Project Values(@Name, @Desc)";
+                        cmd.CommandText = "Insert into LED_Project (Project_Name, Description) Values(@Name, @Desc)";
                         cmd.Parameters.AddWithValue("@Name", Value1);
                         cmd.Parameters.AddWithValue("@Desc", Value2);
                         break;
@@ -391,7 +520,7 @@ namespace LEDLightingComposer
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error verifying name exists in table " + Table + ": " + ex.Message);
+                MessageBox.Show("Error inserting record into table " + Table + ": " + ex.Message);
 
             }
 
@@ -405,7 +534,7 @@ namespace LEDLightingComposer
            Value1 = Num_Leds, Value2 = LED_Position_Array, Value3 = LED_Color_Array, Value4 = Lighting_Effect,
            Value5 = Effect_Start, Value6 = Effect_Duration
         */
-        public int updateRecordInDB(String Table, String Param1, String Value1, String Value2, String Value3, String Value4, String Value5)
+        public int updateRecordInDB(String Table, String Param1, String Value1, String Value2, String Value3, String Value4, String Value5, String Value6, String Value7, String Value8)
         {
             //Declare variables
             MySqlCommand cmd;
@@ -422,13 +551,17 @@ namespace LEDLightingComposer
                 {
                     case "LED_EFFECT":
                         cmd.CommandText = "Update LED_Effect Set LED_Position_Array = @LPA, LED_Color_Array = @LCA, "+
-                            "Lighting_Effect = @LEffect, Effect_Start = @EStart, Effect_Duration = @EDuration where Effect_Num = @ENum";
+                            "Lighting_Effect = @LEffect, Effect_Start = @EStart, Effect_Duration = @EDuration, Delay_Time = @DTime, " +
+                            "Iterations = @Iterations, Bounces = @Bounces where Effect_Num = @ENum";
                         cmd.Parameters.AddWithValue("@ENum", int.Parse(Param1));
                         cmd.Parameters.AddWithValue("@LPA", Value1);
                         cmd.Parameters.AddWithValue("@LCA", Value2);
                         cmd.Parameters.AddWithValue("@LEffect", int.Parse(Value3));
-                        cmd.Parameters.AddWithValue("@EStart", int.Parse(Value4));
-                        cmd.Parameters.AddWithValue("@EDuration", int.Parse(Value5));
+                        cmd.Parameters.AddWithValue("@EStart", float.Parse(Value4));
+                        cmd.Parameters.AddWithValue("@EDuration", float.Parse(Value5));
+                        cmd.Parameters.AddWithValue("@DTime", float.Parse(Value6));
+                        cmd.Parameters.AddWithValue("@Iterations", int.Parse(Value7));
+                        cmd.Parameters.AddWithValue("@Bounces", int.Parse(Value8));
                         break;
                     case "LED_PROJECT":
 
@@ -507,7 +640,7 @@ namespace LEDLightingComposer
 
         /*
         */
-        public int insertRecordIntoDBReturnIncr(String Table, String Value1, String Value2, String Value3, String Value4, String Value5, String Value6, String Value7, String Value8, String Value9)
+        public int insertRecordIntoDBReturnIncr(String Table, String Value1, String Value2, String Value3, String Value4, String Value5, String Value6, String Value7, String Value8, String Value9, String Value10, String Value11, String Value12)
         {
             //Declare variables
             MySqlCommand cmd;
@@ -523,24 +656,68 @@ namespace LEDLightingComposer
                 switch (Table)
                 {
                     case "LED_EFFECT":
-                        cmd.CommandText = "Insert into LED_Effect (Project_Name, MCU_Name, Pin_Setup, Num_LEDs, Lighting_Effect, Effect_Start, Effect_Duration, LED_Position_Array, LED_Color_Array) Values(@PName, @CName, @PSetup, @NumLEDs, @LEffect, @EffectStart, @EffectDuration, @LEDPArray, @LEDCArray)";
+                        //Invoke default constraints on values for certain lighting effects
+                        switch (int.Parse(Value5))
+                        {
+                            case Effects.ALLCLEAR:
+                                //Delay time should equal duration time so no unnecessary updating is done
+                                Value10 = Value7;
+                                break;
+                            case Effects.RAINBOW:
+                                //Default iterations if necessary
+                                if (int.Parse(Value11) == 0)
+                                {
+                                    Value11 = "1";
+                                }
+                                break;
+                            case Effects.LOADCOLOR:
+                                //Delay time should equal duration time so no unnecessary updating is done
+                                Value10 = Value7;
+                                break;
+                            case Effects.BOUNCEBACK:
+                                //Default iterations if necessary
+                                if (int.Parse(Value11) == 0)
+                                {
+                                    Value11 = "1";
+                                }
+
+                                //Default bounces if necessary
+                                if (int.Parse(Value12) == 0)
+                                {
+                                    Value12 = "2";
+                                }
+                                break;
+                            case Effects.FLOWTHROUGH:
+                                //Default iterations if necessary
+                                if (int.Parse(Value11) == 0)
+                                {
+                                    Value11 = "1";
+                                }
+                                break;
+                        }
+                        cmd.CommandText = "Insert into LED_Effect (Project_Name, MCU_Name, Pin_Setup, Num_LEDs, Lighting_Effect, " + 
+                            "Effect_Start, Effect_Duration, Delay_Time, LED_Position_Array, LED_Color_Array, Iterations, Bounces) " + 
+                            "Values(@PName, @CName, @PSetup, @NumLEDs, @LEffect, @EffectStart, @EffectDuration, @DTime, @LEDPArray, " +
+                            "@LEDCArray, @Iterations, @Bounces)";
                         cmd.Parameters.AddWithValue("@PName", Value1);
                         cmd.Parameters.AddWithValue("@CName", Value2);
                         cmd.Parameters.AddWithValue("@PSetup", int.Parse(Value3));
                         cmd.Parameters.AddWithValue("@NumLEDs", int.Parse(Value4));
                         cmd.Parameters.AddWithValue("@LEffect", int.Parse(Value5));
-                        cmd.Parameters.AddWithValue("@EffectStart", int.Parse(Value6));
-                        cmd.Parameters.AddWithValue("@EffectDuration", int.Parse(Value7));
+                        cmd.Parameters.AddWithValue("@EffectStart", float.Parse(Value6));
+                        cmd.Parameters.AddWithValue("@EffectDuration", float.Parse(Value7));
                         cmd.Parameters.AddWithValue("@LEDPArray", Value8);
                         cmd.Parameters.AddWithValue("@LEDCArray", Value9);
+                        cmd.Parameters.AddWithValue("@DTime", float.Parse(Value10));
+                        cmd.Parameters.AddWithValue("@Iterations", int.Parse(Value11));
+                        cmd.Parameters.AddWithValue("@Bounces", int.Parse(Value12));
                         break;
                     case "MCU_PINS":
-                        cmd.CommandText = "Insert into MCU_Pins (Description, Project_Name, MCU_Name, Data_Pin, Clock_Pin) Values(@Desc, @PName, @MName, @DPin, @CPin)";
+                        cmd.CommandText = "Insert into MCU_Pins (Description, MCU_Name, Data_Pin, Clock_Pin) Values(@Desc, @MName, @DPin, @CPin)";
                         cmd.Parameters.AddWithValue("@Desc", Value1);
-                        cmd.Parameters.AddWithValue("@PName", Value2);
-                        cmd.Parameters.AddWithValue("@MName", Value3);
-                        cmd.Parameters.AddWithValue("@DPin", int.Parse(Value4));
-                        cmd.Parameters.AddWithValue("@CPin", int.Parse(Value5));
+                        cmd.Parameters.AddWithValue("@MName", Value2);
+                        cmd.Parameters.AddWithValue("@DPin", int.Parse(Value3));
+                        cmd.Parameters.AddWithValue("@CPin", int.Parse(Value4));
                         break;
                     default:
                         return -1;
@@ -665,7 +842,7 @@ namespace LEDLightingComposer
 
         /*
         */
-        public int getPinSetupValue(String ProjectName, String MCUName, String[] PinSetup)
+        public int getPinSetupValue(String MCUName, String[] PinSetup)
         {
             //Declare variables
             MySqlCommand cmd;
@@ -679,8 +856,7 @@ namespace LEDLightingComposer
                 cmd = con.CreateCommand();
 
                 //Conjure query string
-                cmd.CommandText = "Select Pin_Setup from MCU_Pins where Project_Name = @PName and MCU_Name = @CName and Data_Pin = @DPin and Clock_Pin = @CPin";
-                cmd.Parameters.AddWithValue("@PName", ProjectName);
+                cmd.CommandText = "Select Pin_Setup from MCU_Pins where MCU_Name = @CName and Data_Pin = @DPin and Clock_Pin = @CPin";
                 cmd.Parameters.AddWithValue("@CName", MCUName);
                 cmd.Parameters.AddWithValue("@DPin", int.Parse(PinSetup[0].Trim()));
                 cmd.Parameters.AddWithValue("@CPin", int.Parse(PinSetup[1].Trim()));
@@ -701,6 +877,43 @@ namespace LEDLightingComposer
             }
 
             return iret;
+        }
+
+        /*
+        */
+        public List<int> getDistinctPinSetups(String ProjectName)
+        {
+            //Declare variables
+            MySqlCommand cmd;
+            MySqlDataReader rdr;
+            List<int> pinSetups = new List<int>();
+
+            try
+            {
+                //Open db connection
+                OpenDBConnection();
+                cmd = con.CreateCommand();
+
+                //Conjure query string
+                cmd.CommandText = "Select Distinct Pin_Setup from LED_Effect where Project_Name = @PName";
+                cmd.Parameters.AddWithValue("@PName", ProjectName);
+
+                rdr = cmd.ExecuteReader();
+                while(rdr.Read())
+                {
+                    pinSetups.Add(rdr.GetInt32(0));
+                }
+                rdr.Close();
+
+                //Close db connection
+                CloseDBConnection();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error getting list of Pin Setups...: " + ex.Message);
+            }
+
+            return pinSetups;
         }
 
         /*
@@ -1040,7 +1253,8 @@ namespace LEDLightingComposer
         public void btnEditRecord_Click(object sender, EventArgs e)
         {
             //Declare variables
-            int selectedRow, numOfLEDs, effectStart, effectDuration, effectNum;
+            int selectedRow, numOfLEDs, effectNum, iterations, bounces;
+            float effectStart, effectDuration, delayTime;
             String projectName, mcuName, pinSetup, lightingEffect, currentSongPath;
             List<int> ledPArray = new List<int>();
             List<String> ledCArray = new List<string>();
@@ -1058,23 +1272,26 @@ namespace LEDLightingComposer
                 pinSetup = projectGrid.Rows[selectedRow].Cells["DATA_PIN"].Value.ToString().Trim() + ";" + projectGrid.Rows[selectedRow].Cells["CLOCK_PIN"].Value.ToString().Trim() + ";";
                 numOfLEDs = int.Parse(projectGrid.Rows[selectedRow].Cells["NUM_LEDS"].Value.ToString().Trim());
 
-                temp = projectGrid.Rows[selectedRow].Cells["LED_POSITION_ARRAY"].Value.ToString().Split(';');
+                temp = projectGrid.Rows[selectedRow].Cells["LED_POSITION_ARRAY"].Value.ToString().Split(',');
                 foreach(String s in temp)
                 {
                     ledPArray.Add(int.Parse(s));
                 }
-                temp = projectGrid.Rows[selectedRow].Cells["LED_COLOR_ARRAY"].Value.ToString().Split(';');
+                temp = projectGrid.Rows[selectedRow].Cells["LED_COLOR_ARRAY"].Value.ToString().Split(',');
                 foreach(String s in temp)
                 {
                     ledCArray.Add(s);
                 }
                 lightingEffect = projectGrid.Rows[selectedRow].Cells["LIGHTING_EFFECT"].Value.ToString().Trim() + " - " + projectGrid.Rows[selectedRow].Cells["DESCRIPTION"].Value.ToString().Trim();
-                effectStart = int.Parse(projectGrid.Rows[selectedRow].Cells["EFFECT_START"].Value.ToString().Trim());
-                effectDuration = int.Parse(projectGrid.Rows[selectedRow].Cells["EFFECT_DURATION"].Value.ToString().Trim());
+                effectStart = float.Parse(projectGrid.Rows[selectedRow].Cells["EFFECT_START"].Value.ToString().Trim());
+                effectDuration = float.Parse(projectGrid.Rows[selectedRow].Cells["EFFECT_DURATION"].Value.ToString().Trim());
+                delayTime = float.Parse(projectGrid.Rows[selectedRow].Cells["DELAY_TIME"].Value.ToString().Trim()); ;
+                iterations = int.Parse(projectGrid.Rows[selectedRow].Cells["ITERATIONS"].Value.ToString().Trim()); ;
+                bounces = int.Parse(projectGrid.Rows[selectedRow].Cells["BOUNCES"].Value.ToString().Trim()); ;
                 effectNum = int.Parse(projectGrid.Rows[selectedRow].Cells["EFFECT_NUM"].Value.ToString().Trim());
 
                 //Open project form with initial values for timer and song file path
-                Project pj = new Project(this, projectName, mcuName, pinSetup, numOfLEDs, ledPArray, ledCArray, lightingEffect, effectStart, effectDuration, effectNum, currentSongPath, false);
+                Project pj = new Project(this, projectName, mcuName, pinSetup, numOfLEDs, ledPArray, ledCArray, lightingEffect, effectStart, effectDuration, delayTime, iterations, bounces, effectNum, currentSongPath, false);
                 //pj.Owner = (LEDLightingComposerCS)sender;
                 pj.Show();
             }
@@ -1177,7 +1394,7 @@ namespace LEDLightingComposer
             this.projectGrid.DataSource = null;
 
             //Clear Drawing Manager's LED Strip Effect
-            dmanager.LedStrips.Clear();
+            dmanager.DrawableObjects.Clear();
         }
 
         #endregion Screen Events

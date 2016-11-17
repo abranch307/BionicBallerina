@@ -14,20 +14,24 @@ namespace LEDLightingComposer
         private Rectangle rect;
         private Color ledColor;
 
-        public LED(String StripName, Color Clr, int Top, int Left, Rectangle Rect)
+        public LED(Color Clr, int Top, int Left, Rectangle Rect)
         {
-            this.stripName = StripName;
             this.ledColor = Clr;
             this.top = Top;
             this.left = Left;
             this.rect = Rect;
         }
 
-        public void drawObject(Graphics g)
+        public void drawObject(String Type, Graphics g)
         {
             Pen pen = new Pen(Color.Black);
             g.FillRectangle(new SolidBrush(ledColor), rect);
-            g.DrawRectangle(pen, rect);
+
+            if (Type.Equals("LINE"))
+            {
+                //Draw leds in a straight line
+                g.DrawRectangle(pen, rect);
+            }
         }
 
         public int Top

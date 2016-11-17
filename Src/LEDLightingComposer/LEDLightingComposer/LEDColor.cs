@@ -37,7 +37,7 @@ namespace LEDLightingComposer
                 //Load new text boxes into panel
                 for(int i = 0; i < NumLEDs; i++)
                 {
-                    createAndAdd2Panel(i);
+                    createAndAdd2Panel("", i);
                 }
             }
 
@@ -45,7 +45,7 @@ namespace LEDLightingComposer
 
         /*
         */
-        private void createAndAdd2Panel(int count)
+        private void createAndAdd2Panel(String text, int count)
         {
             //Create new combobox, add to list, and then add to panel
             Label lbl = new Label();
@@ -55,39 +55,23 @@ namespace LEDLightingComposer
             ComboBox cbox = new ComboBox();
             comboBoxes.Add(cbox);
             cbox.Items.AddRange(new object[] {
-                "0 - Red",
-                "1 - Green",
-                "2 - Blue",
-                "3 - White",
-                "4 - Yellow",
-                "5 - Cyan",
-                "6 - Magenta"});
-            cbox.SelectedIndex = 0;
-            cbox.Top = 25 * count;
-            cbox.Left = 100;
-
-            this.panel1.Controls.Add(lbl);
-            this.panel1.Controls.Add(cbox);
-        }
-
-        private void createAndAdd2Panel(String text, int count)
-        {
-            //Create new textbox, add to list, and then add to panel
-            Label lbl = new Label();
-            lbl.Text = "Color Selection: " + count;
-            lbl.Top = 25 * count;
-
-            ComboBox cbox = new ComboBox();
-            comboBoxes.Add(cbox);
-            cbox.Items.AddRange(new object[] {
-                "0 - Red",
-                "1 - Green",
-                "2 - Blue",
-                "3 - White",
-                "4 - Yellow",
-                "5 - Cyan",
-                "6 - Magenta"});
-            cbox.SelectedItem = text;
+                "0 - Clear",
+                "1 - White",
+                "2 - Red",
+                "3 - Green",
+                "4 - Blue",
+                "5 - Yellow",
+                "6 - Cyan",
+                "7 - Magenta",
+                "8 - Orange"});
+            if (text.Trim().Equals(""))
+            {
+                cbox.SelectedIndex = 0;
+            }
+            else
+            {
+                cbox.SelectedItem = text;
+            }
             cbox.Top = 25 * count;
             cbox.Left = 100;
 
