@@ -30,4 +30,4 @@ Some major components used/developed in this project are:
   15. Logic Level Converter (Bi-directional 3.3V to 5V)
 
 For more details about the project and setup, open Operations_Maintenance_Manual in /Documenation directory
-Feel free to view/download src files.  Our graphical user interface was written in C# using the .NET Framework and Windows Form, while the code for our microcontrollers was written in C++
+Feel free to view/download src files.  Our graphical user interface was written in C# using the .NET Framework and Windows Form, while the code for our microcontrollers was written in C/C++
