@@ -29,4 +29,4 @@ Some major components used/developed in this project are:
   14. Protection Circuit Module (PCM)
   15. Logic Level Converter (Bi-directional 3.3V to 5V)
   
-  See Operations_Maintenance_Manual in /Documenation directory
+See Operations_Maintenance_Manual in /Documenation directory
