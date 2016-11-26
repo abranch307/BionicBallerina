@@ -1,5 +1,16 @@
 // PassStructViaWiFi.h
 
+/*
+	Author: Aaron Branch, Zach Jarmon, Peter Martinez
+	Created: 
+	Last Modified: 
+	Class: PassStructViaWiFi.h
+	Class Description:
+		This class defines URIs, http parameters & arguments used/expected when handling HTTP requests.  Also defined
+		are structs and methods used to setup a Webserver on ESP8266 and handle passing information/commands from WiFi 
+		to the serial interface
+*/
+
 #ifndef _PASSSTRUCTVIAWIFI_h
 #define _PASSSTRUCTVIAWIFI_h
 
@@ -25,9 +36,11 @@
 	#include <ESP8266WiFi.h>
 #endif
 
+#ifndef ESP8266MDNS_H
+	#include <ESP8266mDNS.h>
+#endif
+
 //Define http parameters and args
-#define PINSETUPARG "PINSETUP"
-#define CHANGEPIXELCOLORARG "CHANGEPIXELCOLOR"
 #define INITLEDSEQS "INITLEDSEQS"
 #define READY "READY"
 #define ACTION "ACTION"
@@ -35,17 +48,6 @@
 #define STOP 1
 #define RESTART 2
 
-typedef struct {
-	uint16_t numPixels; //Number of dotstar pixels linked
-	uint8_t dataPin; //Data pin for one dotstar setup
-	uint8_t clockPin; //Clock pin for one dotstar setup
-	uint8_t brg; //Coloring arrangment DOTSTAR_BRG, ...
-}PinSetup;
-
-typedef struct {
-	uint16_t pixelIndex; //Which pixel to setup
-	uint32_t color; //What color to change to; 0xFF0000 = red, 0x00FF00 = ?, 0x0000FF = ?
-}ChangePixelColor;
 
 class PassStructViaWiFiClass
 {
@@ -54,26 +56,27 @@ class PassStructViaWiFiClass
 
  public:
 	PassStructViaWiFiClass();
-	void begin();
-	void handleClient();
-	void finishedProcessingData(String clientReply);
+	bool begin();
+	bool handleClient();
 
  private:
-	void setupWebURIs();
-	void handleRoot(void);
-	void handleReady();
-	void handleInitLEDSeqs();
-	void handleAddStruct();
-	void handleRemoveStruct();
-	void handleListStructs();
-	void handleNotFound();
-	void Add_Struct(PinSetup **ps);
-	void Add_Struct(ChangePixelColor **cpc);
-	void Remove_Struct(PinSetup *ps);
-	void Remove_Struct(ChangePixelColor *cpc);
-	void Replace_Struct(PinSetup *ps, PinSetup *nps);
-	void Replace_Struct(ChangePixelColor *cpc, ChangePixelColor *ncpc);
-	void List_Structs(void);
+	bool setupWebURIs();
+	bool handleRoot(void);
+	bool handleReady();
+	bool handleInitLEDSeqs();
+	bool handleNotFound();
+
+	/*Setup ssid & password*/
+	//const char *ssid = "ATT9i5Q6AE";
+	//const char *password = "6ve+g+vew3bf";
+
+	const char *ssid = "DOTSTARCOMPOSER";
+	const char *password = "dotstar1234";
+
+	//const char *ssid = "linksys";
+	//const char *password = "user1234";
+
+	char hostString[16] = { 0 };//Define DNS Hostname
 };
 
 extern PassStructViaWiFiClass PassStructViaWiFi;

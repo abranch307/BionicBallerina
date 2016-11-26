@@ -1,5 +1,13 @@
 // Strip.h
 
+/*
+Author: Aaron Branch, Zach Jarmon, Peter Martinez
+Created:
+Class:
+Class Description:
+
+*/
+
 #ifndef _STRIP_h
 #define _STRIP_h
 

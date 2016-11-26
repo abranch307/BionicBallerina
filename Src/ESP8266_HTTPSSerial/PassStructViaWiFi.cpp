@@ -1,124 +1,253 @@
-// 
-// 
-// 
+/*
+	Author: Aaron Branch, Zach Jarmon, Peter Martinez
+	Created:
+	Last Modified:
+	Class: PassStructViaWiFi.h
+	Class Description:
+		This class defines URIs, http parameters & arguments used/expected when handling HTTP requests.  Also defined
+		are structs and methods used to setup a Webserver on ESP8266 and handle passing information/commands from WiFi
+		to the serial interface
+*/
 
 #ifndef _PASSSTRUCTVIAWIFI_h
 	#include "PassStructViaWiFi.h"
 #endif
 
-#ifndef wifiserver_h
-	#include <WiFiServer.h>
-#endif
+ESP8266WebServer server(80);//Setup webserver port
 
-#ifndef wificlient_h
-	#include <WiFiClient.h>
-#endif
-
-#ifndef WiFi_h
-	#include <ESP8266WiFi.h>
-#endif
-
-#ifndef ESP8266WEBSERVER_H
-	#include <ESP8266WebServer.h>
-#endif
-
-#include "Arduino.h"
-
-/*Setup webserver port*/
-ESP8266WebServer server(80);
-
+/*Blank default constructor*/
 PassStructViaWiFiClass::PassStructViaWiFiClass(){}
 
-void PassStructViaWiFiClass::handleClient() {
-	server.handleClient();
-}
+/*
+	Method: setupWebURIs
+	This method sets up valid user-defined web request URIs that the webserver will accept and handle
 
-/*This functions sets up valid web request URIs and reponses*/
-void PassStructViaWiFiClass::setupWebURIs() {
-	/*Setup Web request naming*/
-	server.on("/", std::bind(&PassStructViaWiFiClass::handleRoot,this));
-	server.on("/ready", std::bind(&PassStructViaWiFiClass::handleReady, this));
-	server.on("/init_led_seqs", std::bind(&PassStructViaWiFiClass::handleInitLEDSeqs, this));
-	server.on("/add_struct", std::bind(&PassStructViaWiFiClass::handleAddStruct,this));
-	server.on("/remove_struct", std::bind(&PassStructViaWiFiClass::handleRemoveStruct,this));
-	server.on("/list_structs", std::bind(&PassStructViaWiFiClass::handleListStructs,this));
-	server.onNotFound(std::bind(&PassStructViaWiFiClass::handleNotFound,this));
-}
+	Parameters: None
 
-void PassStructViaWiFiClass::begin() {
-	/*Setup Web request naming*/
-	setupWebURIs();
+	Returns: bool - true if successful when setting up URIs, false if unsuccessful when setting up URIs
+*/
+bool PassStructViaWiFiClass::setupWebURIs() {
+	bool bret = false;
 
-	/*Start server*/
-	server.begin();
-}
+	__try {
+		/*Setup Web request URIs*/
+		server.on("/", std::bind(&PassStructViaWiFiClass::handleRoot, this));
+		server.on("/ready", std::bind(&PassStructViaWiFiClass::handleReady, this));
+		server.on("/init_led_seqs", std::bind(&PassStructViaWiFiClass::handleInitLEDSeqs, this));
+		server.onNotFound(std::bind(&PassStructViaWiFiClass::handleNotFound, this));
 
-void PassStructViaWiFiClass::handleRoot(void) {
-	String response = "";
-	response += "<h1>Welcome to ESP8266 Struct Passing Testing</h1><br><br>";
-	response += "Test using these subdirectories: /add_struct, /remove_struct, list_structs, /ready, /init_led_seqs?INITLEDSEQS=(0-Start)(1-Stop)(2-Restart)";
-	server.send(200, "text/html", response);
+		bret = true;
+	}
+	__catch(const std::exception& e) {
+		//Do nothing - bret is left as false
+	}
+
+	return bret;
 }
 
 /*
-	Function handleReady
-	This method will send "YES" as an http response to the calling user
+	Method begin:
+		This method will initialize hostname using ESP_ + chipID, connect to WiFi Access Point with specified 
+		ssid and passphrase designated in header file, setup accepted web URIs, and start web server 
+	Parameters: None
+
+	Returns: bool - true if web uris setup & web server started successcully, false if either uris setup or web server
+		start fails
+*/
+bool PassStructViaWiFiClass::begin() {
+	//Declare variables
+	bool bret = true;
+
+	/*Set hostname*/
+	sprintf(hostString, "ESP_%06X", ESP.getChipId());
+	WiFi.hostname(hostString);
+
+	/*Connect to AP*/
+	WiFi.begin(ssid, password);
+	Serial.println("");
+
+	/*Wait for connection*/
+	while (WiFi.status() != WL_CONNECTED) {
+		delay(500);
+		Serial.println(".");
+	}
+
+	/*Display connection info*/
+	Serial.println("");
+	Serial.print("Connected to ");
+	Serial.println(ssid);
+	Serial.print("IP address: ");
+	Serial.println(WiFi.localIP());
+	Serial.print("Hostname: ");
+	Serial.println(WiFi.hostname());
+
+	/*Setup Web request URIs*/
+	if (!setupWebURIs()) {
+		Serial.println("Error setting up Web URIs...");
+		bret = false;
+	}
+
+	__try {
+		/*Start server*/
+		server.begin();
+	}
+	__catch (const std::exception& e) {
+		//Set bret to false
+		bret = false;
+	}
+
+	return bret;
+}
+
+/*
+	Method: handleClient
+	This method will call the defined webserver's handle client method, which looks for incoming
+	http requests and client connections
 
 	Parameters: none
 
-	Returns: nothing to calling method, response to http user
+	Returns: bool - false if call to webserver client handle fails, true if call to webserver client handle is successful
 */
+bool PassStructViaWiFiClass::handleClient() {
+	bool bret = false;
 
-void PassStructViaWiFiClass::handleReady() {
+	__try {
+		//Call webserver's client handling method
+		server.handleClient();
+
+		bret = true;
+	}
+	__catch(const std::exception& e) {
+		//Do nothing - bret is left as false
+	}
+
+	return bret;
+}
+
+/*
+	Method handleRoot:
+		Sends http response in the form of text/html when user navigates to http://ipaddress:80/ that describes
+		the different uris, parameters, and args used in each
+
+	Parameter: none
+
+	Returns: bool - true if successful in sending response, false if unsuccessful in sending response
+*/
+bool PassStructViaWiFiClass::handleRoot(void) {
+	bool bret = false;
+
+	__try {
+		String response = "";
+		response += "<h1>Welcome to ESP8266 Struct Passing Testing</h1><br><br>";
+		response += "Test using these sub-uris: /add_struct, /remove_struct, list_structs, /ready?READY=(Y), /init_led_seqs?INITLEDSEQS=(0-Start)(1-Stop)(2-Restart)";
+		server.send(200, "text/html", response);
+
+		bret = true;
+	}
+	__catch (const std::exception& e) {
+		//Serial.println(e.what());
+	}
+
+	return bret;
+}
+
+/*
+	Method handleRoot:
+		Sends http response in the form of text/html when user navigates to an invalid uri on
+		http://ipaddress:80/
+
+	Parameter: none
+
+	Returns: bool - true if successful in sending response, false if unsuccessful in sending response
+*/
+bool PassStructViaWiFiClass::handleNotFound() {
+	//Declare variables
+	String response = "";
+	bool bret = false;
+
+	__try {
+		//Send respone to user
+		response += "<h1>In Not Found Handler</h1><br><br>";
+		server.send(200, "text/html", response);
+
+		bret = true;
+	}
+	__catch (const std::exception& e) {
+
+	}
+}
+
+/*
+	Method handleReady
+		This method will send "YES" as an http response to the calling user and attached microcontroller
+		via serial interface
+
+	Parameters: none
+
+	Returns: bool - true if necessary parameter and arg are found, false if paramter or necessary arg are not found,
+		or if sending response fails
+*/
+bool PassStructViaWiFiClass::handleReady() {
 	/*Declare variables*/
 	String response = "";
+	bool bret = false;
 
-	/*Verify arg READY is present*/
-	if (server.hasArg(READY)) {
-		String sret = READY;
-		String received = "";
+	__try {
+		/*Verify arg READY is present*/
+		if (server.hasArg(READY)) {
+			String sret = READY;
+			String received = "";
 
-		/*Get passed argument*/
-		received = server.arg(READY);;
+			/*Get passed argument*/
+			received = server.arg(READY);;
 
-		Serial.println(sret);
-		Serial.println(received);
+			Serial.println(sret);
+			Serial.println(received);
 
-		/*Notify user ESP8266 is ready by sending YES*/
-		response = "YES";
+			/*Notify user ESP8266 is ready by sending YES*/
+			response = "YES";
+
+			//Send response to user
+			server.send(200, "text/plain", response);
+		}
 	}
-	else {
-		return;
+	__catch (const std::exception& e) {
+		//Serial.println(e.what());
 	}
 
-	//Send response to user
-	server.send(200, "text/plain", response);
+	return bret;
 }
 /*
 	Function handleInitLEDSeqs
-	This method will send a struct to the attached microcontroller via serial interface which
-	gives a signal to start LED Lighting Sequences (0 for start, 2 for restart, 1 for stop
+		This method will send commands to the attached microcontroller via serial interface which
+		gives a signal to start/stop/restart LED Lighting Sequences 
+		(0 for start, 1 for stop - which pauses LED performance, 
+		2 for restart - which stops and restarts performance to the beginning).  It also sends
+		a response back to the user in the html form which echoes what parameter and arg was received
 
 	Parameters: none
 
-	Returns: nothing to calling method, response to http user
+	Returns: true if necessary parameter and arg are found, false if paramter or necessary arg are not found,
+		or if sending response fails
 */
-void PassStructViaWiFiClass::handleInitLEDSeqs() {
+bool PassStructViaWiFiClass::handleInitLEDSeqs() {
 	/*Declare variables*/
 	String response = "";
+	bool bret = false;
 
-	/*Verify arg INITLEDSEQS is present*/
-	if (server.hasArg(INITLEDSEQS)) {
-		String sret = INITLEDSEQS;
-		String received = "";
-		int action = -1;
+	__try {
+		/*Verify arg INITLEDSEQS is present*/
+		if (server.hasArg(INITLEDSEQS)) {
+			String sret = INITLEDSEQS;
+			String received = "";
+			int action = -1;
 
-		/*Get passed argument and convert to int*/
-		received = server.arg(INITLEDSEQS);
-		action = received.toInt();
+			/*Get passed argument and convert to int*/
+			received = server.arg(INITLEDSEQS);
+			action = received.toInt();
 
-		//Send specific command to connected microcrontoller depending on passed action
-		switch (action) {
+			//Send specific command to connected microcrontoller depending on passed action
+			switch (action) {
 			case START:
 				received = "0";
 				break;
@@ -128,121 +257,26 @@ void PassStructViaWiFiClass::handleInitLEDSeqs() {
 			case RESTART:
 				received = "2";
 				break;
+			}
+
+			Serial.println(sret);
+			Serial.println(received);
+
+			/*Notify user of what data was received*/
+			response = "<h1>" + sret + " - " + received + " - processed by handleInitLEDSeqs()</h1><br><br>";
+
+			//Send http response to user
+			server.send(200, "text/html", response);
+
+			bret = true;
 		}
-
-		Serial.println(sret);
-		Serial.println(received);
-
-		/*Notify user of what data was received*/
-		response = "<h1>" + sret + " - " + received + " - processed by handleInitLEDSeqs()</h1><br><br>";
 	}
-	else {
-		return;
+	__catch (const std::exception& e) {
+		//Serial.println(e.what());
 	}
 
-	//Send http response to user
-	server.send(200, "text/html", response);
+	return bret;
 }
 
-void PassStructViaWiFiClass::handleAddStruct() {
-	/*Declare variables*/
-	String response = "";
-
-	/*Verify arg PINSETUPARG or CHANGEPIXELCOLORARG is present*/
-	if (server.hasArg(PINSETUPARG)) {
-		String sret = "";
-		String received = "";
-
-		/*Create byte array that can hold bytes coming across WiFi*/
-		char *dBytes = (char*) malloc(server.arg(PINSETUPARG).length());
-
-		/*Crreate PinSetup pointer to hold array once bytes received*/
-		//PinSetup **ps = (PinSetup**)malloc(server.arg(PINSETUPARG).length());
-		
-		/*Copy bytes from WiFi into dBytes variable*/
-		server.arg(PINSETUPARG).getBytes((unsigned char*)dBytes, (server.arg(PINSETUPARG).length()), 0U);
-		received += dBytes;
-
-		/*Create array of PinSetup structs from byte data recived*/
-		//ps = (PinSetup**)dBytes;
-
-		/*Loop until done reading from serial so we can write back to user*/
-		//while (Serial.available());
-
-		/*Loop through array and send values back to user for reference*/
-		//for (int i = 0; i < (sizeof(ps)/sizeof(PinSetup)); i++) {
-		//	sret = "For element " + String(i) + " we have the following values: "
-		//		+ "NumPixels = " + String(ps[i]->numPixels)
-		//		+ "Datapin = " + String(ps[i]->dataPin)
-		//		+ "ClockPin = " + String(ps[i]->clockPin)
-		//		+ "Dotstar_Brg = " + String(ps[i]->brg)
-		//		+ "\r\n";
-		//}
-
-		//Serial.println(sret);
-		Serial.println(received);
-		/*Notify user of what data was received*/
-		server.send(200, "text/plain", sret);
-		server.send(200, "text/plain", received);
-
-		/*Free malloced data*/
-		//free(&dBytes);
-		//free(ps);
-	}
-	else if (server.hasArg(CHANGEPIXELCOLORARG)) {
-		
-	}
-
-	response += "<h1>In Add Struct Handler</h1><br><br>";
-	server.send(200, "text/html", response);
-}
-
-void PassStructViaWiFiClass::handleRemoveStruct() {
-	String response = "";
-	response += "<h1>In Remove Struct Handler</h1><br><br>";
-	server.send(200, "text/html", response);
-}
-
-void PassStructViaWiFiClass::handleListStructs() {
-	String response = "";
-	response += "<h1>In List Structs Handler</h1><br><br>";
-	server.send(200, "text/html", response);
-}
-
-void PassStructViaWiFiClass::handleNotFound() {
-	String response = "";
-	response += "<h1>In Not Found Handler</h1><br><br>";
-	server.send(200, "text/html", response);
-}
-
-void  PassStructViaWiFiClass::Add_Struct(PinSetup **ps) {
-
-}
-
-void  PassStructViaWiFiClass::Add_Struct(ChangePixelColor **cpc) {
-
-}
-
-void  PassStructViaWiFiClass::Remove_Struct(PinSetup *ps) {
-
-}
-
-void  PassStructViaWiFiClass::Remove_Struct(ChangePixelColor *cpc) {
-
-}
-
-void  PassStructViaWiFiClass::Replace_Struct(PinSetup *ps, PinSetup *nps) {
-
-}
-
-void  PassStructViaWiFiClass::Replace_Struct(ChangePixelColor *cpc, ChangePixelColor *ncpc) {
-
-}
-
-void  PassStructViaWiFiClass::List_Structs() {
-
-}
-
-
-PassStructViaWiFiClass PassStructViaWiFi;
+//PassStructViaWiFiClass PassStructViaWiFi;
 

@@ -1,3 +1,11 @@
+/*
+	Author: Aaron Branch, Zach Jarmon, Peter Martinez
+	Created:
+	Class:
+	Class Description:
+
+*/
+
 #ifndef _WIFIMODULERXHANDLER_h
 	#include "WiFiModuleRXHandler.h"
 #endif

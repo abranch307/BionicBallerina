@@ -1,7 +1,9 @@
 /*
-	Name:
-	Created:
-	Author:
+	Author: Aaron Branch, Zach Jarmon, Peter Martinez
+	Created: 
+	Class:
+	Class Description:
+
 */
 
 #include "Structs.h"

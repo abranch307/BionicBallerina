@@ -46,4 +46,9 @@ C:\Users\Abranch\AppData\Local\Temp\VMicroBuilds\ESP8266_HTTPSSerial\esp8266_gen
  C:\Users\Abranch\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.0.0\libraries\ESP8266WiFi\src/WiFiClient.h \
  C:\Users\Abranch\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.0.0\libraries\ESP8266WiFi\src/WiFiServer.h \
  C:\Users\Abranch\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.0.0\libraries\ESP8266WiFi\src/WiFiClientSecure.h \
- C:\Users\Abranch\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.0.0\libraries\ESP8266WiFi\src/include/ssl.h
+ C:\Users\Abranch\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.0.0\libraries\ESP8266WiFi\src/include/ssl.h \
+ C:\Users\Abranch\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.0.0\libraries\ESP8266mDNS/ESP8266mDNS.h \
+ C:\Users\Abranch\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.0.0\libraries\ESP8266WiFi\src/WiFiUdp.h \
+ C:\Users\Abranch\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.0.0\cores\esp8266/Udp.h \
+ C:\Users\Abranch\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.0.0\cores\esp8266/Stream.h \
+ C:\Users\Abranch\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.0.0\libraries\ESP8266WiFi\src/include/slist.h

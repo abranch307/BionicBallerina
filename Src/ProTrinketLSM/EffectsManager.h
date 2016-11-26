@@ -1,5 +1,13 @@
 // EffectsManager.h
 
+/*
+Author: Aaron Branch, Zach Jarmon, Peter Martinez
+Created:
+Class:
+Class Description:
+
+*/
+
 #ifndef _EFFECTSMANAGER_h
 #define _EFFECTSMANAGER_h
 

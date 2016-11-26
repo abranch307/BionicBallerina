@@ -1,5 +1,13 @@
 // WiFiModuleRXHandler.h
 
+/*
+	Author: Aaron Branch, Zach Jarmon, Peter Martinez
+	Created:
+	Class:
+	Class Description:
+
+*/
+
 #ifndef _WIFIMODULERXHANDLER_h
 #define _WIFIMODULERXHANDLER_h
 

@@ -1,63 +1,29 @@
-/**/
+/*
+	Author: Aaron Branch, Zach Jarmon, Peter Martinez
+	Class: ESP8266_HTTPSSerial.ino
+	Class Description:
+		This is the main file for this program.  It handles the setup of variables and configurations for the ESP8266
+		and the events that happen during the infite loop.  Setup includes; initializing helper classes, SSID
+		and passphrase for connecting to Access Point, starting serial communication, and use helper classes to
+		handle http requests which in turn will send received commands through the serial interface.
+*/
+
+#include <DNSServer.h>
 #include "PassStructViaWiFi.h"
-#include <ESP8266mDNS.h>
-#include <WiFiClient.h>
-#include <ESP8266WiFi.h>
-#include <ESP8266WebServer.h>
-
-/*Setup ssid & password*/
-//const char *ssid = "ATT9i5Q6AE";
-//const char *password = "6ve+g+vew3bf";
-
-const char *ssid = "DOTSTARCOMPOSER";
-const char *password = "dotstar1234";
-
-//const char *ssid = "linksys";
-//const char *password = "user1234";
 
 /*Setup webserver handling class*/
 PassStructViaWiFiClass psvwc;
-
-/*Setup DNS object*/
-//MDNSResponder mdns;
-
-/*Setup name of this device*/
-//const char *espName = "ESP8266";
 
 void setup()
 {
 	/*Initialize serial interface*/
 	Serial.begin(115200);
 
-	/*Connect to AP*/
-	WiFi.begin(ssid, password);
-	//Serial.println("");
-
-	/*Wait for connection*/
-	while (WiFi.status() != WL_CONNECTED) {
-		delay(500);
-		//Serial.println(".");
-	}
-
-	/*Display connection info*/
-	//Serial.println("");
-	//Serial.print("Connected to ");
-	//Serial.println(ssid);
-	//Serial.println(" IP address: ");
-	//Serial.println(WiFi.localIP());
-
-	/*Setup dns name for easy finding of this micro controller*/
-	//if (mdns.begin(espName)) {
-	//if(MDNS.begin(espName))
-	//{
-	//	Serial.println("MDNS responder started...");
-	//}
-
 	/*Setup web request URIs and responses*/
 	psvwc.begin();
 
 	/*Notify developer HTTP server has started successfully*/
-	//Serial.println("HTTP server started");
+	Serial.println("HTTP server started");
 }
 
 void loop()
