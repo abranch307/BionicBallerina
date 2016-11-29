@@ -673,7 +673,7 @@ namespace LEDLightingComposer
                 return; }
 
             //Verify Effect_Duration has been entered
-            if (veriFloatTextbox(this.txtEffectDuration) < 1) {
+            if (veriFloatTextbox(this.txtEffectDuration) < 0) {
                 MessageBox.Show("Your entered effect duration must be greater than 0...");
                 return;
             }

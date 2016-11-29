@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -16,7 +17,8 @@ namespace LEDLightingComposer
     {
         //Global variables
         private static String ESP8266DNSPREFIX = "ESP_";
-        private static List<String> ips, iparray;
+        private static ConcurrentBag<String> ips;
+        private static List<String> iparray, endingIPS;
         private static int waitTimeMiliSeconds = 7000;
         private static short START = 0, PAUSE = 1, STOP = 2, UPDATETIME = 3;
         public static bool sendSignalThreads;
@@ -277,10 +279,11 @@ namespace LEDLightingComposer
         public static List<String> getAllIPAddressesOnNetwork()
         {
             //Declare variables
-            String sret = "", ipBase = "", ipt = "";
-            Thread[] threads = new Thread[254];
+            List<Thread> threads = new List<Thread>();
             iparray = new List<String>();
-            ips = new List<String>();
+            ips = new ConcurrentBag<String>();
+            endingIPS = new List<string>();
+            String sret = "", ipBase = "", ipt = "";
 
             //Get IP Base
             ipBase = getLocalBaseIP();
@@ -288,20 +291,38 @@ namespace LEDLightingComposer
             //Ping all devices on network
             for (int i = 1; i < 255; i++)
             {
-                ipt = ipBase + i.ToString();
-                iparray.Add(ipt);
-                threads[i - 1] = new Thread(new ThreadStart(pingNetworkAddress));
-                threads[i - 1].Start();
-                //threads[i - 1].Join();
+                try
+                {
+                    ipt = ipBase + i.ToString();
+                    iparray.Add(ipt);
+
+                    threads.Add(new Thread(new ThreadStart(pingNetworkAddress)));
+                    threads.ElementAt(threads.Count - 1).Start();
+                }
+                catch (Exception ex)
+                {
+
+                }
             }
 
             //Join threads
-            for (int i = 1; i < 255; i++)
+            foreach (Thread t in threads)
             {
-                threads[i - 1].Join();
+                try
+                {
+                    t.Join();
+                }
+                catch (Exception ex)
+                {
+
+                }
             }
 
-            return ips;
+            for (int i = 0; i < ips.Count; i++)
+            {
+                endingIPS.Add(ips.ElementAt(i));
+            }
+            return endingIPS;
         }
 
         /*
@@ -347,16 +368,24 @@ namespace LEDLightingComposer
         {
             //Declare variables
             String ipaddress = "", name = "";
+            Ping p = null;
+            PingReply r = null;
+            
             try
             {
                 ipaddress = iparray[(iparray.Count - 1)];
-                Ping p = new Ping();
-                
+
                 //p.PingCompleted += new PingCompletedEventHandler(p_PingCompleted);
                 //p.SendAsync(ipaddress, 1000, ipaddress);
-                PingReply r = p.Send(ipaddress, 5000);
 
-                if(r.Status == IPStatus.Success)
+                //for (int i = 0; i < 2; i++)
+                //{
+                    p = new Ping();
+                    r = p.Send(ipaddress, 3000);
+                    p.Dispose();
+                //}
+
+                if (r.Status == IPStatus.Success)
                 {
                     try
                     {
@@ -368,7 +397,11 @@ namespace LEDLightingComposer
                     {
 
                     }
+                    //If this ip address contains the ESP8266 prefix or a blank name (could be no dns avaiable), then add to list
+                    //if (name.Trim().ToUpper().Contains(ESP8266DNSPREFIX) || name.Trim().Equals(""))
+                    //{
                     ips.Add(name + " ; " + ipaddress);
+                    //}
                 }
             }
             catch (Exception ex)
@@ -377,6 +410,8 @@ namespace LEDLightingComposer
             }
         }
 
+        /*
+        */
         public static void p_PingCompleted(object sender, PingCompletedEventArgs e)
         {
             //Declare variables

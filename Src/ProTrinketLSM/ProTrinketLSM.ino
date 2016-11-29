@@ -15,8 +15,8 @@
 
 //Declare setup values
 unsigned long localElapsedTime, temp;
-int8_t numStrips = 2, numEffects1 = 4, numEffects2 = 3;
-uint16_t numPixels1 = 5, numPixels2 = 5;
+int8_t numStrips = 2, numEffects1 = 5, numEffects2 = 3;
+uint16_t numPixels1 = 120, numPixels2 = 5;
 bool endSeqs = false;
 
 //Allocate memory for effects manager and setup
@@ -28,7 +28,7 @@ Strip *strips = (Strip*)calloc(numStrips, sizeof(Strip));;
 
 //Allocation memory for Lighting Sequences
 LightingSequence* seqs1 = (LightingSequence*)calloc(numEffects1, sizeof(LightingSequence));
-LightingSequence* seqs2 = (LightingSequence*)calloc(numPixels2, sizeof(LightingSequence));
+LightingSequence* seqs2 = (LightingSequence*)calloc(numEffects2, sizeof(LightingSequence));
 
 void setup()
 {
@@ -37,28 +37,11 @@ void setup()
 	Serial.println("Capturing serial output on ProTrinket");
 
 	//Setup lighting sequences 1
-	//seqs1[0] = { CLEAR, numPixels1, , " ", 1000, 1000, 1, 2 };//Clear
-	//seqs1[0] = { CLEAR, numPixels1, " ", 1000, 1000, 0, 0 };//Clear
-	//seqs1[1] = { LOADCOLOR, numPixels1, "2,2,2,2,2 ", 3000, 3000, 0, 0 };//load color effect
-	//seqs1[2] = { CLEAR, numPixels1, "0,0,0,0,0 ", 1000, 1000, 0, 0 };//Clear
-	//seqs1[3] = { LOADCOLOR, numPixels1, "8,8,8,8,8 ", 3000, 3000, 0, 0 };//load color effect
-	//seqs1[4] = { CLEAR, numPixels1, "0,0,0,0,0 ", 1000, 1000, 0, 0 };//Clear
-	//seqs1[1] = { FLOWTHROUGH, numPixels1, "1,2,3,4,5 ", 200, 4000, 0, 2 };//flowthrough effect
-	//seqs1[2] = { CLEAR, numPixels1, " ", 4, 4, 0, 0 };//clear effect
-	//seqs1[1] = { BOUNCEBACK, numPixels1, "0,0,1,2,0 ", 200, 5000, 2, 2 };//bounceback effect
-	seqs1[0] = { RAINBOW, numPixels1, "0,0,0,0,0 ", 200, 7000, 1, 2 };//rainbow effect
-	seqs1[1] = { FLOWTHROUGH, numPixels1, "1,2,0,2,1 ", 200, 11000, 0, 44 };//flowthrough effect
-	//seqs1[1] = { RAINBOW, numPixels1, " ", 1000, 7000, 1, 2 };//rainbow effect
-	//seqs1[1] = { RAINBOW, numPixels1, " ", 200, 7000, 1, 2 };//rainbow effect
-	seqs1[2] = { LOADCOLOR, numPixels1, "0,4,0,4,0 ", 4000, 4000, 0, 0 };//load color effect
-	//seqs1[6] = { RAINBOW, numPixels1, " ", 200, 6000, 1, 2 };//rainbow effect
-	//seqs1[6] = { CLEAR, numPixels1"0,0,0,0,0 ", 1000, 1000, 1, 2 };//Clear
-	//seqs1[4] = { LOADCOLOR, numPixels1, "0,4,4,4,0 ", 4000, 4000, 0, 0 };//load color effect
-	seqs1[3] = { BOUNCEBACK, numPixels1, "0,0,1,2,0 ", 200, 4000, 4, 2 };//bounceback effect
-	//seqs1[5] = { LOADCOLOR, numPixels1, "4,4,0,4,4 ", 4000, 4000, 0, 0 };//load color effect
-	//seqs1[6] = { LOADCOLOR, numPixels1, "5,5,5,5,5 ", 4000, 4000, 0, 0 };//load color effect
-	//seqs1[1] = { CLEAR, numPixels1, " ", 4000, 4000, 0, 0 };//clear effect
-	//seqs1[3] = { CLEAR, numPixels1, " ", 4000, 4000, 0, 0 };//clear effect
+	seqs1[0] = { RAINBOW, numPixels1, "0,0,0,0,0 ", 200, 7000, 1, 2, 100, 0, 0 };//rainbow effect
+	seqs1[1] = { FLOWTHROUGH, numPixels1, "0,1,2,0,2,1,0 ", 200, 11000, 0, 44, 100, 0, 0 };//flowthrough effect
+	seqs1[2] = { LOADCOLOR, numPixels1, "0,4,0,4,0 ", 500, 4000, 0, 0, 10, 0, 0 };//load color effect
+	seqs1[3] = { BOUNCEBACK, numPixels1, "0,0,1,2,0 ", 200, 4000, 4, 2, 150, 0, 0 };//bounceback effect
+	seqs1[4] = { FLOWTHROUGH, numPixels1, "0,4,0,4,0 ", 200, 11000, 0, 44, 100, 0, 0 };//flowthrough effect
 
 	//Initialize strip 1
 	strips[0] = Strip(numPixels1, 8, 6, DOTSTAR_RGB, seqs1, numEffects1);

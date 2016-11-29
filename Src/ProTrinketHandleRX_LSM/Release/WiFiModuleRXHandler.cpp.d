@@ -1,4 +1,4 @@
-C:\Users\Abranch\AppData\Local\Temp\VMicroBuilds\ProTrinketHandleRX_LSM\adafruit_adafruit_avr_protrinket5ftdi\WiFiModuleRXHandler.cpp.o: \
+C:\Users\Abranch\AppData\Local\Temp\VMicroBuilds\ProTrinketHandleRX_LSM\adafruit_adafruit_avr_protrinket5\WiFiModuleRXHandler.cpp.o: \
  C:\Users\Abranch\Source\Repos\BionicBallerina\Src\ProTrinketHandleRX\WiFiModuleRXHandler.cpp \
  C:\Users\Abranch\Source\Repos\BionicBallerina\Src\ProTrinketHandleRX\WiFiModuleRXHandler.h \
  C:\Program\ Files\ (x86)\Arduino\hardware\arduino\avr\cores\arduino/arduino.h \

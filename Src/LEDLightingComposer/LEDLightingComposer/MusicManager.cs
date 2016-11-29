@@ -19,13 +19,14 @@ namespace LEDLightingComposer
         public AxWindowsMediaPlayer player2;
         public Panel TrackBarPanel;
         public TrackBar trackBar;
-        public TextBox timer;
+        public CheckBox chkPlayerDelayTime;
+        public TextBox timer, playerDelayTime;
         private Button loadSong, jump2Secs;
         private Label songName;
         public String currentSongFilePath;
         public bool isPlaying, settingUp;
 
-        public MusicManager(LEDLightingComposerCS LLC, AxWindowsMediaPlayer Player2, Button LoadSong, Button Jump2Secs, TextBox Timer, Panel TrackBarPanel, Label SongName)
+        public MusicManager(LEDLightingComposerCS LLC, AxWindowsMediaPlayer Player2, Button LoadSong, Button Jump2Secs, TextBox Timer, Panel TrackBarPanel, Label SongName, CheckBox ChkPlayerDelayTime, TextBox PlayerDelayTime)
         {
             //Set class variables to passed
             this.llc = LLC;
@@ -33,6 +34,8 @@ namespace LEDLightingComposer
             this.loadSong = LoadSong;
             this.jump2Secs = Jump2Secs;
             this.timer = Timer;
+            this.chkPlayerDelayTime = ChkPlayerDelayTime;
+            this.playerDelayTime = PlayerDelayTime;
             this.TrackBarPanel = TrackBarPanel;
             this.songName = SongName;
             this.currentSongFilePath = "";
@@ -194,6 +197,21 @@ namespace LEDLightingComposer
         }
 
         /*
+        */
+        public void chkPlayerDelayTime_CheckedChanged(object sender, EventArgs e)
+        {
+            //Disable or enable playerDelayTime textbox depending on checkbox value
+            if (this.chkPlayerDelayTime.Checked)
+            {
+                this.playerDelayTime.Enabled = true;
+            }
+            else
+            {
+                this.playerDelayTime.Enabled = false;
+            }
+        }
+
+        /*
             
         */
         public void WMPlayer_PositionChange(object sender, AxWMPLib._WMPOCXEvents_PositionChangeEvent e)
@@ -232,8 +250,8 @@ namespace LEDLightingComposer
                     //this.timer.Update();
 
                     //Reset time onscreen
-                    //this.timer.Text = "0";
-                    //this.timer.Update();
+                    this.timer.Text = "0";
+                    this.timer.Update();
 
                     //Update music player time and timer text
                     //updateMusicPlayerAndTimerText();
@@ -341,9 +359,11 @@ namespace LEDLightingComposer
 
                     break;
 
-                case 3:    // Playing (Done 2nd at start)
+                case 3:// Playing (Done 2nd at start)
                     //this.timer.Text = "Playing";
                     //this.timer.Update();
+                    float trackerTime = 0;
+                    int delayTime = 0;
                     this.isPlaying = true;
 
                     //Pause until the setup below has gone through
@@ -354,6 +374,7 @@ namespace LEDLightingComposer
 
                     //Change trackbar maximum to total seconds in song
                     this.trackBar.Value = (int)this.player2.Ctlcontrols.currentPosition;
+                    trackerTime = this.trackBar.Value;
                     this.trackBar.Maximum = Convert.ToInt32(Decimal.Parse(this.player2.currentMedia.duration.ToString()));
 
                     //Start performance on mcus if Synchronize MCUs is checked
@@ -377,8 +398,10 @@ namespace LEDLightingComposer
                             //Send performance time to update in mcus
                             if (llc.getSelectedIPAddresses() != null && llc.getSelectedIPAddresses().Count > 0)
                             {
-                                if (HttpRequestResponse.sendStartHTTPSCommand("UPDATETIME", llc.getSelectedIPAddresses(), convertTimeToSeconds(this.timer.Text)))
+                                if (HttpRequestResponse.sendStartHTTPSCommand("UPDATETIME", llc.getSelectedIPAddresses(), Convert.ToString(Decimal.ToInt32(Decimal.Parse(convertTimeToSeconds(this.timer.Text)) * 1000))))
                                 {
+                                    //Delay for a few seconds
+                                    System.Threading.Thread.Sleep(1000);
                                     //Send start signal and Synchronize MCUs
                                     if (!HttpRequestResponse.sendStartHTTPSCommand("START", llc.getSelectedIPAddresses(), null))
                                     {
@@ -397,6 +420,23 @@ namespace LEDLightingComposer
 
                         //Enable windows media player controls
                         amp.Ctlenabled = true;
+                    }
+
+                    //Delay play time if specified
+                    if (this.chkPlayerDelayTime.Checked)
+                    {
+                        //Get delay time from playerDelayTime textbox
+                        try
+                        {
+                            delayTime = Decimal.ToInt32(Decimal.Parse(this.playerDelayTime.Text.ToString().Trim()) * 1000);
+                        }catch(Exception ex)
+                        {
+                            delayTime = 0;
+                        }
+
+                        //Wait delayed amount of time
+                        System.Threading.Thread.Sleep(delayTime);
+                        this.player2.Ctlcontrols.currentPosition = trackerTime;
                     }
 
                     //Start ticker
@@ -514,7 +554,8 @@ namespace LEDLightingComposer
             }
             else if (!Time2Convert.Contains(":"))
             {
-                temp = (Time2Convert + ":00").Split(':');
+                sRet = Time2Convert;
+                return sRet;
             }
             else
             {

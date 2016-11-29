@@ -1,5 +1,5 @@
-C:\Users\Abranch\AppData\Local\Temp\VMicroBuilds\ProTrinketHandleRX_LSM\adafruit_adafruit_avr_protrinket5ftdi\ProTrinketHandleRX_LSM.cpp.o: \
- C:\Users\Abranch\AppData\Local\Temp\VMicroBuilds\ProTrinketHandleRX_LSM\adafruit_adafruit_avr_protrinket5ftdi\ProTrinketHandleRX_LSM.cpp \
+C:\Users\Abranch\AppData\Local\Temp\VMicroBuilds\ProTrinketHandleRX_LSM\adafruit_adafruit_avr_protrinket5\ProTrinketHandleRX_LSM.cpp.o: \
+ C:\Users\Abranch\AppData\Local\Temp\VMicroBuilds\ProTrinketHandleRX_LSM\adafruit_adafruit_avr_protrinket5\ProTrinketHandleRX_LSM.cpp \
  C:\Program\ Files\ (x86)\Arduino\hardware\arduino\avr\cores\arduino/arduino.h \
  C:\Program\ Files\ (x86)\Arduino\hardware\arduino\avr\cores\arduino/binary.h \
  C:\Program\ Files\ (x86)\Arduino\hardware\arduino\avr\cores\arduino/WCharacter.h \
@@ -12,11 +12,11 @@ C:\Users\Abranch\AppData\Local\Temp\VMicroBuilds\ProTrinketHandleRX_LSM\adafruit
  C:\Program\ Files\ (x86)\Arduino\hardware\arduino\avr\cores\arduino/Arduino.h \
  C:\Program\ Files\ (x86)\Arduino\hardware\arduino\avr\variants\eightanaloginputs/pins_arduino.h \
  C:\Program\ Files\ (x86)\Arduino\hardware\arduino\avr\variants\eightanaloginputs/../standard/pins_arduino.h \
- C:\Users\Abranch\AppData\Local\Temp\VMicroBuilds\ProTrinketHandleRX_LSM\adafruit_adafruit_avr_protrinket5ftdi\Structs.h \
+ C:\Users\Abranch\AppData\Local\Temp\VMicroBuilds\ProTrinketHandleRX_LSM\adafruit_adafruit_avr_protrinket5\Structs.h \
  C:\Program\ Files\ (x86)\Arduino\hardware\arduino\avr\libraries\SPI/SPI.h \
  C:\Program\ Files\ (x86)\Arduino\hardware\arduino\avr\cores\arduino/Arduino.h \
  C:\Program\ Files\ (x86)\Arduino\libraries\Adafruit_DotStar/Adafruit_DotStar.h \
- C:\Users\Abranch\AppData\Local\Temp\VMicroBuilds\ProTrinketHandleRX_LSM\adafruit_adafruit_avr_protrinket5ftdi\Strip.h \
- C:\Users\Abranch\AppData\Local\Temp\VMicroBuilds\ProTrinketHandleRX_LSM\adafruit_adafruit_avr_protrinket5ftdi\EffectsManager.h \
- C:\Users\Abranch\AppData\Local\Temp\VMicroBuilds\ProTrinketHandleRX_LSM\adafruit_adafruit_avr_protrinket5ftdi\Effects.h \
- C:\Users\Abranch\AppData\Local\Temp\VMicroBuilds\ProTrinketHandleRX_LSM\adafruit_adafruit_avr_protrinket5ftdi\WiFiModuleRXHandler.h
+ C:\Users\Abranch\AppData\Local\Temp\VMicroBuilds\ProTrinketHandleRX_LSM\adafruit_adafruit_avr_protrinket5\Strip.h \
+ C:\Users\Abranch\AppData\Local\Temp\VMicroBuilds\ProTrinketHandleRX_LSM\adafruit_adafruit_avr_protrinket5\EffectsManager.h \
+ C:\Users\Abranch\AppData\Local\Temp\VMicroBuilds\ProTrinketHandleRX_LSM\adafruit_adafruit_avr_protrinket5\Effects.h \
+ C:\Users\Abranch\AppData\Local\Temp\VMicroBuilds\ProTrinketHandleRX_LSM\adafruit_adafruit_avr_protrinket5\WiFiModuleRXHandler.h

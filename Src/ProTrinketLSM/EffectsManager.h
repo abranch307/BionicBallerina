@@ -21,6 +21,10 @@ Class Description:
 	#include "Structs.h"
 #endif
 
+#ifndef _EFFECTS_h
+	#include "Effects.h"
+#endif
+
 #ifndef _STRIP_h
 	#include "Strip.h""
 #endif

@@ -1,4 +1,4 @@
-C:\Users\Abranch\AppData\Local\Temp\VMicroBuilds\ProTrinketHandleRX_LSM\adafruit_adafruit_avr_protrinket5ftdi\Structs.cpp.o: \
+C:\Users\Abranch\AppData\Local\Temp\VMicroBuilds\ProTrinketHandleRX_LSM\adafruit_adafruit_avr_protrinket5\Structs.cpp.o: \
  C:\Users\Abranch\Source\Repos\BionicBallerina\Src\ProTrinketLSM\Structs.cpp \
  C:\Users\Abranch\Source\Repos\BionicBallerina\Src\ProTrinketLSM\Structs.h \
  C:\Program\ Files\ (x86)\Arduino\hardware\arduino\avr\cores\arduino/arduino.h \

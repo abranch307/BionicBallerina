@@ -236,7 +236,7 @@ namespace LEDLightingComposer
             try
             {
                 //Clear all pixels first
-                Effects.allClear(strip, DrawManager);
+                //Effects.allClear(strip, DrawManager);
 
                 //Initilialize if first time in
                 if (strip.Init)
@@ -264,16 +264,18 @@ namespace LEDLightingComposer
                         strip.Head++;
                         strip.Tail++;
 
-                        if (strip.Head < seq.totalPixels)
-                        {
-                            //Load color with a shift and clear previous tail pixel
-                            loadColor(strip, DrawManager);
-                        }
-                        else
+                        if (strip.Head >= seq.totalPixels)
                         {
                             strip.Forward = false;
                             strip.Bounces++;
+
+                            strip.ShiftPixelBy--;
+                            strip.Head--;
+                            strip.Tail--;
                         }
+
+                        //Load color with a shift and clear previous tail pixel
+                        loadColor(strip, DrawManager);
                     }
                     else
                     {
@@ -282,16 +284,18 @@ namespace LEDLightingComposer
                         strip.Head--;
                         strip.Tail--;
 
-                        if (strip.Tail >= 0)
-                        {
-                            //Load color with a shift and clear previous head pixel
-                            loadColor(strip, DrawManager);
-                        }
-                        else
+                        if (strip.Tail < 0)
                         {
                             strip.Forward = true;
                             strip.Bounces++;
+
+                            strip.ShiftPixelBy++;
+                            strip.Head++;
+                            strip.Tail++;
                         }
+
+                        //Load color with a shift and clear previous head pixel
+                        loadColor(strip, DrawManager);
                     }
                 }
                 //Set return value to true
@@ -325,6 +329,136 @@ namespace LEDLightingComposer
             if (strip == null)
             {
                 return bRet;
+            }
+
+            //Declare variables
+            int elem = 0, colorValue = 0;
+
+            //Add 1 to i if i is -1 and reset ps
+            if (strip.I < 0)
+            {
+                //Add 1 to i making i = 0
+                strip.I++;
+
+                if (strip.IsRainbow)
+                {
+                    //Reset p values
+                    strip.P0 = -1;
+                    strip.P1 = 0;
+                    strip.P2 = 1;
+                    strip.P3 = 2;
+                    strip.P4 = 3;
+                    strip.P5 = 4;
+                }
+                else
+                {
+                    //Set virual pixel elements to default element indexes
+                    for (elem = 0; elem < seq.totalPixels; elem++)
+                    {
+                        //Add 1 to pixel's shift value
+                        strip.VirtualPixelArray[elem] = elem - 1;
+                    }
+                }
+            }
+
+            if (strip.IsRainbow)
+            {
+                //Verify if p0 is greater than numPixels, and if so add 1 to shiftPixelsBy
+                if (strip.P0 >= seq.totalPixels)
+                {
+                    //Add 1 to shiftPixelsBy and reset j
+                    strip.I++;
+
+                    //Reset p values
+                    strip.P0 = 0; strip.P1 = 1; strip.P2 = 2; strip.P3 = 3; strip.P4 = 4; strip.P5 = 5;
+                }
+
+                if (strip.I < seq.iterations)
+                {
+                    //Find drawable object that matches this strip's pin setup for manipulating LEDs onscreen
+                    dbo = DrawManager.getDrawableObject("PINSETUP", strip.PinSetup.ToString());
+
+                    if (dbo == null)
+                    {
+                        return bRet;
+                    }
+
+                    //Set all of Drawable Object's LEDS to clear
+                    //allClear(strip, DrawManager);
+
+                    //Set specific pixels to rainbow colors
+                    try { dbo.Leds[strip.P0++].LEDColor = Effects.getColorFromCode(CLEAR); } catch (Exception ex) { }
+                    try { dbo.Leds[strip.P1++].LEDColor = Effects.getColorFromCode(RED); } catch (Exception ex) { }
+                    try { dbo.Leds[strip.P2++].LEDColor = Effects.getColorFromCode(ORANGE); } catch (Exception ex) { }
+                    try { dbo.Leds[strip.P3++].LEDColor = Effects.getColorFromCode(YELLOW); } catch (Exception ex) { }
+                    try { dbo.Leds[strip.P4++].LEDColor = Effects.getColorFromCode(GREEN); } catch (Exception ex) { }
+                    try { dbo.Leds[strip.P5++].LEDColor = Effects.getColorFromCode(BLUE); } catch (Exception ex) { }
+
+                    if (strip.P0 >= seq.totalPixels)
+                    {
+                        strip.P0 = 0;
+                    }
+                    if (strip.P1 >= seq.totalPixels)
+                    {
+                        strip.P1 = 0;
+                    }
+                    if (strip.P2 >= seq.totalPixels)
+                    {
+                        strip.P2 = 0;
+                    }
+                    if (strip.P3 >= seq.totalPixels)
+                    {
+                        strip.P3 = 0;
+                    }
+                    if (strip.P4 >= seq.totalPixels)
+                    {
+                        strip.P4 = 0;
+                    }
+                    if (strip.P5 >= seq.totalPixels)
+                    {
+                        strip.P5 = 0;
+                    }
+                }
+            }
+            else
+            {
+                //Verify if first element is greater than total pixels, and if so add 1 to shiftPixelsBy
+                if (strip.VirtualPixelArray[0] >= seq.totalPixels)
+                {
+                    //Add 1 to shiftPixelsBy and reset j
+                    strip.I++;;
+                }
+
+                if (strip.I <= seq.iterations)
+                {
+                    //Find drawable object that matches this strip's pin setup for manipulating LEDs onscreen
+                    dbo = DrawManager.getDrawableObject("PINSETUP", strip.PinSetup.ToString());
+
+                    if (dbo == null)
+                    {
+                        return bRet;
+                    }
+
+                    for (elem = 0; elem < seq.totalPixels; elem++)
+                    {
+                        //Add 1 to pixel's shift value
+                        strip.VirtualPixelArray[elem] = strip.VirtualPixelArray[elem] + 1;
+
+                        //Verify pixel shift is not over end of led strip
+                        if (strip.VirtualPixelArray[elem] >= seq.totalPixels)
+                        {
+                            //Change virtual index to 0
+                            strip.VirtualPixelArray[elem] = 0;
+                        }
+
+                        //Set pixel color
+                        try { dbo.Leds[strip.VirtualPixelArray[elem]].LEDColor = Effects.getColorFromCode(int.Parse(seq.colors[elem].Split('-')[0].Trim())); } catch (Exception ex) { }
+                    }
+                }
+                else
+                {
+                    allClear(strip, DrawManager);
+                }
             }
 
             return bRet;
@@ -368,6 +502,37 @@ namespace LEDLightingComposer
             }
 
             return clr;
+        }
+
+        /*
+        */
+        public static String getEffectFromCode(int EffectCode)
+        {
+            String sret = "";
+
+            switch (EffectCode)
+            {
+                case 0:
+                    sret = "ALLCLEAR";
+                    break;
+                case 1:
+                    sret = "RAINBOW";
+                    break;
+                case 2:
+                    sret = "LOADCOLOR";
+                    break;
+                case 3:
+                    sret = "BOUNCEBACK";
+                    break;
+                case 4:
+                    sret = "FLOWTHROUGH";
+                    break;
+                default:
+                    sret = "ALLCLEAR";
+                    break;
+            }
+
+            return sret;
         }
     }
 }

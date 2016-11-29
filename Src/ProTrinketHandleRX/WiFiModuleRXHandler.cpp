@@ -78,9 +78,12 @@ void WiFiModuleRXHandlerClass::LoopHandle() {
 void WiFiModuleRXHandlerClass::RXHandler() {
 	String str;
 	boolean methFound = false;
-	int state, i = 0, looping = 0;
+	int state, i = 0, looping = 0, looping2 = 0;
 	UserMethods meth = LED;
 	//inputString = "";
+
+	//Reset serialString
+	emptySerialString();
 
 	Serial.println("I made it into RXHandler interrupt...");
 
@@ -103,10 +106,29 @@ void WiFiModuleRXHandlerClass::RXHandler() {
 		if (!methFound) {
 			Serial.println("No method found yet so reading until new line");
 
-			//Read string from RX
-			str = Serial.readStringUntil('\n');
+			looping2 = -1;
 
-			Serial.println("Found a new line now...");
+			//Read string from RX
+			Serial.setTimeout(1000);
+			while (Serial.available()) {
+				looping2++;
+				delay(1);  //small delay to allow input buffer to fill
+				char c = Serial.read();  //gets one byte from serial buffer
+				if (c == '\n') {
+					break; //breaks out of capture loop to print readstring
+				}
+				serialString[looping2] = c; //makes the string readString
+				Serial.println(serialString);
+
+				if (looping2 > 100) {
+					break;
+				}
+			}
+			//str = Serial.readStringUntil('\n');
+			str = serialString;
+
+			Serial.print("Found a new line now and the value is: ");
+			Serial.println(str);
 
 			str.trim();
 			//inputString += "The read string was " + str + "\n";
@@ -130,9 +152,17 @@ void WiFiModuleRXHandlerClass::RXHandler() {
 				meth = ILEDSEQS;
 				methFound = true;
 			}
+			else if (str.equals(UPDATEPERFORMANCETIME)) 
+			{
+				Serial.println("UPT string found!");
+				//inputString += "UPT string found!\n";
+				meth = UPT;
+				methFound = true;
+			}
 			else {
 				//Empty serial buffer
 				while (Serial.read() != -1);
+				Serial.println("Emptied serial buffer.  Should exit now...");
 			}
 		}
 		else {
@@ -208,6 +238,21 @@ void WiFiModuleRXHandlerClass::RXHandler() {
 
 							break;
 					}
+					break;
+				case UPT:
+					Serial.println("Now handling UPT...");
+					
+					//Read int into updateTime variable for loop to call Effects Manager method for updating performance time of all strips change sw boolean
+					updateTime = Serial.parseInt();
+
+					Serial.print("UPT update performance time equals ");
+					Serial.println(updateTime);
+
+					sw = true;
+
+					//Set command
+					cmd = UPDATETIME;
+					break;
 				default:
 					break;
 			}
@@ -238,4 +283,16 @@ int WiFiModuleRXHandlerClass::getCurrentCommand() {
 	}
 
 	return iret;
+}
+
+/*
+*/
+bool WiFiModuleRXHandlerClass::emptySerialString() {
+	bool bret = false;
+
+	for (int i = 0; i < strlen(serialString); i++) {
+		serialString[i] = '\0';
+	}
+
+	return bret;
 }

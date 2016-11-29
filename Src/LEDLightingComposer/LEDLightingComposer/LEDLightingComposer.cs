@@ -19,6 +19,7 @@ namespace LEDLightingComposer
         private DrawingManager composerDrawManager;
         private System.Windows.Forms.Timer screenRefreshTimer;
         private Dictionary<String, bool> foundIPAddresses = new Dictionary<string, bool>();
+        private WaitDialog waitDialogBox;
 
         public LEDLightingComposerCS()
         {
@@ -34,6 +35,8 @@ namespace LEDLightingComposer
             this.lblTimer.Anchor = (AnchorStyles.Top | AnchorStyles.Right);
             this.txtTimer.Anchor = (AnchorStyles.Top | AnchorStyles.Right);
             this.btnJump2Secs.Anchor = (AnchorStyles.Top | AnchorStyles.Right);
+            this.chkPlayerDelayTime.Anchor = (AnchorStyles.Top | AnchorStyles.Right);
+            this.txtPlayerDelayTime.Anchor = (AnchorStyles.Top | AnchorStyles.Right);
             this.btnLoadSong.Anchor = (AnchorStyles.Top | AnchorStyles.Right);
             this.pnlDraw.Anchor = (AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right);
 
@@ -51,7 +54,7 @@ namespace LEDLightingComposer
             this.btnExit.Anchor = (AnchorStyles.Bottom| AnchorStyles.Left);
 
             //Initialize classes to handle certain form functions
-            musicmanager = new MusicManager(this, this.WMPlayer, this.btnLoadSong, this.btnJump2Secs, this.txtTimer, this.pnlTBar, this.lblSongName);
+            musicmanager = new MusicManager(this, this.WMPlayer, this.btnLoadSong, this.btnJump2Secs, this.txtTimer, this.pnlTBar, this.lblSongName, this.chkPlayerDelayTime, this.txtPlayerDelayTime);
             databasemanager = new DatabaseManager(this,this.lblProjectName, this.btnAdd2Project, this.btnEditRecord, this.btnSend2SDCard, this.btnSend2SDCard, this.btnOpenProject, this.dgvProjectData);
             composerDrawManager = new DrawingManager();
             EffectsManager.Init(databasemanager, composerDrawManager);
@@ -248,6 +251,10 @@ namespace LEDLightingComposer
             //Skip getting new ip addresses if foundIPAddresses is not empty
             if (foundIPAddresses == null || foundIPAddresses.Count <= 0)
             {
+                //Invoke wait dialog
+                waitDialogBox = new WaitDialog();
+                waitDialogBox.Show();
+
                 //Create new dictionary
                 foundIPAddresses = new Dictionary<string, bool>();
 
@@ -265,6 +272,10 @@ namespace LEDLightingComposer
                 {
 
                 }
+
+                //Close wait dialog
+                waitDialogBox.Close();
+                waitDialogBox = null;
             }
 
             try
@@ -275,27 +286,38 @@ namespace LEDLightingComposer
 
                 while (ledp.ShowDialog() == DialogResult.Retry)
                 {
+                    //Invoke wait dialog
+                    waitDialogBox = new WaitDialog();
+                    waitDialogBox.Show();
+
                     //Create new dictionary
                     foundIPAddresses = new Dictionary<string, bool>();
 
                     //Get IP Addresses on network
                     ipAddresses = HttpRequestResponse.getAllIPAddressesOnNetwork();
 
-                    try
+                    //Add to dictionary
+                    foreach (String str in ipAddresses)
                     {
-                        //Add to dictionary
-                        foreach (String str in ipAddresses)
+                        try
                         {
+                            //If this ip address contains the ESP8266 prefix or a blank name (could be no dns avaiable), then add to list
+                            //if (name.Trim().ToUpper().Contains(ESP8266DNSPREFIX) || name.Trim().Equals(""))
+                            //{
                             foundIPAddresses.Add(str, false);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
+                            //}
+                        }catch(Exception ex)
+                        {
 
+                        }
                     }
 
                     ledp = new ScreenArraySelections("IP", foundIPAddresses.Count, null, null, foundIPAddresses);
                     ledp.Owner = this;
+
+                    //Close wait dialog
+                    waitDialogBox.Close();
+                    waitDialogBox = null;
                 }
             }
             catch(Exception ex)
@@ -308,6 +330,12 @@ namespace LEDLightingComposer
         {
             //Allow the MusicManager class to handle this event
             musicmanager.btnJump2Secs_Click(sender, e);
+        }
+
+        private void chkPlayerDelayTime_CheckedChanged(object sender, EventArgs e)
+        {
+            //Allow the MusicManager class to handle this event
+            musicmanager.chkPlayerDelayTime_CheckedChanged(sender, e);
         }
 
         private void WMPlayer_PositionChange(object sender, AxWMPLib._WMPOCXEvents_PositionChangeEvent e)

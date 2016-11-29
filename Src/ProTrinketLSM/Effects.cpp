@@ -27,78 +27,12 @@ void Effects::allClear(Adafruit_DotStar* strip, LightingSequence* lseqs, uint16_
 
 	//Loop through all pixels and set color to clear
 	for (int i = 0; i < lseqs[currentSequence].totalPixels; i++) {
-		setSinglePixelColor(strip, lseqs, currentSequence, i, 0);
+		setSinglePixelColor(strip, lseqs, i, 0);
 	}
 
 	//Show new effects
 	strip->show();
 }
-
-//void Effects::rainbow(Adafruit_DotStar* strip, LightingSequence* lseqs, uint16_t currentSequence, int16_t* i, int16_t* p0, int16_t* p1, int16_t* p2, int16_t* p3, int16_t* p4, int16_t* p5, Strip* PassedStripClass) {
-//	//Exit if invalid pointers passed
-//	if (strip == NULL) {
-//		return;
-//	}
-//	else if (lseqs == NULL)
-//	{
-//		return;
-//	}
-//
-//	//Add 1 to i if i is -1 and reset ps
-//	if (*i < 0) {
-//		//Add 1 to i making i = 0
-//		*i = *i + 1;
-//
-//		//Reset p values
-//		*p0 = -1, *p1 = 0, *p2 = 1, *p3 = 2, *p4 = 3, *p5 = 4;
-//	}
-//
-//	//Verify if p0 is greater than numPixels1, and if so add 1 to shiftPixelsBy
-//	if (*p0 >= lseqs[currentSequence].totalPixels) {
-//		//Add 1 to shiftPixelsBy and reset j
-//		*i = *i + 1;
-//
-//		//Reset p values
-//		*p0 = 0, *p1 = 1, *p2 = 2, *p3 = 3, *p4 = 4, *p5 = 5;
-//	}
-//
-//	if (*i <= lseqs[currentSequence].iterations) {
-//		strip->setPixelColor((*p0)++, CLEAR);
-//		strip->setPixelColor((*p1)++, RED);
-//		strip->setPixelColor((*p2)++, ORANGE);
-//		strip->setPixelColor((*p3)++, YELLOW);
-//		strip->setPixelColor((*p4)++, GREEN);
-//		strip->setPixelColor((*p5)++, BLUE);
-//		strip->setPixelColor(*p1 - 2, CLEAR);
-//
-//		if (*p0 >= lseqs[currentSequence].totalPixels)
-//		{
-//			*p0 = 0;
-//		}
-//		if (*p1 >= lseqs[currentSequence].totalPixels)
-//		{
-//			*p1 = 0;
-//		}
-//		if (*p2 >= lseqs[currentSequence].totalPixels)
-//		{
-//			*p2 = 0;
-//		}
-//		if (*p3 >= lseqs[currentSequence].totalPixels)
-//		{
-//			*p3 = 0;
-//		}
-//		if (*p4 >= lseqs[currentSequence].totalPixels)
-//		{
-//			*p4 = 0;
-//		}
-//		if (*p5 >= lseqs[currentSequence].totalPixels)
-//		{
-//			*p5 = 0;
-//		}
-//	}
-//
-//	strip->show();
-//}
 
 void Effects::loadColor(Adafruit_DotStar* strip, LightingSequence* lseqs, uint16_t currentSequence, uint16_t shiftPixelToLoad, Strip* PassedStripClass) {
 	//Exit if invalid pointers passed
@@ -126,7 +60,7 @@ void Effects::loadColor(Adafruit_DotStar* strip, LightingSequence* lseqs, uint16
 		getNextCommaDelimitedColorToken(lseqs[currentSequence].colors, cdrColor.nextBegPosition);
 
 		//Convert return color index to actual color
-		setSinglePixelColor(strip, lseqs, currentSequence, (elem + shiftPixelToLoad), cdrColor.value);
+		setSinglePixelColor(strip, lseqs, (elem + shiftPixelToLoad), cdrColor.value);
 	}
 
 	//Show new effects
@@ -304,7 +238,7 @@ void Effects::flowThrough(Adafruit_DotStar* strip, LightingSequence* lseqs, uint
 				getNextCommaDelimitedColorToken(lseqs[currentSequence].colors, cdrColor.nextBegPosition);
 
 				//Set pixel color
-				setSinglePixelColor(strip, lseqs, currentSequence, virtualPixelIndexArray[elem], cdrColor.value);
+				setSinglePixelColor(strip, lseqs, virtualPixelIndexArray[elem], cdrColor.value);
 			}
 		}
 		else {
@@ -317,7 +251,7 @@ void Effects::flowThrough(Adafruit_DotStar* strip, LightingSequence* lseqs, uint
 
 /*
 */
-void Effects::setSinglePixelColor(Adafruit_DotStar* strip, LightingSequence* lseqs, uint16_t currentSequence, uint16_t pixelElem, uint16_t color) {
+void Effects::setSinglePixelColor(Adafruit_DotStar* strip, LightingSequence* lseqs, uint16_t pixelElem, uint16_t color) {
 	//Exit if invalid pointers passed
 	if (strip == NULL) {
 		return;
@@ -360,6 +294,32 @@ void Effects::setSinglePixelColor(Adafruit_DotStar* strip, LightingSequence* lse
 	default:
 		strip->setPixelColor(pixelElem, CLEAR);
 		break;
+	}
+}
+
+/*
+*/
+void Effects::updateBrightness(Adafruit_DotStar* strip, LightingSequence* lseqs, uint16_t currentSequence) {
+	//Update brightness if necessary
+	if (lseqs[currentSequence].incrBrightness != 0) {
+		//Add incr to brightness
+		lseqs[currentSequence].brightness = lseqs[currentSequence].brightness + lseqs[currentSequence].incrBrightness;
+
+		if (lseqs[currentSequence].brightness > 255) {
+			lseqs[currentSequence].brightness = 255;
+			lseqs[currentSequence].incrBrightness = lseqs[currentSequence].incrBrightness * -1;
+		}
+		else if (lseqs[currentSequence].brightness < 0) {
+			lseqs[currentSequence].brightness = 0;
+			lseqs[currentSequence].incrBrightness = lseqs[currentSequence].incrBrightness * -1;
+		}
+
+		//Set brightness
+		strip->setBrightness(lseqs[currentSequence].brightness);
+	}
+	else {
+		//Set brightness
+		strip->setBrightness(lseqs[currentSequence].brightness);
 	}
 }
 

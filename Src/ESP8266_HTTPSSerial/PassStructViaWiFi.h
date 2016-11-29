@@ -42,6 +42,7 @@
 
 //Define http parameters and args
 #define INITLEDSEQS "INITLEDSEQS"
+#define UPDATEPERFORMANCETIME "UPT"
 #define READY "READY"
 #define ACTION "ACTION"
 #define START 0
@@ -64,14 +65,15 @@ class PassStructViaWiFiClass
 	bool handleRoot(void);
 	bool handleReady();
 	bool handleInitLEDSeqs();
+	bool handleUpdatePerformanceTime();
 	bool handleNotFound();
 
 	/*Setup ssid & password*/
-	//const char *ssid = "ATT9i5Q6AE";
-	//const char *password = "6ve+g+vew3bf";
+	const char *ssid = "ATT9i5Q6AE";
+	const char *password = "6ve+g+vew3bf";
 
-	const char *ssid = "DOTSTARCOMPOSER";
-	const char *password = "dotstar1234";
+	/*const char *ssid = "DOTSTARCOMPOSER";
+	const char *password = "dotstar1234";*/
 
 	//const char *ssid = "linksys";
 	//const char *password = "user1234";

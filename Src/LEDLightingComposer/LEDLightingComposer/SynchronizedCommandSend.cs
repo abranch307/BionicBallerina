@@ -16,7 +16,7 @@ namespace LEDLightingComposer
         private int threadNo, waitTimeMiliSeconds = 7000;
         private short command;
         private String sendString = "";
-        private static short START = 0, STOP = 1, PAUSE = 2, UPDATETIME = 3;
+        private static short START = 0, STOP = 1, PAUSE = 2;
         private static String readyUri = "/ready", readyParam = "READY", initLEDSeqsUri = "/init_led_seqs", initActionParam = "INITLEDSEQS", initUpdatePerformTimeUri = "/update_performance_time", initUPTActionParam = "UPT";
         
         public SynchronizedCommandSend(Boolean[] ESP8266sReady, String IPAddress, int ThreadNo, short Command, String SendString)

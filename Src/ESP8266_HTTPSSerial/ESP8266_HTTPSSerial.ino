@@ -23,7 +23,7 @@ void setup()
 	psvwc.begin();
 
 	/*Notify developer HTTP server has started successfully*/
-	Serial.println("HTTP server started");
+	//Serial.println("HTTP server started");
 }
 
 void loop()

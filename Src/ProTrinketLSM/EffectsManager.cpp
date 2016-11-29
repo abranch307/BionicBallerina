@@ -76,6 +76,7 @@ bool EffectsManager::resetPerformance() {
 bool EffectsManager::clearStrips() {
 	//Clear strips
 	for (int i = 0; i < countStrips; i++) {
+		Effects::allClear(strips2Manage[i].getStrip(), strips2Manage[i].getLightingSequences(), 0, NULL);
 		strips2Manage[i].getStrip()->clear();
 	}
 }

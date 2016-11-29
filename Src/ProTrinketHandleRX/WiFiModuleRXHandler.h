@@ -21,6 +21,7 @@
 #define PINSETUPARG "PINSETUP"
 #define CHANGEPIXELCOLORARG "CHANGEPIXELCOLOR"
 #define INITLEDSEQS "INITLEDSEQS"
+#define UPDATEPERFORMANCETIME "UPT"
 #define USERINFORECV "USERINFO"
 #define LEDSWITCH "LED"
 #define START 0
@@ -36,8 +37,10 @@ class WiFiModuleRXHandlerClass
 		boolean stringComplete = false;  // whether the string is complete
 		boolean beginSeqs = false;
 		boolean sw = false;
-		enum UserMethods { LED, USERINFO, ILEDSEQS };
-		enum Command { RESET, RESUME };
+		int updateTime = 0;
+		char serialString[20] = { '\0' };
+		enum UserMethods { LED, USERINFO, ILEDSEQS, UPT };
+		enum Command { RESET, RESUME, UPDATETIME };
 		Command cmd;
 		WiFiModuleRXHandlerClass();
 		void RXHandler();
@@ -45,6 +48,7 @@ class WiFiModuleRXHandlerClass
 		int ESP8266CH_POn(int PinTurnOn);
 		int ESP8266CH_POff(int PinTurnOn);
 		int getCurrentCommand();
+		bool emptySerialString();
 	private:
 		//Setup struct for userinformation
 		struct userInfo {

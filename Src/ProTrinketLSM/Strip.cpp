@@ -65,6 +65,11 @@ void Strip::Update(unsigned long currentPerformanceTime) {
 		currentDuration = 0;
 		prevDuration = -1;
 
+		if (currentSequence < countSeqs) {
+			//Set brighness here
+			Effects::updateBrightness(&strip, lseqs, currentSequence);
+		}
+
 		//Reset necessary global variables
 		i = -1;
 		init = true;
@@ -80,6 +85,11 @@ void Strip::Update(unsigned long currentPerformanceTime) {
 	if (prevDuration == -1) {
 		proceed = true;
 		prevDuration = roundedDuration;
+
+		if (currentSequence < countSeqs) {
+			//Set brighness here
+			Effects::updateBrightness(&strip, lseqs, currentSequence);
+		}
 	}
 	else if (roundedDuration != prevDuration) {
 		proceed = true;
@@ -88,6 +98,11 @@ void Strip::Update(unsigned long currentPerformanceTime) {
 
 	//Set current duration to rounded duration
 	currentDuration = roundedDuration;
+
+	//Update brightness if necessary
+	if (lseqs[currentSequence].incrBrightness != 0 && (roundedDuration % lseqs[currentSequence].brightnessDelayTime) == 0 && proceed) {
+		Effects::updateBrightness(&strip, lseqs, currentSequence);
+	}
 
 	//If delaytime % counter is zero, then perform next peformance of lighting effect
 	if ((roundedDuration % lseqs[currentSequence].delayTime) == 0 && proceed) {

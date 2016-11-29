@@ -22,6 +22,8 @@ namespace LEDLightingComposer
         MySqlConnection con, con2, con3;
         private String connString = "Server=localhost;Database=test;Uid=root;Pwd=user1234";
 
+        #region Public Methods
+
         public DatabaseManager(LEDLightingComposerCS LLC, Label ProjectName, Button Add2Project, Button EditRecord, Button Send2MCUViaHTTP, Button Send2SDCard, Button OpenProject, DataGridView ProjectGrid)
         {
             //Set global variables to passed variables
@@ -172,7 +174,8 @@ namespace LEDLightingComposer
             MySqlCommand cmd;
             MySqlDataReader rdr;
             List<int> pinSetups = new List<int>();
-            int iCount = 0, lastEffectEnd = 0, effectStart = 0;
+            int iCount = 0;
+            double lastEffectEnd = 0, effectStart = 0;
 
             try
             {
@@ -204,7 +207,7 @@ namespace LEDLightingComposer
                     while (rdr.Read())
                     {
                         //Conjure effectStart
-                        effectStart = Convert.ToInt32(rdr["EFFECT_START"].ToString());
+                        effectStart = Convert.ToDouble(rdr["EFFECT_START"].ToString());
 
                         //If this effect's effect_start does not equal last effects end, create a filler record from last effect's end to this effect's start
                         if (effectStart != lastEffectEnd)
@@ -219,7 +222,7 @@ namespace LEDLightingComposer
                         }
 
                         //Set lastEffectEnd to this effect's effect_start + effect_duration
-                        lastEffectEnd = Convert.ToInt32(rdr["ENDOFEFFECT"].ToString());
+                        lastEffectEnd = Convert.ToDouble(rdr["ENDOFEFFECT"].ToString());
                     }
                     rdr.Close();
                 }
@@ -739,95 +742,166 @@ namespace LEDLightingComposer
 
         /*
         */
-        public void writeProjectFromDB2StructsLocalFile(String ProjectName, FileStream StripSetupFile, FileStream LEffectsFile)
+        public void writeProjectFromDB2StructsLocalFile(String ProjectName, FileStream SetupFile)
         {
             //Declare variables
-            MySqlCommand cmd, cmd2;
-            MySqlDataReader rdr, rdr2;
-            StreamWriter stripSetupW1 = new StreamWriter(StripSetupFile);
-            StreamWriter lEffectsW2 = new StreamWriter(LEffectsFile);
-            String projectName = "", pinSetup = "";
-            int stripCount = 0, lEffectsCount = 0, loopCount1 = -1, loopCount2 = -1;
-            bool first1 = true, first2 = true;
+            StreamWriter setupFileWrite = new StreamWriter(SetupFile);
+            List<String> mcuNames = null, pinSetups = null, lEffects = null, pins = null;
+            String[] lSeq = { "" }, dataClockPins = { "" };
+            String stemp = "";
+            int stripCount = 0, i = 0, j = 0, iret = 0;
 
             try
             {
-                //Open db connection
-                OpenDBConnection();
-                cmd = con.CreateCommand();
+                //Get distinct mcu names
+                mcuNames = getMultipleStringValuesFromDB("LED_EFFECT", "MCUS", ProjectName, null);
 
-                //Conjure query string
-                cmd.CommandText = "Select Distinct LE.PROJECT_NAME, LE.PIN_SETUP, LE.NUM_LEDS, MP.DATA_PIN, MP.CLOCK_PIN from Led_Effect LE, MCU_Pins MP where MP.PIN_SETUP = LE.PIN_SETUP "+
-                    "and LE.Project_Name = @PName order by LE.Pin_Setup";
-                cmd.Parameters.AddWithValue("@PName", ProjectName);
-
-                rdr = cmd.ExecuteReader();
-                while(rdr.Read())
+                //Loop through distinct mcu names (which represent separate microcontrollers)
+                foreach (String mcuName in mcuNames)
                 {
-                    //Get count of strips to be setup
-                    projectName = rdr["PROJECT_NAME"].ToString().Trim();
-                    pinSetup = rdr["PIN_SETUP"].ToString().Trim();
 
-                    //Add 1 to loopCount1
-                    loopCount1 += 1;
-                    if (loopCount1 > 0)
+                    //Write header for allocating lighting effect memory section
+                    setupFileWrite.Write("//Allocate Lighting Effect Memory for MCU: " + mcuName + "**************************************************************************************" + System.Environment.NewLine + System.Environment.NewLine);
+
+                    //Write first part of memory allocation section to file for effect variables, effects manager, strips, and lighting sequences
+                    setupFileWrite.Write("//Effects specific variables" + System.Environment.NewLine
+                        + "unsigned long localElapsedTime, temp;" + System.Environment.NewLine + "int8_t ");
+
+                    //Get distinct pin setups
+                    pinSetups = getMultipleStringValuesFromDB("LED_EFFECT", "PINSETUPS", ProjectName, mcuName);
+
+                    //Get number of strips
+                    stripCount = pinSetups.Count;
+
+                    //Write number of strips to file
+                    setupFileWrite.Write(" numStrips = " + stripCount.ToString() + ", ");
+
+                    //Loop for each distinct pin setup
+                    for (i = 0; i < pinSetups.Count; i++)
                     {
-                        first1 = false;
-                    }
-                    else
-                    {
-                        stripCount = getInstancesCount("LED_EFFECT", "STRIPS", projectName, pinSetup);
-                    }
-
-                    //Write Strip setup information to StripSetupFile
-                    stripSetupW1.Write(createStructInfo("STRIP", first1, false, stripCount.ToString(), loopCount1.ToString(), rdr["NUM_LEDS"].ToString().Trim(), rdr["DATA_PIN"].ToString().Trim(), rdr["CLOCK_PIN"].ToString().Trim(),"","","","","","",""));
-                    stripSetupW1.Flush();
-
-                    //Loop through all distinct lighting effects and write to LEffectsFile
-                    OpenDBConnection3();
-                    cmd2 = con3.CreateCommand();
-                    cmd2.CommandText = "Select PROJECT_NAME, PIN_SETUP, LIGHTING_EFFECT, NUM_LEDS, LED_POSITION_ARRAY, LED_COLOR_ARRAY, EFFECT_START, EFFECT_DURATION " +
-                    "from Led_Effect where Project_Name = @PName and Pin_Setup = @PSetup order by Pin_Setup, Effect_Start";
-                    cmd2.Parameters.AddWithValue("@PName", projectName);
-                    cmd2.Parameters.AddWithValue("@PSetup", int.Parse(pinSetup));
-
-                    rdr2 = cmd2.ExecuteReader();
-                    while (rdr2.Read())
-                    {
-                        //Get count of lighting effects
-                        projectName = rdr2["PROJECT_NAME"].ToString().Trim();
-                        pinSetup = rdr2["PIN_SETUP"].ToString().Trim();
-
-                        //Add 1 to loopCount2
-                        loopCount2 += 1;
-                        if (loopCount2 > 0)
+                        //Get number of lighting effects
+                        if ((stemp = getValueFromDB("LED_EFFECT", "NUMLEFFECTS", ProjectName, getValueFromDB("MCU_PINS", "MCUNAME", pinSetups[i], null, null), pinSetups[i])).Equals("") || stemp.Equals("0")) {/*This pin setup will be skipped (this should never happen as we're only looping through information that is in the database...)*/}
+                        else
                         {
-                            first1 = false;
-                            first2 = false;
+                            int.TryParse(stemp, out iret);
+                        }
+
+                        //Write numEffects variable
+                        if (i == (pinSetups.Count - 1))
+                        {
+                            setupFileWrite.Write("numEffects" + (i + 1) + " = " + iret + ";" + System.Environment.NewLine);
                         }
                         else
                         {
-                            lEffectsCount = getInstancesCount("LED_EFFECT", "LEFFECTS", projectName, pinSetup);
+                            setupFileWrite.Write("numEffects" + (i + 1) + " = " + iret + ", ");
+                        }
+                    }
+                    setupFileWrite.Flush();
+
+                    //Write beginning of numPixels line
+                    setupFileWrite.Write("uint16_t ");
+
+                    //Loop for each distinct pin setup
+                    for (i = 0; i < pinSetups.Count; i++)
+                    {
+                        //Get number of LEDs
+                        if ((stemp = getValueFromDB("LED_EFFECT", "DISTINCTNUMLEDS", ProjectName, getValueFromDB("MCU_PINS", "MCUNAME", pinSetups[i], null, null), pinSetups[i])).Equals("") || stemp.Equals("0")) {/*This pin setup will be skipped (this should never happen as we're only looping through information that is in the database...)*/}
+                        else
+                        {
+                            int.TryParse(stemp, out iret);
                         }
 
-                        //Write Lighting Effects information to LEffectsFile
-                        lEffectsW2.Write(createStructInfo("LEFFECTS", first1, first2, stripCount.ToString(), lEffectsCount.ToString(), loopCount1.ToString(), loopCount2.ToString(), rdr2["Lighting_Effect"].ToString().Trim(), rdr2["NUM_LEDS"].ToString().Trim(), rdr2["LED_Position_Array"].ToString().Trim(), rdr2["LED_Color_Array"].ToString().Trim(), rdr2["Effect_Start"].ToString().Trim(), rdr2["Effect_Duration"].ToString().Trim(),"0","0"));
-                        lEffectsW2.Flush();
+                        //Write numPixels variable
+                        if (i == (pinSetups.Count - 1))
+                        {
+                            setupFileWrite.Write("numPixels" + (i + 1) + " = " + iret + ";" + System.Environment.NewLine + System.Environment.NewLine);
+                        }
+                        else
+                        {
+                            setupFileWrite.Write("numPixels" + (i + 1) + " = " + iret + ", ");
+                        }
                     }
-                    //Close datareader and db connection
-                    rdr2.Close();
-                    CloseDBConnection3();
+                    setupFileWrite.Flush();
 
-                    //Reset first2 and loopCount2
-                    first2 = true;
-                    loopCount2 = -1;
+                    //Write last part of memory allocation section to file for effect variables, effects manager, strips, and lighting sequences
+                    setupFileWrite.Write("//Allocate memory for effects manager and steup" + System.Environment.NewLine +
+                        "EffectsManager effectsManager;" + System.Environment.NewLine +
+                        "EffectsManagerUpdateReturn *uRet = (EffectsManagerUpdateReturn*)calloc(1, sizeof(EffectsManagerUpdateReturn));" + System.Environment.NewLine + System.Environment.NewLine);
+                    setupFileWrite.Write("//Allocate memory for strips" + System.Environment.NewLine +
+                        "Strip *strips = (Strip*)calloc(numStrips, sizeof(Strip));" + System.Environment.NewLine + System.Environment.NewLine);
 
-                    //Write new line to separate next strip
-                    lEffectsW2.Write(System.Environment.NewLine);
+                    //Start writing strip memory allocation section
+                    setupFileWrite.Write("//Allocation memory for Lighting Sequences" + System.Environment.NewLine);
+
+                    //Write last part of strip memory allocation section
+                    for (i = 0; i < stripCount; i++)
+                    {
+                        if (i == (stripCount - 1))
+                        {
+                            setupFileWrite.Write("LightingSequence* seqs" + (i + 1) + " = (LightingSequence*)calloc(numEffects" + (i + 1) + ", sizeof(LightingSequence));" + System.Environment.NewLine + System.Environment.NewLine);
+                        }
+                        else
+                        {
+                            setupFileWrite.Write("LightingSequence* seqs" + (i + 1) + " = (LightingSequence*)calloc(numEffects" + (i + 1) + ", sizeof(LightingSequence));" + System.Environment.NewLine);
+                        }
+                    }
+                    setupFileWrite.Write("//End of Allocate Lighting Effect Memory for MCU: " + mcuName + "**************************************************************************************" + System.Environment.NewLine + System.Environment.NewLine);
+                    setupFileWrite.Flush();
+
+                    //Write header for initializing lighting effects section
+                    setupFileWrite.Write("//Initialize Lighting Effects for MCU: " + mcuName + "*****************************************************************************************" + System.Environment.NewLine + System.Environment.NewLine);
+
+                    //Loop through pin setups and gather lighting effects
+                    for (i = 0; i < pinSetups.Count; i++)
+                    {
+                        //Get all lighting effects for strip
+                        lEffects = getMultipleStringValuesFromDB("LED_EFFECT", "LEFFECTS", ProjectName, pinSetups[i]);
+
+                        //Loop all effects
+                        for (j = 0; j < lEffects.Count; j++)
+                        {
+                            //Split lighting effects variables
+                            lSeq = lEffects[j].Split(';');
+
+                            //Write lighting effects initialization
+                            setupFileWrite.Write(createStructInfo("LEFFECT", j.ToString(), lSeq[0], "numPixels", lSeq[1], lSeq[2], lSeq[3], lSeq[4], lSeq[5], (i + 1).ToString()) + System.Environment.NewLine);
+                        }
+                        setupFileWrite.Write(System.Environment.NewLine);
+                    }
+                    setupFileWrite.Write("//End of Initialize Lighting Effects for MCU: " + mcuName + "*****************************************************************************************" + System.Environment.NewLine + System.Environment.NewLine);
+                    setupFileWrite.Flush();
+
+                    //Write header for initializing strips section
+                    setupFileWrite.Write("//Initialize Strips for MCU: " + mcuName +"***************************************************************************************************" + System.Environment.NewLine + System.Environment.NewLine);
+
+                    //Loop through pin setups and gather lighting effects
+                    for (i = 0; i < pinSetups.Count; i++)
+                    {
+                        //Get pin setup pins
+                        pins = getMultipleStringValuesFromDB("MCU_PINS", "PINS", pinSetups[i], null);
+
+                        //Split pins
+                        dataClockPins = pins[0].Split(';');
+
+                        //Write strips initialization
+                        setupFileWrite.Write(createStructInfo("STRIP", i.ToString(), "numPixels" + (i + 1), dataClockPins[0], dataClockPins[1], "seqs" + (i + 1), "numEffects" + (i + 1), null, null, null));
+                    }
+                    setupFileWrite.Write(System.Environment.NewLine);
+                    setupFileWrite.Write("//End of Initialize Strips for MCU: " + mcuName + "***************************************************************************************************" + System.Environment.NewLine + System.Environment.NewLine);
+                    setupFileWrite.Flush();
+
+                    //Write header for initializing effects manager section
+                    setupFileWrite.Write("//Initialize Effects Manager for MCU: " + mcuName + "***************************************************************************************" + System.Environment.NewLine + System.Environment.NewLine);
+
+                    //Write effects manager initialization
+                    setupFileWrite.Write("//Initialize effects manager" + System.Environment.NewLine +
+                        "effectsManager = EffectsManager(strips, numStrips);" + System.Environment.NewLine +
+                        "effectsManager.effectsManagerUpdateRet = uRet;" + System.Environment.NewLine + System.Environment.NewLine);
+
+                    setupFileWrite.Write("//End of Initialize Effects Manager for MCU: " + mcuName + "***************************************************************************************" + System.Environment.NewLine + System.Environment.NewLine);
+                    setupFileWrite.Write(System.Environment.NewLine + System.Environment.NewLine);
+                    setupFileWrite.Flush();
                 }
-                //Close datareader and db connection
-                rdr.Close();
-                CloseDBConnection();
 
                 //Notify user
                 MessageBox.Show("Project successfully written to file as structs...");
@@ -982,6 +1056,22 @@ namespace LEDLightingComposer
                             cmd.Parameters.AddWithValue("@MName", Param2);
                             cmd.Parameters.AddWithValue("@PSetup", int.Parse(Param3));
                         }
+                        else if (Option.Equals("DISTINCTNUMLEDS"))
+                        {
+                            //Conjure query string
+                            cmd.CommandText = "Select Distinct Num_Leds from LED_Effect where Project_Name = @PName and MCU_Name = @CName and Pin_Setup = @Pin order by Num_Leds desc";
+                            cmd.Parameters.AddWithValue("@PName", Param1);
+                            cmd.Parameters.AddWithValue("@CName", Param2);
+                            cmd.Parameters.AddWithValue("@Pin", Param3);
+                        }
+                        else if (Option.Equals("NUMLEFFECTS"))
+                        {
+                            //Conjure query string
+                            cmd.CommandText = "Select Count(Pin_Setup) from LED_Effect where Project_Name = @PName and MCU_Name = @CName and Pin_Setup = @Pin order by Num_Leds desc";
+                            cmd.Parameters.AddWithValue("@PName", Param1);
+                            cmd.Parameters.AddWithValue("@CName", Param2);
+                            cmd.Parameters.AddWithValue("@Pin", Param3);
+                        }
                         else
                         {
                             //Conjure query string
@@ -990,6 +1080,27 @@ namespace LEDLightingComposer
                             cmd.Parameters.AddWithValue("@MName", Param2);
                             cmd.Parameters.AddWithValue("@PSetup", int.Parse(Param3));
                         }
+                        break;
+                    case "MCU_PINS":
+                        if (Option.Equals("PINSETUP"))
+                        {
+                            //Conjure query string
+                            cmd.CommandText = "Select Pin_Setup from MCU_Pins where MCU_Name = @CName and Data_Pin = @DPin and Clock_Pin = @CPin";
+                            cmd.Parameters.AddWithValue("@CName", Param1);
+                            cmd.Parameters.AddWithValue("@DPin", int.Parse(Param2));
+                            cmd.Parameters.AddWithValue("@CPin", int.Parse(Param3));
+                        }
+                        else if (Option.Equals("MCUNAME"))
+                        {
+                            //Conjure query string
+                            cmd.CommandText = "Select MCU_Name from MCU_Pins where Pin_Setup = @PSetup";
+                            cmd.Parameters.AddWithValue("@PSetup", Param1);
+                        }
+                        else
+                        {
+
+                        }
+
                         break;
                 }
 
@@ -1011,7 +1122,236 @@ namespace LEDLightingComposer
             return sret;
         }
 
+        /*
+        */
+        public List<String> getMultipleStringValuesFromDB(String Table, String Option, String Param1, String Param2)
+        {
+            //Declare variables
+            MySqlCommand cmd;
+            MySqlDataReader rdr;
+            List<String> sret = null;
+            String str = "";
+
+            try
+            {
+                //Open db connection
+                OpenDBConnection();
+                cmd = con.CreateCommand();
+
+                switch (Table)
+                {
+                    case "LED_EFFECT":
+                        if (Option.Equals("MCUS"))
+                        {
+                            //Conjure query string
+                            cmd.CommandText = "Select Distinct MCU_Name from LED_Effect where Project_Name = @PName order by MCU_Name";
+                            cmd.Parameters.AddWithValue("@PName", Param1);
+                        }
+                        else if (Option.Equals("PINSETUPS"))
+                        {
+                            //Conjure query string
+                            cmd.CommandText = "Select Distinct Pin_Setup from LED_Effect where Project_Name = @PName and MCU_Name = @MCName order by Pin_Setup";
+                            cmd.Parameters.AddWithValue("@PName", Param1);
+                            cmd.Parameters.AddWithValue("@MCName", Param2);
+                        }
+                        else if (Option.Equals("LEFFECTS"))
+                        {
+                            cmd.CommandText = "Select LIGHTING_EFFECT, LED_COLOR_ARRAY, (DELAY_TIME * 1000) AS DELAY_TIME, (EFFECT_DURATION * 1000) as EFFECT_DURATION, BOUNCES, ITERATIONS " +
+                                "from Led_Effect where Project_Name = @PName and Pin_Setup = @PSetup order by Effect_Start";
+                            cmd.Parameters.AddWithValue("@PName", Param1);
+                            cmd.Parameters.AddWithValue("@PSetup", int.Parse(Param2));
+                        }
+                        else
+                        {
+
+                        }
+                        break;
+                    case "MCU_PINS":
+                        if (Option.Equals("PINS"))
+                        {
+                            //Conjure query string
+                            cmd.CommandText = "Select Data_Pin, Clock_Pin from MCU_PINS where Pin_Setup = @PSetup";
+                            cmd.Parameters.AddWithValue("@PSetup", int.Parse(Param1));
+                        }else
+                        {
+
+                        }
+                        break;
+                }
+
+                rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    if (sret == null)
+                    {
+                        sret = new List<String>();
+                    }
+
+                    //Reset string value
+                    str = "";
+
+                    for (int i = 0; i < rdr.VisibleFieldCount; i++)
+                    {
+                        str += rdr[i].ToString().Trim() + ";";
+                    }
+
+                    //Trim last ; off
+                    str = str.Substring(0, (str.Length - 1));
+
+                    //sret.Add(rdr.GetString(0));
+                    sret.Add(str);
+                }
+                rdr.Close();
+
+                //Close db connection
+                CloseDBConnection();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error getting " + Option + " from " + Table + ": " + ex.Message);
+                sret = null;
+            }
+
+            return sret;
+        }
+
+        /*
+            Method: getInstancesCount
+                This method will query a designated table's count of particular instances.
+            
+            Parameters: String Table - specifies which table to query in database, String Option - allows user to choose different options
+                of querying within the specified table, String Param1 - first parameter table to should match (optional), String param2 - 
+                second parameter table should match  (optional)
+            
+            Returns: int - if query is successful a count of found instances will be returned, returns -1 if query fails
+        */
+        public int getInstancesCount(String Table, String Option, String Param1, String Param2)
+        {
+            //Declare variables
+            MySqlCommand cmd;
+            MySqlDataReader rdr;
+            int iret = -1;
+
+            try
+            {
+                //Open db connection
+                OpenDBConnection2();
+
+                cmd = con2.CreateCommand();
+
+                //Conjure query string
+                switch (Table)
+                {
+                    case "LED_EFFECT":
+                        if (Option.Equals("STRIPS"))
+                        {
+                            cmd.CommandText = "Select Count(*) from LED_Effect where Project_Name = @PName and Pin_Setup = @Pin";
+                            cmd.Parameters.AddWithValue("@PName", Param1);
+                            cmd.Parameters.AddWithValue("@Pin", Param2);
+                        }
+                        else if (Option.Equals("MCUS"))
+                        {
+                            cmd.CommandText = "Select Count(Distinct MCU_Name) from LED_Effect where Project_Name = @PName and Pin_Setup = @Pin";
+                            cmd.Parameters.AddWithValue("@PName", Param1);
+                            cmd.Parameters.AddWithValue("@Pin", Param2);
+                        }
+                        else
+                        {
+                            cmd.CommandText = "Select Count(*) from LED_Effect where Project_Name = @PName and Pin_Setup = @Pin";
+                            cmd.Parameters.AddWithValue("@PName", Param1);
+                            cmd.Parameters.AddWithValue("@Pin", Param2);
+                        }
+                        break;
+                }
+
+                rdr = cmd.ExecuteReader();
+                if (rdr.Read())
+                {
+                    if (rdr.GetString(0).Trim().Equals(""))
+                    {
+                        iret = 0;
+                    }
+                    else
+                    {
+                        iret = rdr.GetInt32(0);
+                    }
+                }
+                rdr.Close();
+
+                //Close db connection
+                CloseDBConnection2();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error getting true Pin Setup value...: " + ex.Message);
+            }
+
+            return iret;
+        }
+
+        #endregion Public Methods
+
         #region Private Methods
+
+        /*
+           Method createStructInfo:
+            This function will create struct like info for writing to file for passed info
+        */
+        private String createStructInfo(String Type, String Value1, String Value2, String Value3, String Value4, String Value5, String Value6, String Value7, String Value8, String Value9)
+        {
+            //Declare variables
+            String sRet = "", effect = "";
+            String[] splitColorArray = { "" };
+            Decimal dec = 0;
+            int effectCode = 0, i = 0, delayTime = 0, duration = 0, bounces = 0, iterations = 0;
+
+            //Conjure string by type
+            switch (Type)
+            {
+                case "STRIP":
+                    sRet += "strips[" + Value1 + "] = Strip(" + Value2 + ", " + Value3 + ", " + Value4 + ", DOTSTAR_RGB, " + Value5 + ", " + Value6 + ");" + System.Environment.NewLine;
+                    sRet += "strips[" + Value1 + "].getStrip()->begin();" + System.Environment.NewLine;
+                    sRet += "strips[" + Value1 + "].getStrip()->show();" + System.Environment.NewLine + System.Environment.NewLine;
+
+                    break;
+                case "LEFFECT":
+                    //Get name of effect
+                    int.TryParse(Value2, out effectCode);
+                    effect = Effects.getEffectFromCode(effectCode);
+
+                    //Split led color array (value 6) by comma then reassemble with only numbers for color specifications
+                    try
+                    {
+                        splitColorArray = Value4.Split(',');
+                        Value4 = "";
+                        for (i = 0; i < splitColorArray.Length; i++)
+                        {
+                            Value4 += splitColorArray[i].Split('-')[0].Trim() + ",";
+                        }
+
+                        //Trim last ;
+                        Value4 = Value4.Substring(0, (Value4.Length - 1)) + " ";
+                    }
+                    catch (Exception ex)
+                    {
+                        //Default value6 to 0
+                        Value4 = "0";
+                    }
+
+                    //Setup delayTime, duration, bounces, and iterations
+                    if (Decimal.TryParse(Value5, out dec)) { delayTime = Decimal.ToInt32(dec); }else {delayTime = -1; }
+                    if (Decimal.TryParse(Value6, out dec)) { duration = Decimal.ToInt32(dec); }else { duration = -1; }
+                    if (Decimal.TryParse(Value7, out dec)) { bounces = Decimal.ToInt32(dec); }else { bounces = -1; }
+                    if (Decimal.TryParse(Value8, out dec)) { iterations = Decimal.ToInt32(dec); }else { iterations = -1; }
+
+                    //Add lighting effect info to strip
+                    sRet += "seqs" + Value9 + "[" + Value1 + "] = {" + effect + ", " + Value3 + Value9 + ", \"" + Value4 + "\", " + delayTime + ", " + duration + ", " + bounces + ", " + iterations + "}" + ";";
+
+                    break;
+            }
+
+            return sRet;
+        }
 
         /*
         */
@@ -1134,110 +1474,7 @@ namespace LEDLightingComposer
             return bret;
         }
 
-        /*
-           Function createStructInfo:
-           This function will create struct like info for writing to file for passed info
-        */
-        private String createStructInfo(String Type, bool Initialize1, bool Initialize2, String Value1, String Value2, String Value3, String Value4, String Value5, String Value6, String Value7, String Value8, String Value9, String Value10, String Value11, String Value12)
-        {
-            //Declare variables
-            String sRet = "";
-
-            //Conjure string by type
-            switch (Type)
-            {
-                case "STRIP":
-                    if (Initialize1)
-                    {
-                        sRet += "strips = (StripInfo**)calloc(" + Value1 + ", sizeof(StripInfo*))" + System.Environment.NewLine + System.Environment.NewLine;
-                    }
-                    sRet += "strips["+ Value2 +"] = (StripInfo*)calloc(1, sizeof(StripInfo))" + System.Environment.NewLine;
-                    sRet += "strips[" + Value2 + "]->NumPixels = " + Value3 + System.Environment.NewLine;
-                    sRet += "strips[" + Value2 + "]->Datapin = " + Value4 + System.Environment.NewLine;
-                    sRet += "strips[" + Value2 + "]->ClockPin = " + Value5 + System.Environment.NewLine + System.Environment.NewLine;
-
-                    break;
-                case "LEFFECTS":
-                    if (Initialize1)
-                    {
-                        //Initialize array to hold values for all strips
-                        sRet += "leffects = (LightingEffect**)calloc(" + Value1 + ", sizeof(LightingEffect*))" + System.Environment.NewLine;
-                    }
-                    if (Initialize2)
-                    {
-                        //Initialize 2nd dimension of array to hold all lighting effects that pertain to this particular strip
-                        sRet += "leffects[" + Value3 + "] = (LightingEffect*)calloc(" + Value2 + ", sizeof(LightingEffect))" + System.Environment.NewLine;
-                    }
-                    //Add lighting effect info to strip
-                    sRet += "leffects[" + Value3 + "][" + Value4 + "] = {" + Value5 + ", " + Value6 + ", \"" + Value7 + "\", \"" + Value8 + "\", " + Value9 + ", " + Value10 + ", " + Value11 + ", " + Value12 + "}" + System.Environment.NewLine;
-
-                    break;
-            }
-
-            return sRet;
-        }
-
-        /*
-        */
-        public int getInstancesCount(String Table, String Option, String Param1, String Param2)
-        {
-            //Declare variables
-            MySqlCommand cmd;
-            MySqlDataReader rdr;
-            int iret = -1;
-
-            try
-            {
-                //Open db connection
-                OpenDBConnection2();
-
-                cmd = con2.CreateCommand();
-
-                //Conjure query string
-                switch (Table)
-                {
-                    case "LED_EFFECT":
-                        if (Option.Equals("STRIPS"))
-                        {
-                            cmd.CommandText = "Select Count(*) from LED_Effect where Project_Name = @PName and Pin_Setup = @Pin group by Pin_Setup";
-                            cmd.Parameters.AddWithValue("@PName", Param1);
-                            cmd.Parameters.AddWithValue("@Pin", Param2);
-                        }else
-                        {
-                            cmd.CommandText = "Select Count(*) from LED_Effect where Project_Name = @PName and Pin_Setup = @Pin";
-                            cmd.Parameters.AddWithValue("@PName", Param1);
-                            cmd.Parameters.AddWithValue("@Pin", Param2);
-                        }
-                        break;
-                }
-
-                rdr = cmd.ExecuteReader();
-                if (rdr.Read())
-                {
-                    if (rdr.GetString(0).Trim().Equals(""))
-                    {
-                        iret = 0;
-                    }
-                    else
-                    {
-                        iret = rdr.GetInt32(0);
-                    }
-                }
-                rdr.Close();
-
-                //Close db connection
-                CloseDBConnection2();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error getting true Pin Setup value...: " + ex.Message);
-            }
-
-            return iret;
-        }
-
         #endregion Private Methods
-
 
         #region Screen Events
 
@@ -1339,8 +1576,8 @@ namespace LEDLightingComposer
         {
             //Declare variables
             SaveFileDialog saveFileDialog1 = new SaveFileDialog();
-            FileStream stripSetupFile = null, leffectsFile = null;
-            String projectName = "", stripSetupFilename = "", leffectsFilename = "";
+            FileStream setupFile = null;
+            String projectName = "", stripSetupFilename = "";
 
             //Verify records exist within grid
             if (projectGrid.Rows.Count <= 0)
@@ -1350,23 +1587,23 @@ namespace LEDLightingComposer
                 return;
             }
 
+            //Get project name from datagridview
+            projectName = projectGrid.Rows[0].Cells["PROJECT_NAME"].Value.ToString().Trim();
+
             //Allow user to choose file path and name
             saveFileDialog1.Filter = "Notepad|*.txt";
-            saveFileDialog1.Title = "Save Microcontroller Lighting Effect Text File";
+            saveFileDialog1.Title = "Save Microcontroller Lighting Effects Text File";
             saveFileDialog1.ShowDialog();
 
             // If the file name is not an empty string open it for saving.
             if (saveFileDialog1.FileName != "")
             {
                 //Conjure filenames for Strip and LightingEffects files
-                stripSetupFilename = saveFileDialog1.FileName.Split('.')[0] + "-STRIP" + ".txt";
-                leffectsFilename = saveFileDialog1.FileName.Split('.')[0] + "-LEFFECTS" + ".txt";
+                stripSetupFilename = saveFileDialog1.FileName.Split('.')[0] + "-" + projectName + "MicrocontrollersSetup" + ".txt";
 
                 // Saves the Text via a FileStream created by the OpenFile method.
                 saveFileDialog1.FileName = stripSetupFilename;
-                stripSetupFile = (System.IO.FileStream)saveFileDialog1.OpenFile();
-                saveFileDialog1.FileName = leffectsFilename;
-                leffectsFile = (System.IO.FileStream)saveFileDialog1.OpenFile();
+                setupFile = (System.IO.FileStream)saveFileDialog1.OpenFile();
             }
             else
             {
@@ -1375,15 +1612,11 @@ namespace LEDLightingComposer
                 return;
             }
 
-            //Get project name from datagridview
-            projectName = projectGrid.Rows[0].Cells["PROJECT_NAME"].Value.ToString().Trim();
-
             //Loop through LED_Effect table for project and write structs to user selected file path and name
-            writeProjectFromDB2StructsLocalFile(projectName, stripSetupFile, leffectsFile);
+            writeProjectFromDB2StructsLocalFile(projectName, setupFile);
 
             //Close file
-            stripSetupFile.Close();
-            leffectsFile.Close();
+            setupFile.Close();
         }
 
         /*

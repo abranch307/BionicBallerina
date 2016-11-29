@@ -14,6 +14,7 @@ C:\Users\Abranch\AppData\Local\Temp\VMicroBuilds\ProTrinketLSM\adafruit_adafruit
  C:\Program\ Files\ (x86)\Arduino\hardware\arduino\avr\variants\eightanaloginputs/pins_arduino.h \
  C:\Program\ Files\ (x86)\Arduino\hardware\arduino\avr\variants\eightanaloginputs/../standard/pins_arduino.h \
  C:\Users\Abranch\AppData\Local\Temp\VMicroBuilds\ProTrinketLSM\adafruit_adafruit_avr_protrinket5\Structs.h \
- C:\Users\Abranch\AppData\Local\Temp\VMicroBuilds\ProTrinketLSM\adafruit_adafruit_avr_protrinket5\Strip.h \
+ C:\Users\Abranch\AppData\Local\Temp\VMicroBuilds\ProTrinketLSM\adafruit_adafruit_avr_protrinket5\Effects.h \
  C:\Program\ Files\ (x86)\Arduino\libraries\Adafruit_DotStar/Adafruit_DotStar.h \
- C:\Program\ Files\ (x86)\Arduino\hardware\arduino\avr\cores\arduino/Arduino.h
+ C:\Program\ Files\ (x86)\Arduino\hardware\arduino\avr\cores\arduino/Arduino.h \
+ C:\Users\Abranch\AppData\Local\Temp\VMicroBuilds\ProTrinketLSM\adafruit_adafruit_avr_protrinket5\Strip.h

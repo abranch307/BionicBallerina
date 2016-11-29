@@ -34,6 +34,7 @@ bool PassStructViaWiFiClass::setupWebURIs() {
 		server.on("/", std::bind(&PassStructViaWiFiClass::handleRoot, this));
 		server.on("/ready", std::bind(&PassStructViaWiFiClass::handleReady, this));
 		server.on("/init_led_seqs", std::bind(&PassStructViaWiFiClass::handleInitLEDSeqs, this));
+		server.on("/update_performance_time", std::bind(&PassStructViaWiFiClass::handleUpdatePerformanceTime, this));
 		server.onNotFound(std::bind(&PassStructViaWiFiClass::handleNotFound, this));
 
 		bret = true;
@@ -60,30 +61,30 @@ bool PassStructViaWiFiClass::begin() {
 
 	/*Set hostname*/
 	sprintf(hostString, "ESP_%06X", ESP.getChipId());
-	WiFi.hostname(hostString);
+	//WiFi.hostname(hostString);
 
 	/*Connect to AP*/
 	WiFi.begin(ssid, password);
-	Serial.println("");
+	//Serial.println("");
 
 	/*Wait for connection*/
 	while (WiFi.status() != WL_CONNECTED) {
 		delay(500);
-		Serial.println(".");
+		//Serial.println(".");
 	}
 
 	/*Display connection info*/
-	Serial.println("");
+	/*Serial.println("");
 	Serial.print("Connected to ");
 	Serial.println(ssid);
 	Serial.print("IP address: ");
 	Serial.println(WiFi.localIP());
 	Serial.print("Hostname: ");
-	Serial.println(WiFi.hostname());
+	Serial.println(WiFi.hostname());*/
 
 	/*Setup Web request URIs*/
 	if (!setupWebURIs()) {
-		Serial.println("Error setting up Web URIs...");
+		//Serial.println("Error setting up Web URIs...");
 		bret = false;
 	}
 
@@ -272,6 +273,51 @@ bool PassStructViaWiFiClass::handleInitLEDSeqs() {
 		}
 	}
 	__catch (const std::exception& e) {
+		//Serial.println(e.what());
+	}
+
+	return bret;
+}
+
+/*
+	Function handleUpdatePerformanceTime
+		This method will send commands to the attached microcontroller via serial interface which
+		gives a signal to update the Effect Manager's performance time to specified value.  It also sends
+		a response back to the user in the html form which echoes what parameter and arg was received
+
+	Parameters: none
+
+	Returns: true if necessary parameter and arg are found, false if paramter or necessary arg are not found,
+	or if sending response fails
+*/
+bool PassStructViaWiFiClass::handleUpdatePerformanceTime() {
+	/*Declare variables*/
+	String response = "";
+	bool bret = false;
+
+	__try {
+		/*Verify arg UPT is present*/
+		if (server.hasArg(UPDATEPERFORMANCETIME)) {
+			String sret = UPDATEPERFORMANCETIME;
+			String received = "";
+
+			/*Get passed argument and convert to int*/
+			received = server.arg(UPDATEPERFORMANCETIME);
+
+			//Send specific command to connected microcrontoller depending on passed action
+			Serial.println(sret);
+			Serial.println(received);
+
+			/*Notify user of what data was received*/
+			response = "<h1>" + sret + " - " + received + " - processed by handleUpdatePerformanceTime()</h1><br><br>";
+
+			//Send http response to user
+			server.send(200, "text/html", response);
+
+			bret = true;
+		}
+	}
+	__catch(const std::exception& e) {
 		//Serial.println(e.what());
 	}
 

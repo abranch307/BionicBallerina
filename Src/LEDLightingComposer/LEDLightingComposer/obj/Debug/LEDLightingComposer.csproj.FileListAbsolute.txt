@@ -18,12 +18,13 @@ C:\Users\Abranch\Documents\Visual Studio 2015\Projects\LEDLightingComposer\LEDLi
 C:\Users\Abranch\Documents\Visual Studio 2015\Projects\LEDLightingComposer\LEDLightingComposer\obj\Debug\LEDLightingComposer.csproj.GenerateResource.Cache
 C:\Users\Abranch\Documents\Visual Studio 2015\Projects\LEDLightingComposer\LEDLightingComposer\obj\Debug\LEDLightingComposer.exe
 C:\Users\Abranch\Documents\Visual Studio 2015\Projects\LEDLightingComposer\LEDLightingComposer\obj\Debug\LEDLightingComposer.pdb
-C:\Users\Abranch\Source\Repos\BionicBallerina\Src\LEDLightingComposer\LEDLightingComposer\bin\Debug\LEDLightingComposer.exe
-C:\Users\Abranch\Source\Repos\BionicBallerina\Src\LEDLightingComposer\LEDLightingComposer\bin\Debug\Interop.WMPLib.dll
-C:\Users\Abranch\Source\Repos\BionicBallerina\Src\LEDLightingComposer\LEDLightingComposer\bin\Debug\AxInterop.WMPLib.dll
 C:\Users\Abranch\Source\Repos\BionicBallerina\Src\LEDLightingComposer\LEDLightingComposer\bin\Debug\LEDLightingComposer.exe.config
+C:\Users\Abranch\Source\Repos\BionicBallerina\Src\LEDLightingComposer\LEDLightingComposer\bin\Debug\LEDLightingComposer.exe
+C:\Users\Abranch\Source\Repos\BionicBallerina\Src\LEDLightingComposer\LEDLightingComposer\bin\Debug\LEDLightingComposer.pdb
 C:\Users\Abranch\Source\Repos\BionicBallerina\Src\LEDLightingComposer\LEDLightingComposer\bin\Debug\MySql.Data.dll
 C:\Users\Abranch\Source\Repos\BionicBallerina\Src\LEDLightingComposer\LEDLightingComposer\bin\Debug\MySql.Web.dll
+C:\Users\Abranch\Source\Repos\BionicBallerina\Src\LEDLightingComposer\LEDLightingComposer\bin\Debug\Interop.WMPLib.dll
+C:\Users\Abranch\Source\Repos\BionicBallerina\Src\LEDLightingComposer\LEDLightingComposer\bin\Debug\AxInterop.WMPLib.dll
 C:\Users\Abranch\Source\Repos\BionicBallerina\Src\LEDLightingComposer\LEDLightingComposer\obj\Debug\Interop.WMPLib.dll
 C:\Users\Abranch\Source\Repos\BionicBallerina\Src\LEDLightingComposer\LEDLightingComposer\obj\Debug\AxInterop.WMPLib.dll
 C:\Users\Abranch\Source\Repos\BionicBallerina\Src\LEDLightingComposer\LEDLightingComposer\obj\Debug\LEDLightingComposer.csproj.ResolveComReference.cache
@@ -33,7 +34,8 @@ C:\Users\Abranch\Source\Repos\BionicBallerina\Src\LEDLightingComposer\LEDLightin
 C:\Users\Abranch\Source\Repos\BionicBallerina\Src\LEDLightingComposer\LEDLightingComposer\obj\Debug\LEDLightingComposer.Project.resources
 C:\Users\Abranch\Source\Repos\BionicBallerina\Src\LEDLightingComposer\LEDLightingComposer\obj\Debug\LEDLightingComposer.Properties.Resources.resources
 C:\Users\Abranch\Source\Repos\BionicBallerina\Src\LEDLightingComposer\LEDLightingComposer\obj\Debug\LEDLightingComposer.SearchBrowser.resources
+C:\Users\Abranch\Source\Repos\BionicBallerina\Src\LEDLightingComposer\LEDLightingComposer\obj\Debug\LEDLightingComposer.WaitDialog.resources
 C:\Users\Abranch\Source\Repos\BionicBallerina\Src\LEDLightingComposer\LEDLightingComposer\obj\Debug\LEDLightingComposer.csproj.GenerateResource.Cache
 C:\Users\Abranch\Source\Repos\BionicBallerina\Src\LEDLightingComposer\LEDLightingComposer\obj\Debug\LEDLightingComposer.exe
 C:\Users\Abranch\Source\Repos\BionicBallerina\Src\LEDLightingComposer\LEDLightingComposer\obj\Debug\LEDLightingComposer.pdb
-C:\Users\Abranch\Source\Repos\BionicBallerina\Src\LEDLightingComposer\LEDLightingComposer\bin\Debug\LEDLightingComposer.pdb
+C:\Users\Abranch\Source\Repos\BionicBallerina\Src\LEDLightingComposer\LEDLightingComposer\obj\Debug\LEDLightingComposer.csprojResolveAssemblyReference.cache

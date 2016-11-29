@@ -1,4 +1,4 @@
-C:\Users\Abranch\AppData\Local\Temp\VMicroBuilds\ProTrinketHandleRX_LSM\adafruit_adafruit_avr_protrinket5ftdi\Strip.cpp.o: \
+C:\Users\Abranch\AppData\Local\Temp\VMicroBuilds\ProTrinketHandleRX_LSM\adafruit_adafruit_avr_protrinket5\Strip.cpp.o: \
  C:\Users\Abranch\Source\Repos\BionicBallerina\Src\ProTrinketLSM\Strip.cpp \
  C:\Users\Abranch\Source\Repos\BionicBallerina\Src\ProTrinketLSM\Effects.h \
  C:\Program\ Files\ (x86)\Arduino\hardware\arduino\avr\cores\arduino/arduino.h \

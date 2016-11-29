@@ -13,13 +13,14 @@ namespace LEDLightingComposer
         private String stripName;
         private DrawingManager drawManager;
         private List<Structs.LightingSequence> lseqs = new List<Structs.LightingSequence>();
-        private bool proceed = false, init = true, forward = true;
+        private bool proceed = false, init = true, forward = true, isRainbow = false;
         private long currentDuration = 0, // so elapsedtime - this = time within this sequence
             prevDuration = -1, //Makes sure duration isn't processed more than once for sequence
             prevSeqTimesAccumulated = 0; //As sequences change, the duration times are accumulated to here (used to find current effect's duration)
         private int pinSetup, currentSequence = 0, countSeqs = 0, i = -1, j = -1, p0 = -1, p1 = 0, 
             p2 = 1, p3 = 2, p4 = 3, p5 = 4, tail = 0, head = 3, shiftPixelBy = 0, 
             counter1 = 0, counter2 = 0, bounces = 0;
+        private int[] virtualPixelArray = null;
 
         /*
             Lighting effects are:
@@ -47,6 +48,15 @@ namespace LEDLightingComposer
             this.drawManager = DManager;
             this.pinSetup = PinSetup;
             lseqs = LightingSequences;
+
+            if(lseqs != null && lseqs.Count > 0)
+            {
+                virtualPixelArray = new int[lseqs[0].totalPixels];
+            }else
+            {
+                //Default number of virtual pixels to 100
+                virtualPixelArray = new int[100];
+            }
         }
 
         /*
@@ -162,7 +172,9 @@ namespace LEDLightingComposer
                             Effects.allClear(this, drawManager);
                             break;
                         case Effects.RAINBOW:
-                            Effects.rainbow(this, drawManager);
+                            isRainbow = true;
+                            Effects.flowThrough(this, drawManager);
+                            //Effects.rainbow(this, drawManager);
                             break;
                         case Effects.LOADCOLOR:
                             Effects.loadColor(this, drawManager);
@@ -173,7 +185,8 @@ namespace LEDLightingComposer
                             Effects.bounceBack(this, drawManager, hd, tl);
                             break;
                         case Effects.FLOWTHROUGH:
-                            //Effects.flowThrough(this, drawManager);
+                            isRainbow = false;
+                            Effects.flowThrough(this, drawManager);
                             break;
                     }
                 }
@@ -245,7 +258,7 @@ namespace LEDLightingComposer
         private void advanceEffectToDuration(int TimesThroughDelayTime)
         {
             //Declare variables
-            int i = 0;
+            int i = 0, hd = 0, tl = 0; ;
 
             switch (lseqs[currentSequence].lightsequence)
             {
@@ -260,38 +273,47 @@ namespace LEDLightingComposer
                     this.i = -1;
 
                     //Initialize effect
-                    Effects.rainbow(this, drawManager);
+                    isRainbow = true;
+                    //Effects.rainbow(this, drawManager);
 
+                    //for (i = 0; i < TimesThroughDelayTime; i++)
+                    //{
+                    //    Effects.rainbow(this, drawManager);
+                    //}
+                    Effects.flowThrough(this, drawManager);
+
+                    //Move flowthrough pixels into position
                     for (i = 0; i < TimesThroughDelayTime; i++)
                     {
-                        Effects.rainbow(this, drawManager);
+                        Effects.flowThrough(this, drawManager);
                     }
                     break;
                 case Effects.LOADCOLOR:
                     Effects.loadColor(this, drawManager);
                     break;
                 case Effects.BOUNCEBACK:
-                    //hd = getHeadofLED();
-                    //tl = getTailofLED();
+                    hd = getHeadofLED();
+                    tl = getTailofLED();
                     this.init = true;
 
                     //Initialize effect
-                    //Effects.bounceBack(this, drawManager, hd, tl);
+                    Effects.bounceBack(this, drawManager, hd, tl);
 
                     //Move bounce back pixels into position
                     for (i = 0; i < TimesThroughDelayTime; i++)
                     {
-                        //Effects.bounceBack(this, drawManager, hd, tl);
+                        Effects.bounceBack(this, drawManager, hd, tl);
                     }
                     break;
                 case Effects.FLOWTHROUGH:
                     //Initialize effect
-                    //Effects.flowThrough(this, drawManager);
+                    isRainbow = false;
+                    Effects.flowThrough(this, drawManager);
 
                     //Move flowthrough pixels into position
                     for (i = 0; i < TimesThroughDelayTime; i++)
                     {
-                        //Effects.flowThrough(this, drawManager);
+                        Effects.flowThrough(this, drawManager);
                     }
                     break;
             }
@@ -356,9 +378,9 @@ namespace LEDLightingComposer
             int head = -1, i = 0;
 
             //Loop and find the last LED whose color is not clear
-            for(i = 0; i < lseqs[currentSequence].effectedPixels.Length; i++)
+            for(i = 0; i < lseqs[currentSequence].colors.Length; i++)
             {
-                if(int.Parse(lseqs[currentSequence].effectedPixels[i]) != Effects.CLEAR)
+                if(int.Parse(lseqs[currentSequence].colors[i].Split('-')[0].Trim()) != Effects.CLEAR)
                 {
                     head = i;
                 }
@@ -373,9 +395,9 @@ namespace LEDLightingComposer
             int tail = -1, i = 0;
 
             //Loop and find the first LED whose color is not clear
-            for (i = 0; i < lseqs[currentSequence].effectedPixels.Length; i++)
+            for (i = 0; i < lseqs[currentSequence].colors.Length; i++)
             {
-                if (int.Parse(lseqs[currentSequence].effectedPixels[i]) != Effects.CLEAR)
+                if (int.Parse(lseqs[currentSequence].colors[i].Split('-')[0].Trim()) != Effects.CLEAR)
                 {
                     tail = i;
                     break;
@@ -631,6 +653,31 @@ namespace LEDLightingComposer
             set
             {
                 forward = value;
+            }
+        }
+
+        public bool IsRainbow
+        {
+            get
+            {
+                return isRainbow;
+            }
+            set
+            {
+                isRainbow = value;
+            }
+        }
+
+        public int[] VirtualPixelArray
+        {
+            get
+            {
+                return virtualPixelArray;
+            }
+
+            set
+            {
+                virtualPixelArray = value;
             }
         }
     }

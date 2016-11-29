@@ -53,6 +53,8 @@
             this.chkSynchronizeMCUs = new System.Windows.Forms.CheckBox();
             this.chkSkipIPSetup = new System.Windows.Forms.CheckBox();
             this.btnMCUIPSetup = new System.Windows.Forms.Button();
+            this.chkPlayerDelayTime = new System.Windows.Forms.CheckBox();
+            this.txtPlayerDelayTime = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.dgvProjectData)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.WMPlayer)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tBarTimer)).BeginInit();
@@ -73,7 +75,7 @@
             // lblTimer
             // 
             this.lblTimer.AutoSize = true;
-            this.lblTimer.Location = new System.Drawing.Point(395, 129);
+            this.lblTimer.Location = new System.Drawing.Point(401, 109);
             this.lblTimer.Name = "lblTimer";
             this.lblTimer.Size = new System.Drawing.Size(66, 13);
             this.lblTimer.TabIndex = 7;
@@ -179,14 +181,14 @@
             // 
             // txtTimer
             // 
-            this.txtTimer.Location = new System.Drawing.Point(394, 147);
+            this.txtTimer.Location = new System.Drawing.Point(401, 127);
             this.txtTimer.Name = "txtTimer";
             this.txtTimer.Size = new System.Drawing.Size(67, 20);
             this.txtTimer.TabIndex = 18;
             // 
             // btnJump2Secs
             // 
-            this.btnJump2Secs.Location = new System.Drawing.Point(394, 173);
+            this.btnJump2Secs.Location = new System.Drawing.Point(401, 153);
             this.btnJump2Secs.Name = "btnJump2Secs";
             this.btnJump2Secs.Size = new System.Drawing.Size(67, 42);
             this.btnJump2Secs.TabIndex = 19;
@@ -292,11 +294,32 @@
             this.btnMCUIPSetup.UseVisualStyleBackColor = true;
             this.btnMCUIPSetup.Click += new System.EventHandler(this.btnMCUIPSetup_Click);
             // 
+            // chkPlayerDelayTime
+            // 
+            this.chkPlayerDelayTime.AutoSize = true;
+            this.chkPlayerDelayTime.Location = new System.Drawing.Point(395, 202);
+            this.chkPlayerDelayTime.Name = "chkPlayerDelayTime";
+            this.chkPlayerDelayTime.Size = new System.Drawing.Size(85, 17);
+            this.chkPlayerDelayTime.TabIndex = 30;
+            this.chkPlayerDelayTime.Text = "Delay Player";
+            this.chkPlayerDelayTime.UseVisualStyleBackColor = true;
+            this.chkPlayerDelayTime.CheckedChanged += new System.EventHandler(this.chkPlayerDelayTime_CheckedChanged);
+            // 
+            // txtPlayerDelayTime
+            // 
+            this.txtPlayerDelayTime.Enabled = false;
+            this.txtPlayerDelayTime.Location = new System.Drawing.Point(400, 222);
+            this.txtPlayerDelayTime.Name = "txtPlayerDelayTime";
+            this.txtPlayerDelayTime.Size = new System.Drawing.Size(67, 20);
+            this.txtPlayerDelayTime.TabIndex = 31;
+            // 
             // LEDLightingComposerCS
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(784, 561);
+            this.Controls.Add(this.txtPlayerDelayTime);
+            this.Controls.Add(this.chkPlayerDelayTime);
             this.Controls.Add(this.btnMCUIPSetup);
             this.Controls.Add(this.chkSkipIPSetup);
             this.Controls.Add(this.chkSynchronizeMCUs);
@@ -359,6 +382,8 @@
         private System.Windows.Forms.CheckBox chkSynchronizeMCUs;
         private System.Windows.Forms.CheckBox chkSkipIPSetup;
         private System.Windows.Forms.Button btnMCUIPSetup;
+        private System.Windows.Forms.CheckBox chkPlayerDelayTime;
+        private System.Windows.Forms.TextBox txtPlayerDelayTime;
     }
 }
 
