@@ -81,7 +81,8 @@
             this.cBoxProjectName.Location = new System.Drawing.Point(16, 39);
             this.cBoxProjectName.Name = "cBoxProjectName";
             this.cBoxProjectName.Size = new System.Drawing.Size(102, 21);
-            this.cBoxProjectName.TabIndex = 1;
+            this.cBoxProjectName.TabIndex = 0;
+            this.cBoxProjectName.SelectedIndexChanged += new System.EventHandler(this.cBoxProjectName_SelectedIndexChanged);
             this.cBoxProjectName.DropDownClosed += new System.EventHandler(this.cBoxProjectName_DropDownClosed);
             // 
             // label2
@@ -99,7 +100,7 @@
             this.cBoxMCUName.Location = new System.Drawing.Point(124, 39);
             this.cBoxMCUName.Name = "cBoxMCUName";
             this.cBoxMCUName.Size = new System.Drawing.Size(102, 21);
-            this.cBoxMCUName.TabIndex = 3;
+            this.cBoxMCUName.TabIndex = 10;
             this.cBoxMCUName.SelectedIndexChanged += new System.EventHandler(this.cBoxMCUName_SelectedIndexChanged);
             // 
             // cBoxPinSetup
@@ -108,7 +109,7 @@
             this.cBoxPinSetup.Location = new System.Drawing.Point(232, 39);
             this.cBoxPinSetup.Name = "cBoxPinSetup";
             this.cBoxPinSetup.Size = new System.Drawing.Size(102, 21);
-            this.cBoxPinSetup.TabIndex = 4;
+            this.cBoxPinSetup.TabIndex = 20;
             this.cBoxPinSetup.SelectedIndexChanged += new System.EventHandler(this.cBoxPinSetup_SelectedIndexChanged);
             // 
             // label3
@@ -125,7 +126,7 @@
             this.txtNumLEDs.Location = new System.Drawing.Point(341, 39);
             this.txtNumLEDs.Name = "txtNumLEDs";
             this.txtNumLEDs.Size = new System.Drawing.Size(52, 20);
-            this.txtNumLEDs.TabIndex = 6;
+            this.txtNumLEDs.TabIndex = 30;
             this.txtNumLEDs.Leave += new System.EventHandler(this.txtNumLEDs_Leave);
             // 
             // label4
@@ -140,16 +141,17 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(399, 9);
+            this.label5.Location = new System.Drawing.Point(495, 103);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(95, 13);
             this.label5.TabIndex = 8;
             this.label5.Text = "LED Position Array";
+            this.label5.Visible = false;
             // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(495, 9);
+            this.label6.Location = new System.Drawing.Point(421, 9);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(82, 13);
             this.label6.TabIndex = 9;
@@ -171,7 +173,7 @@
             this.cBoxLEffect.Location = new System.Drawing.Point(16, 95);
             this.cBoxLEffect.Name = "cBoxLEffect";
             this.cBoxLEffect.Size = new System.Drawing.Size(102, 21);
-            this.cBoxLEffect.TabIndex = 11;
+            this.cBoxLEffect.TabIndex = 60;
             this.cBoxLEffect.SelectedIndexChanged += new System.EventHandler(this.cBoxLEffect_SelectedIndexChanged);
             // 
             // label8
@@ -197,21 +199,21 @@
             this.txtEffectStartTime.Location = new System.Drawing.Point(151, 96);
             this.txtEffectStartTime.Name = "txtEffectStartTime";
             this.txtEffectStartTime.Size = new System.Drawing.Size(52, 20);
-            this.txtEffectStartTime.TabIndex = 14;
+            this.txtEffectStartTime.TabIndex = 70;
             // 
             // txtEffectDuration
             // 
             this.txtEffectDuration.Location = new System.Drawing.Point(275, 96);
             this.txtEffectDuration.Name = "txtEffectDuration";
             this.txtEffectDuration.Size = new System.Drawing.Size(52, 20);
-            this.txtEffectDuration.TabIndex = 15;
+            this.txtEffectDuration.TabIndex = 80;
             // 
             // btnSave2Project
             // 
             this.btnSave2Project.Location = new System.Drawing.Point(157, 241);
             this.btnSave2Project.Name = "btnSave2Project";
             this.btnSave2Project.Size = new System.Drawing.Size(125, 25);
-            this.btnSave2Project.TabIndex = 16;
+            this.btnSave2Project.TabIndex = 160;
             this.btnSave2Project.Text = "Save 2 Project";
             this.btnSave2Project.UseVisualStyleBackColor = true;
             this.btnSave2Project.Click += new System.EventHandler(this.btnSave2Project_Click);
@@ -221,27 +223,28 @@
             this.btnExit.Location = new System.Drawing.Point(459, 241);
             this.btnExit.Name = "btnExit";
             this.btnExit.Size = new System.Drawing.Size(125, 25);
-            this.btnExit.TabIndex = 17;
+            this.btnExit.TabIndex = 180;
             this.btnExit.Text = "Exit";
             this.btnExit.UseVisualStyleBackColor = true;
             this.btnExit.Click += new System.EventHandler(this.btnExit_Click);
             // 
             // btnLEDPArray
             // 
-            this.btnLEDPArray.Location = new System.Drawing.Point(399, 36);
+            this.btnLEDPArray.Location = new System.Drawing.Point(502, 127);
             this.btnLEDPArray.Name = "btnLEDPArray";
             this.btnLEDPArray.Size = new System.Drawing.Size(86, 36);
-            this.btnLEDPArray.TabIndex = 18;
+            this.btnLEDPArray.TabIndex = 40;
             this.btnLEDPArray.Text = "Create/Edit Array";
             this.btnLEDPArray.UseVisualStyleBackColor = true;
+            this.btnLEDPArray.Visible = false;
             this.btnLEDPArray.Click += new System.EventHandler(this.btnLEDPArray_Click);
             // 
             // btnLEDCArray
             // 
-            this.btnLEDCArray.Location = new System.Drawing.Point(498, 36);
+            this.btnLEDCArray.Location = new System.Drawing.Point(417, 30);
             this.btnLEDCArray.Name = "btnLEDCArray";
             this.btnLEDCArray.Size = new System.Drawing.Size(86, 36);
-            this.btnLEDCArray.TabIndex = 19;
+            this.btnLEDCArray.TabIndex = 50;
             this.btnLEDCArray.Text = "Create/Edit Array";
             this.btnLEDCArray.UseVisualStyleBackColor = true;
             this.btnLEDCArray.Click += new System.EventHandler(this.btnLEDCArray_Click);
@@ -261,14 +264,14 @@
             this.txtSongPath.Location = new System.Drawing.Point(95, 189);
             this.txtSongPath.Name = "txtSongPath";
             this.txtSongPath.Size = new System.Drawing.Size(381, 20);
-            this.txtSongPath.TabIndex = 21;
+            this.txtSongPath.TabIndex = 200;
             // 
             // btnResetScreen
             // 
             this.btnResetScreen.Location = new System.Drawing.Point(16, 241);
             this.btnResetScreen.Name = "btnResetScreen";
             this.btnResetScreen.Size = new System.Drawing.Size(125, 25);
-            this.btnResetScreen.TabIndex = 22;
+            this.btnResetScreen.TabIndex = 150;
             this.btnResetScreen.Text = "Reset Screen";
             this.btnResetScreen.UseVisualStyleBackColor = true;
             this.btnResetScreen.Click += new System.EventHandler(this.btnResetScreen_Click);
@@ -278,7 +281,7 @@
             this.btnDelete.Location = new System.Drawing.Point(319, 241);
             this.btnDelete.Name = "btnDelete";
             this.btnDelete.Size = new System.Drawing.Size(125, 25);
-            this.btnDelete.TabIndex = 23;
+            this.btnDelete.TabIndex = 170;
             this.btnDelete.Text = "Delete";
             this.btnDelete.UseVisualStyleBackColor = true;
             this.btnDelete.Visible = false;
@@ -318,14 +321,14 @@
             this.txtDelayTime.Location = new System.Drawing.Point(424, 95);
             this.txtDelayTime.Name = "txtDelayTime";
             this.txtDelayTime.Size = new System.Drawing.Size(52, 20);
-            this.txtDelayTime.TabIndex = 27;
+            this.txtDelayTime.TabIndex = 90;
             // 
             // txtIterations
             // 
             this.txtIterations.Location = new System.Drawing.Point(16, 143);
             this.txtIterations.Name = "txtIterations";
             this.txtIterations.Size = new System.Drawing.Size(52, 20);
-            this.txtIterations.TabIndex = 28;
+            this.txtIterations.TabIndex = 100;
             this.txtIterations.Visible = false;
             // 
             // txtBounces
@@ -333,7 +336,7 @@
             this.txtBounces.Location = new System.Drawing.Point(89, 143);
             this.txtBounces.Name = "txtBounces";
             this.txtBounces.Size = new System.Drawing.Size(52, 20);
-            this.txtBounces.TabIndex = 29;
+            this.txtBounces.TabIndex = 110;
             this.txtBounces.Visible = false;
             // 
             // txtBrightness
@@ -341,21 +344,21 @@
             this.txtBrightness.Location = new System.Drawing.Point(162, 143);
             this.txtBrightness.Name = "txtBrightness";
             this.txtBrightness.Size = new System.Drawing.Size(52, 20);
-            this.txtBrightness.TabIndex = 30;
+            this.txtBrightness.TabIndex = 120;
             // 
             // txtIncrBrightness
             // 
             this.txtIncrBrightness.Location = new System.Drawing.Point(240, 143);
             this.txtIncrBrightness.Name = "txtIncrBrightness";
             this.txtIncrBrightness.Size = new System.Drawing.Size(52, 20);
-            this.txtIncrBrightness.TabIndex = 31;
+            this.txtIncrBrightness.TabIndex = 130;
             // 
             // txtBrightnessDelayTime
             // 
             this.txtBrightnessDelayTime.Location = new System.Drawing.Point(359, 143);
             this.txtBrightnessDelayTime.Name = "txtBrightnessDelayTime";
             this.txtBrightnessDelayTime.Size = new System.Drawing.Size(52, 20);
-            this.txtBrightnessDelayTime.TabIndex = 32;
+            this.txtBrightnessDelayTime.TabIndex = 140;
             // 
             // lblBrightness
             // 

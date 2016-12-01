@@ -454,6 +454,9 @@ namespace LEDLightingComposer
                         this.player2.Ctlcontrols.currentPosition = trackerTime;
                     }
 
+                    //Update brightness for all current strips
+                    EffectsManager.updateStripsBrightness();
+
                     //Start ticker
                     this.llc.startTicker();
 

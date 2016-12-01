@@ -60,7 +60,8 @@ namespace LEDLightingComposer
                         cmd.CommandText = "Select Project_Name, Description from LED_Project";
                         break;
                     case "MCUNAMES":
-                        cmd.CommandText = "Select MCU_Name, Description from MCU";
+                        cmd.CommandText = "Select MCU_Name, Description from MCU where Project_Name = @PName";
+                        cmd.Parameters.AddWithValue("@PName", Value1);
                         break;
                     case "MCUPINS":
                         cmd.CommandText = "Select Data_Pin, Clock_Pin, Description from MCU_Pins where MCU_Name = @MName";
@@ -149,7 +150,7 @@ namespace LEDLightingComposer
                 cmd.CommandText = "Select LE.EFFECT_NUM, LE.PROJECT_NAME, LP.Description as PROJECT_DESC, LE.MCU_NAME, M.Description as MCU_DESC, LE.PIN_SETUP, MP.DATA_PIN, MP.CLOCK_PIN, " +
                     "LE.NUM_LEDS, LE.LIGHTING_EFFECT, LES.DESCRIPTION, LE.EFFECT_START, LE.EFFECT_DURATION, (LE.Effect_Start + LE.Effect_Duration) as ENDOFEFFECT, LE.DELAY_TIME, LE.LED_POSITION_ARRAY, LE.LED_COLOR_ARRAY, LE.ITERATIONS, LE.BOUNCES, " +
                     "LE.BRIGHTNESS, LE.INCR_BRIGHTNESS, LE.BRIGHTNESS_DELAYTIME from Led_Effect LE, MCU_Pins MP, Lighting_Effects LES, MCU M, LED_Project LP where MP.PIN_SETUP = LE.PIN_SETUP and LES.Lighting_Effect = LE.Lighting_Effect " +
-                    "and M.MCU_NAME = LE.MCU_NAME and LP.Project_Name = LE.Project_Name and LE.Project_Name = @PName order by LE.Pin_Setup, LE.Effect_Start";
+                    "and M.MCU_NAME = LE.MCU_NAME and M.PROJECT_NAME = LE.Project_Name and LP.Project_Name = LE.Project_Name and LE.Project_Name = @PName order by LE.Pin_Setup, LE.Effect_Start";
                 cmd.Parameters.AddWithValue("@PName", ProjectName);
                 adap = new MySqlDataAdapter(cmd);
                 ds = new DataSet();
@@ -320,6 +321,7 @@ namespace LEDLightingComposer
         {
             int pinSetup, iret = 0, tp = 0, numLeds = 0;
             String[] ledColorArray = { "" }, ledPositionArray = { "" };
+            String mcuNameDesc = "", pinSetupDesc = "";
             bool skip = false, add = true;
 
             try
@@ -361,6 +363,8 @@ namespace LEDLightingComposer
                         numLeds = int.Parse(row.Cells["NUM_LEDS"].Value.ToString().Trim());
                         ledColorArray = row.Cells["LED_COLOR_ARRAY"].Value.ToString().Trim().Split(',');
                         ledPositionArray = row.Cells["LED_POSITION_ARRAY"].Value.ToString().Trim().Split(',');
+                        mcuNameDesc = row.Cells["MCU_NAME"].Value.ToString().Trim() + " - " + row.Cells["MCU_DESC"].Value.ToString().Trim();
+                        pinSetupDesc = "Pins: Data" + row.Cells["DATA_PIN"].Value.ToString().Trim() + ", Clock" + row.Cells["CLOCK_PIN"].Value.ToString().Trim();
 
                         //Don't add to screen if object will be outside of designated window area
                         if (tp > llc.getDrawingBottom())
@@ -370,9 +374,11 @@ namespace LEDLightingComposer
                         {
                             add = true;
                         }
+                        //Add Mcu Name and Pin Setup with Description as a drawable option
+                        dmanager.DrawableObjects.Add(new DrawableObject("TEXT", -1, 0, null, null, mcuNameDesc, pinSetupDesc, tp, 20, bottom, right, 0, add));
 
                         //Add drawable object to drawings managers list of objects to draw
-                        dmanager.DrawableObjects.Add(new DrawableObject("LINE", pinSetup, numLeds, ledColorArray, ledPositionArray, tp, 20, bottom, right, 0, add));
+                        dmanager.DrawableObjects.Add(new DrawableObject("LED", pinSetup, numLeds, ledColorArray, ledPositionArray, "", "", tp + 20, 20, bottom, right, 0, add));
                     }
                 }
             }catch(Exception ex)
@@ -720,9 +726,10 @@ namespace LEDLightingComposer
                                 break;
                         }
                         cmd.CommandText = "Insert into LED_Effect (Project_Name, MCU_Name, Pin_Setup, Num_LEDs, Lighting_Effect, " + 
-                            "Effect_Start, Effect_Duration, Delay_Time, LED_Position_Array, LED_Color_Array, Iterations, Bounces) " + 
+                            "Effect_Start, Effect_Duration, Delay_Time, LED_Position_Array, LED_Color_Array, Iterations, Bounces, " +
+                            "Brightness, Incr_Brightness, Brightness_DelayTime) " + 
                             "Values(@PName, @CName, @PSetup, @NumLEDs, @LEffect, @EffectStart, @EffectDuration, @DTime, @LEDPArray, " +
-                            "@LEDCArray, @Iterations, @Bounces)";
+                            "@LEDCArray, @Iterations, @Bounces, @Brightness, @IncrBrightness, @BrightnessDT)";
                         cmd.Parameters.AddWithValue("@PName", Value1);
                         cmd.Parameters.AddWithValue("@CName", Value2);
                         cmd.Parameters.AddWithValue("@PSetup", int.Parse(Value3));
@@ -735,6 +742,9 @@ namespace LEDLightingComposer
                         cmd.Parameters.AddWithValue("@DTime", float.Parse(Value10));
                         cmd.Parameters.AddWithValue("@Iterations", int.Parse(Value11));
                         cmd.Parameters.AddWithValue("@Bounces", int.Parse(Value12));
+                        cmd.Parameters.AddWithValue("@Brightness", int.Parse(Value13));
+                        cmd.Parameters.AddWithValue("@IncrBrightness", int.Parse(Value14));
+                        cmd.Parameters.AddWithValue("@BrightnessDT", float.Parse(Value15));
                         break;
                     case "MCU_PINS":
                         cmd.CommandText = "Insert into MCU_Pins (Description, MCU_Name, Data_Pin, Clock_Pin) Values(@Desc, @MName, @DPin, @CPin)";

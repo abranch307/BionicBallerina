@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
+using System.Windows.Forms;
 
 namespace LEDLightingComposer
 {
@@ -69,98 +70,6 @@ namespace LEDLightingComposer
             return bRet;
         }
 
-        public static bool rainbow(Strip strip, DrawingManager DrawManager)
-        {
-            //Declare variables
-            bool bRet = false;
-            DrawableObject dbo = null;
-            int i = 0, currentSequence = strip.CurrentSequence;
-            Structs.LightingSequence seq;
-
-            try
-            {
-                seq = strip.LSeqs[currentSequence];
-            }
-            catch (Exception ex)
-            {
-                return bRet;
-            }
-
-            //Exit if invalid pointers passed
-            if (strip == null)
-            {
-                return bRet;
-            }
-
-            //Add 1 to I for next iteration and reset ps
-            if (strip.I < 0)
-            {
-                strip.I++;
-
-                //Reset p values
-                strip.P0 = 0; strip.P1 = 1; strip.P2 = 2; strip.P3 = 3; strip.P4 = 4; strip.P5 = 5;
-            }
-
-            //Verify if p0 is greater than numPixels, and if so add 1 to shiftPixelsBy
-            if (strip.P0 >= seq.totalPixels)
-            {
-                //Add 1 to shiftPixelsBy and reset j
-                strip.I++;
-
-                //Reset p values
-                strip.P0 = 0; strip.P1 = 1; strip.P2 = 2; strip.P3 = 3; strip.P4 = 4; strip.P5 = 5;
-            }
-
-            if (strip.I < seq.iterations)
-            {
-                //Find drawable object that matches this strip's pin setup for manipulating LEDs onscreen
-                dbo = DrawManager.getDrawableObject("PINSETUP", strip.PinSetup.ToString());
-
-                if (dbo == null)
-                {
-                    return bRet;
-                }
-
-                //Set all of Drawable Object's LEDS to clear
-                allClear(strip, DrawManager);
-
-                //Set specific pixels to rainbow colors
-                try { dbo.Leds[strip.P0++].LEDColor = Effects.getColorFromCode(CLEAR, seq.brightness); } catch (Exception ex) { }
-                try { dbo.Leds[strip.P1++].LEDColor = Effects.getColorFromCode(RED, seq.brightness); }catch(Exception ex) { }
-                try { dbo.Leds[strip.P2++].LEDColor = Effects.getColorFromCode(ORANGE, seq.brightness); }catch(Exception ex) { }
-                try { dbo.Leds[strip.P3++].LEDColor = Effects.getColorFromCode(YELLOW, seq.brightness); }catch(Exception ex) { }
-                try { dbo.Leds[strip.P4++].LEDColor = Effects.getColorFromCode(GREEN, seq.brightness); }catch(Exception ex) { }
-                try { dbo.Leds[strip.P5++].LEDColor = Effects.getColorFromCode(BLUE, seq.brightness); }catch(Exception ex) { }
-
-                if (strip.P0 >= seq.totalPixels)
-                {
-                    strip.P0 = 0;
-                }
-                if (strip.P1 >= seq.totalPixels)
-                {
-                    strip.P1 = 0;
-                }
-                if (strip.P2 >= seq.totalPixels)
-                {
-                    strip.P2 = 0;
-                }
-                if (strip.P3 >= seq.totalPixels)
-                {
-                    strip.P3 = 0;
-                }
-                if (strip.P4 >= seq.totalPixels)
-                {
-                    strip.P4 = 0;
-                }
-                if (strip.P5 >= seq.totalPixels)
-                {
-                    strip.P5 = 0;
-                }
-            }
-
-            return bRet;
-        }
-
         public static bool loadColor(Strip strip, DrawingManager DrawManager)
         {
             //Declare variables
@@ -193,17 +102,35 @@ namespace LEDLightingComposer
             }
 
             //Clear all pixels first
-            //allClear(strip, DrawManager);
+            allClear(strip, DrawManager);
 
             //Set all of Drawable Object's LEDS to clear
             for (i = 0; i < seq.totalPixels; i++)
             {
                 try
                 {
-                    dbo.Leds[(i + strip.ShiftPixelBy)].LEDColor = getColorFromCode(int.Parse(seq.colors[i].Split('-')[0].Trim()), seq.brightness);
+                    if ((i + strip.ShiftPixelBy) >= seq.totalPixels)
+                    {
+                        //Attempt to wrap shifted color to beginning of strip of flowthrough effect
+                        if (seq.lightsequence == Effects.FLOWTHROUGH)
+                        {
+                            dbo.Leds[((i + strip.ShiftPixelBy) % seq.totalPixels)].LEDColor = getColorFromCode(int.Parse(seq.colors[i].Split('-')[0].Trim()), seq.brightness);
+                        }else
+                        {
+                            //Do nothing, leave pixels as is
+                        }
+                    }
+                    else if((i + strip.ShiftPixelBy) < 0)
+                    {
+                        //Do nothing as we don't want to wrap negative numbers back to end, as this would be from the bounce back effect (all effects move forward)
+
+                    }else
+                    {
+                        dbo.Leds[(i + strip.ShiftPixelBy)].LEDColor = getColorFromCode(int.Parse(seq.colors[i].Split('-')[0].Trim()), seq.brightness);
+                    }
                 }catch(Exception ex)
                 {
-                    dbo.Leds[((i + strip.ShiftPixelBy)%20)].LEDColor = getColorFromCode(int.Parse(seq.colors[i].Split('-')[0].Trim()), seq.brightness);
+                    
                 }
             }
 
@@ -595,7 +522,7 @@ namespace LEDLightingComposer
                     break;
             }
 
-            updateBrightness(clr, Brightness);
+            clr = updateBrightness(clr, Brightness);
 
             return clr;
         }
@@ -639,12 +566,42 @@ namespace LEDLightingComposer
 
             try
             {
-                float correctionFactor = ((255 - (float)Brightness) / (float)255);
-                float red = (255 - clr.R) * correctionFactor + clr.R;
-                float green = (255 - clr.G) * correctionFactor + clr.G;
-                float blue = (255 - clr.B) * correctionFactor + clr.B;
-                clr = Color.FromArgb(clr.A, (int)red, (int)green, (int)blue);
-            }catch(Exception ex)
+                float correctionFactor = -((float)Brightness / (float)255);
+                //float red = ((255 - clr.R) * correctionFactor) + clr.R;
+                //float green = ((255 - clr.G) * correctionFactor) + clr.G;
+                //float blue = ((255 - clr.B) * correctionFactor) + clr.B;
+                //int alpha = (int)(clr.A * correctionFactor) + clr.A;
+                //float correctionFactor = ((float)Brightness / (float)255);
+                //float red = 255 - (clr.R * correctionFactor);
+                //float green = 255 - (clr.G * correctionFactor);
+                //float blue = 255 - (clr.B * correctionFactor);
+                //if (red < 0) { red = 0; }else if(red > 255) { red = 255; }
+                //if (green < 0) { green = 0; } else if (green > 255) { green = 255; }
+                //if (blue < 0) { blue = 0; } else if (blue > 255) { blue = 255; }
+                //if (alpha < 0) { alpha = 0; } else if (alpha > 255) { alpha = 255; }
+
+                //float red = (float)clr.R;
+                //float green = (float)clr.G;
+                //float blue = (float)clr.B;
+
+                //if (correctionFactor < 0)
+                //{
+                //    correctionFactor = 1 + correctionFactor;
+                //    red *= correctionFactor;
+                //    green *= correctionFactor;
+                //    blue *= correctionFactor;
+                //}
+                //else
+                //{
+                //    red = (255 - red) * correctionFactor + red;
+                //    green = (255 - green) * correctionFactor + green;
+                //    blue = (255 - blue) * correctionFactor + blue;
+                //}
+
+                //clr = Color.FromArgb(clr.A, Math.Max(Math.Min((int)red, 0), 255), Math.Max(Math.Min((int)green, 0), 255), (Math.Max(Math.Min((int)blue, 0), 255)));
+                //clr = Color.FromArgb(alpha, clr.R, clr.G, clr.B);
+            }
+            catch(Exception ex)
             {
 
             }

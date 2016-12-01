@@ -56,6 +56,9 @@ namespace LEDLightingComposer
                     //Clear drawing manager's led strip array
                     dmanager.DrawableObjects.Clear();
 
+                    //Invalidate screen
+                    llc.Invalidate();
+
                     //Load led strips and effects into drawing manager
                     dbmanager.loadLEDStripEffectsIntoDrawingManager(projectGrid, dmanager, llc.getDrawingBottom(), llc.getDrawingRight());
 

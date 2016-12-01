@@ -59,7 +59,7 @@ namespace LEDLightingComposer
             dbmanager.loadCBoxByType("PROJECTNAMES",this.cBoxProjectName,"");
 
             //Load MCU Names from MCU table
-            dbmanager.loadCBoxByType("MCUNAMES",this.cBoxMCUName,"");
+            dbmanager.loadCBoxByType("MCUNAMES",this.cBoxMCUName, getProjectName());
 
             //Load Lighting Effects from Lighting_Effects table
             dbmanager.loadCBoxByType("LIGHTINGEFFECTS",this.cBoxLEffect,"");
@@ -106,7 +106,7 @@ namespace LEDLightingComposer
             dbmanager.loadCBoxByType("PROJECTNAMES", this.cBoxProjectName, "");
 
             //Load MCU Names from MCU table
-            dbmanager.loadCBoxByType("MCUNAMES", this.cBoxMCUName, "");
+            dbmanager.loadCBoxByType("MCUNAMES", this.cBoxMCUName, getProjectName());
 
             //Load Lighting Effects from Lighting_Effects table
             dbmanager.loadCBoxByType("LIGHTINGEFFECTS", this.cBoxLEffect, "");
@@ -669,6 +669,12 @@ namespace LEDLightingComposer
 
             //Verify Project Name has been entered (if yes, verify if Project Name exists in database and if not, create in database)
             if (!veriProjectName()) { return; }
+            else
+            {
+                //Verify if project exists and create if it doesn't
+                veriProjectName();
+
+            }
 
             //Verify MCU Name has been entered (if yes, verify if MCU Name exists in database and if not, create in database)
             if (!veriMCUName()) { return; }
@@ -827,11 +833,16 @@ namespace LEDLightingComposer
 
         private void cBoxProjectName_DropDownClosed(object sender, EventArgs e)
         {
+            
+        }
+
+        private void cBoxProjectName_SelectedIndexChanged(object sender, EventArgs e)
+        {
             //Clear MCU Name combobox
             this.cBoxMCUName.Items.Clear();
 
             //Load distinct MCU Names from LED_Effect table
-            dbmanager.loadCBoxByType("MCUNAMES", this.cBoxMCUName, null);
+            dbmanager.loadCBoxByType("MCUNAMES", this.cBoxMCUName, getProjectName());
         }
 
         private void cBoxMCUName_SelectedIndexChanged(object sender, EventArgs e)

@@ -11,28 +11,48 @@ namespace LEDLightingComposer
 {
     public class LED
     {
-        private String stripName;
         private int top, left;
         private Rectangle rect;
         private Color ledColor;
+        private String type, text;
 
-        public LED(Color Clr, int Top, int Left, Rectangle Rect)
+        public LED(String Type, String Text, Color Clr, int Top, int Left, Rectangle Rect)
         {
+            this.type = Type;
+            this.text = Text;
             this.ledColor = Clr;
             this.top = Top;
             this.left = Left;
             this.rect = Rect;
         }
 
-        public void drawObject(String Type, Graphics g)
+        public void drawObject(Graphics g)
         {
-            Pen pen = new Pen(Color.Black);
-            g.FillRectangle(new SolidBrush(ledColor), rect);
-
-            if (Type.Equals("LINE"))
+            if (type.Equals("LED"))
             {
+                Pen pen = new Pen(Color.Black);
+                g.FillRectangle(new SolidBrush(ledColor), rect);
+
                 //Draw leds in a straight line
                 g.DrawRectangle(pen, rect);
+            }else if(type.Equals("TEXT"))
+            {
+                Font drawFont = new Font("Arial", 8);
+                SolidBrush drawBrush = new SolidBrush(Color.Black);
+                Pen drawPen = new Pen(Color.Blue);
+                StringFormat drawFormat = new StringFormat();
+
+                try
+                {
+                    g.DrawString(text, drawFont, drawBrush, left, top, drawFormat);
+                    drawFont.Dispose();
+                    drawBrush.Dispose();
+                    drawFormat.Dispose();
+                }
+                catch (Exception ex)
+                {
+
+                }
             }
         }
 
@@ -45,11 +65,7 @@ namespace LEDLightingComposer
 
             try
             {
-                float correctionFactor = (((float)255 - (float)Brightness) / (float)255);
-                float red = (255 - ledColor.R) * correctionFactor + ledColor.R;
-                float green = (255 - ledColor.G) * correctionFactor + ledColor.G;
-                float blue = (255 - ledColor.B) * correctionFactor + ledColor.B;
-                ledColor = Color.FromArgb(ledColor.A, (int)red, (int)green, (int)blue);
+                ledColor = Effects.updateBrightness(ledColor, Brightness);
             }catch(Exception ex)
             {
 

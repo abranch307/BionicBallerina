@@ -26,7 +26,7 @@ namespace LEDLightingComposer
             public ushort iterations { get; set; }
             public Int16 brightness { get; set; }
             public Int16 incrBrightness { get; set; }
-            public int brightnessDelayTime { get; set; }
+            public float brightnessDelayTime { get; set; }
         };
 
         struct StripInfo

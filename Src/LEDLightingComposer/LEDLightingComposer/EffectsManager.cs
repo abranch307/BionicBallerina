@@ -168,7 +168,31 @@ namespace LEDLightingComposer
             return bRet;
         }
 
-        public static Structs.LightingSequence createAddLSeqStruct(List<Structs.LightingSequence> LSeqs, int LightSequence, int NumPixels, String[] PixelPositions, String[] Colors, float DelayTime, float Duration, int Bounces, int Iterations)
+        public static bool updateStripsBrightness()
+        {
+            bool bRet = true;
+
+            foreach (Strip s in stripsArray)
+            {
+                try
+                {
+                    //Update brightness of strip
+                    if (!Effects.updateBrightness(s, drawManager))
+                    {
+                        bRet = false;
+                        
+                    }
+                }
+                catch (Exception ex)
+                {
+                    bRet = false;
+                }
+            }
+
+            return bRet;
+        }
+
+        public static Structs.LightingSequence createAddLSeqStruct(List<Structs.LightingSequence> LSeqs, int LightSequence, int NumPixels, String[] PixelPositions, String[] Colors, float DelayTime, float Duration, int Bounces, int Iterations, int Brightness, int IncrBrightness, float BrightnessDelayTime)
         {
             //Declare variables
             Structs.LightingSequence temp;
@@ -224,7 +248,10 @@ namespace LEDLightingComposer
                 delayTime = (UInt32)Math.Floor(DelayTime*1000),
                 duration = (ushort)(Duration*1000),
                 bounces = (ushort)Bounces,
-                iterations = (ushort)Iterations};
+                iterations = (ushort)Iterations,
+                brightness = (short)Brightness,
+                incrBrightness = (short)IncrBrightness,
+                brightnessDelayTime = BrightnessDelayTime};
 
             if (LSeqs != null)
             {
@@ -267,7 +294,10 @@ namespace LEDLightingComposer
                         float.Parse(row.Cells["DELAY_TIME"].Value.ToString().Trim()),
                         float.Parse(row.Cells["EFFECT_DURATION"].Value.ToString().Trim()),
                         int.Parse(row.Cells["BOUNCES"].Value.ToString().Trim()),
-                        int.Parse(row.Cells["ITERATIONS"].Value.ToString().Trim())));
+                        int.Parse(row.Cells["ITERATIONS"].Value.ToString().Trim()),
+                        int.Parse(row.Cells["BRIGHTNESS"].Value.ToString().Trim()),
+                        int.Parse(row.Cells["INCR_BRIGHTNESS"].Value.ToString().Trim()),
+                        float.Parse(row.Cells["BRIGHTNESS_DELAYTIME"].Value.ToString().Trim())));
                 }
             }
 

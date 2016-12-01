@@ -79,13 +79,23 @@ namespace LEDLightingComposer
             {
                 if (!proceed)
                 {
-                    //Call allClear for Strip
-                    Effects.allClear(this, drawManager);
+                    try
+                    {
+                        //Decrement current sequence by 1 for updating last sequence, then call allClear for Strip
+                        currentSequence--;
+                        Effects.allClear(this, drawManager);
+
+                        //Add 1 back to current sequence so no more effects will show for this strip
+                        currentSequence++;
+                    }catch(Exception ex)
+                    {
+
+                    }
 
                     //Reset global variables
                     resetGlobalVars();
 
-                    //Set proceed to true so we don't do this over and over again after effects has stopped
+                    //Set proceed to true so we don't do this allClear section over and over again after effects has stopped
                     proceed = true;
                 }
                 return true;
@@ -134,6 +144,9 @@ namespace LEDLightingComposer
                 proceed = true;
                 prevDuration = roundedDuration;
 
+                //Partially reset global variables
+                partialResetGlobalVars();
+
                 //Update brightness to current sequence struct's
                 Effects.updateBrightness(this, drawManager);
             }
@@ -174,7 +187,6 @@ namespace LEDLightingComposer
                         case Effects.RAINBOW:
                             isRainbow = true;
                             Effects.flowThrough(this, drawManager);
-                            //Effects.rainbow(this, drawManager);
                             break;
                         case Effects.LOADCOLOR:
                             Effects.loadColor(this, drawManager);
@@ -348,13 +360,36 @@ namespace LEDLightingComposer
 
         private bool resetGlobalVars()
         {
-            countSeqs = 0;
+            //countSeqs = 0;
             currentDuration = 0;
             prevDuration = -1;
             prevSeqTimesAccumulated = 0;
             proceed = false;
             init = true;
             forward = true;
+            shiftPixelBy = 0;
+            counter1 = 0;
+            counter2 = 0;
+            i = -1;
+            j = -1;
+            p0 = -1;
+            p1 = 0;
+            p2 = 1;
+            p3 = 2;
+            p4 = 3;
+            p5 = 4;
+            tail = 0;
+            head = 0;
+            bounces = 0;
+
+            return true;
+        }
+
+        private bool partialResetGlobalVars()
+        {
+            init = true;
+            forward = true;
+            shiftPixelBy = 0;
             counter1 = 0;
             counter2 = 0;
             i = -1;
