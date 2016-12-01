@@ -35,7 +35,7 @@ namespace LEDLightingComposer
                     try
                     {
                         //Add led to list with specific color
-                        leds.Add(new LED(Effects.getColorFromCode(int.Parse(LEDColorArray[i].Trim().Substring(0, 1))), Top, Left, new Rectangle(Left, Top, 20, 20)));
+                        leds.Add(new LED(Effects.getColorFromCode(int.Parse(LEDColorArray[i].Trim().Substring(0, 1)), 0), Top, Left, new Rectangle(Left, Top, 20, 20)));
                     }catch(Exception ex)
                     {
                         MessageBox.Show("Error in DrawableObject class: " + ex.Message);   

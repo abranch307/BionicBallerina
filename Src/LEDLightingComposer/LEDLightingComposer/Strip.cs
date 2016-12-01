@@ -90,22 +90,6 @@ namespace LEDLightingComposer
                 }
                 return true;
             }
-            //else if((seq = lseqs[currentSequence]).lightsequence == -1)
-            //{
-            //    //This is a fill-in effect, so clear strip and exit
-            //    if (!proceed)
-            //    {
-            //        //Call allClear for Strip
-            //        Effects.allClear(this, drawManager);
-
-            //        //Reset global variables
-            //        resetGlobalVars();
-
-            //        //Set proceed to true so we don't do this over and over again after effects has stopped
-            //        proceed = true;
-            //    }
-            //    return true;
-            //}
 
             //Set proceed to false to not initially process lighting sequence
             proceed = false;
@@ -133,6 +117,7 @@ namespace LEDLightingComposer
                         return true;
                     }else
                     {
+                        //Set current sequence struct
                         seq = lseqs[currentSequence];
                     }
                 }
@@ -148,6 +133,9 @@ namespace LEDLightingComposer
             {
                 proceed = true;
                 prevDuration = roundedDuration;
+
+                //Update brightness to current sequence struct's
+                Effects.updateBrightness(this, drawManager);
             }
             else if (roundedDuration != prevDuration)
             {
@@ -157,6 +145,18 @@ namespace LEDLightingComposer
 
             //Set current duration to rounded duration
             currentDuration = roundedDuration;
+
+            try
+            {
+                //Update brightness if necessary
+                if (seq.incrBrightness != 0 && (roundedDuration % seq.brightnessDelayTime) == 0 && proceed)
+                {
+                    Effects.updateBrightness(this, drawManager);
+                }
+            }catch(Exception ex)
+            {
+
+            }
 
             try
             {

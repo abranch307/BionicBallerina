@@ -183,6 +183,8 @@ namespace LEDLightingComposer
 
         #endregion Private Methods
 
+        #region Screen Events
+
         private void btnLoadSong_Click(object sender, EventArgs e)
         {
             //Allow the MusicManager class to handle this event
@@ -360,6 +362,9 @@ namespace LEDLightingComposer
         {
             //Allow the DatabaseManager class to handle this event
             databasemanager.btnClearGrid_Click(sender, e, composerDrawManager);
+
+            //Invalid screen to clear drawing in panel
+            this.Invalidate();
         }
 
         private void btnOpenProject_Click(object sender, EventArgs e)
@@ -388,6 +393,18 @@ namespace LEDLightingComposer
 
             }
         }
+
+        private void LEDLightingComposerCS_Resize(object sender, EventArgs e)
+        {
+            //Redraw LEDs on screen if necessary
+            if (!musicmanager.isPlaying)
+            {
+                this.Invalidate();
+                databasemanager.updateProjectsInProjectGrid(this.lblProjectName.Text.ToString().Trim());
+            }
+        }
+
+        #endregion Screen Events
 
         #region Getters & Setters
 

@@ -145,6 +145,7 @@ namespace LEDLightingComposer
             {
                 //Create Label
                 lbl.Text = "Color Selection: " + count;
+                lbl.Top = 25 * count;
 
                 ComboBox cbox = new ComboBox();
                 comboBoxes.Add(cbox);

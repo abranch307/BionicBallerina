@@ -4,6 +4,8 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.VisualStudio.Modeling.Diagrams;
+using System.ComponentModel;
 
 namespace LEDLightingComposer
 {
@@ -32,6 +34,28 @@ namespace LEDLightingComposer
                 //Draw leds in a straight line
                 g.DrawRectangle(pen, rect);
             }
+        }
+
+        /*
+        */
+        public bool updateBrightness(int Brightness)
+        {
+            //Declare variables
+            bool bret = false;
+
+            try
+            {
+                float correctionFactor = (((float)255 - (float)Brightness) / (float)255);
+                float red = (255 - ledColor.R) * correctionFactor + ledColor.R;
+                float green = (255 - ledColor.G) * correctionFactor + ledColor.G;
+                float blue = (255 - ledColor.B) * correctionFactor + ledColor.B;
+                ledColor = Color.FromArgb(ledColor.A, (int)red, (int)green, (int)blue);
+            }catch(Exception ex)
+            {
+
+            }
+
+            return bret;
         }
 
         public int Top

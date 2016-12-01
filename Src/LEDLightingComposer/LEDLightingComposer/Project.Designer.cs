@@ -58,6 +58,12 @@
             this.txtDelayTime = new System.Windows.Forms.TextBox();
             this.txtIterations = new System.Windows.Forms.TextBox();
             this.txtBounces = new System.Windows.Forms.TextBox();
+            this.txtBrightness = new System.Windows.Forms.TextBox();
+            this.txtIncrBrightness = new System.Windows.Forms.TextBox();
+            this.txtBrightnessDelayTime = new System.Windows.Forms.TextBox();
+            this.lblBrightness = new System.Windows.Forms.Label();
+            this.lblIncrBrightness = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label1
@@ -160,6 +166,7 @@
             // 
             // cBoxLEffect
             // 
+            this.cBoxLEffect.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cBoxLEffect.FormattingEnabled = true;
             this.cBoxLEffect.Location = new System.Drawing.Point(16, 95);
             this.cBoxLEffect.Name = "cBoxLEffect";
@@ -201,7 +208,7 @@
             // 
             // btnSave2Project
             // 
-            this.btnSave2Project.Location = new System.Drawing.Point(157, 182);
+            this.btnSave2Project.Location = new System.Drawing.Point(157, 241);
             this.btnSave2Project.Name = "btnSave2Project";
             this.btnSave2Project.Size = new System.Drawing.Size(125, 25);
             this.btnSave2Project.TabIndex = 16;
@@ -211,7 +218,7 @@
             // 
             // btnExit
             // 
-            this.btnExit.Location = new System.Drawing.Point(459, 182);
+            this.btnExit.Location = new System.Drawing.Point(459, 241);
             this.btnExit.Name = "btnExit";
             this.btnExit.Size = new System.Drawing.Size(125, 25);
             this.btnExit.TabIndex = 17;
@@ -242,7 +249,7 @@
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(421, 123);
+            this.label10.Location = new System.Drawing.Point(261, 173);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(57, 13);
             this.label10.TabIndex = 20;
@@ -251,14 +258,14 @@
             // txtSongPath
             // 
             this.txtSongPath.Enabled = false;
-            this.txtSongPath.Location = new System.Drawing.Point(308, 139);
+            this.txtSongPath.Location = new System.Drawing.Point(95, 189);
             this.txtSongPath.Name = "txtSongPath";
-            this.txtSongPath.Size = new System.Drawing.Size(276, 20);
+            this.txtSongPath.Size = new System.Drawing.Size(381, 20);
             this.txtSongPath.TabIndex = 21;
             // 
             // btnResetScreen
             // 
-            this.btnResetScreen.Location = new System.Drawing.Point(16, 182);
+            this.btnResetScreen.Location = new System.Drawing.Point(16, 241);
             this.btnResetScreen.Name = "btnResetScreen";
             this.btnResetScreen.Size = new System.Drawing.Size(125, 25);
             this.btnResetScreen.TabIndex = 22;
@@ -268,7 +275,7 @@
             // 
             // btnDelete
             // 
-            this.btnDelete.Location = new System.Drawing.Point(308, 182);
+            this.btnDelete.Location = new System.Drawing.Point(319, 241);
             this.btnDelete.Name = "btnDelete";
             this.btnDelete.Size = new System.Drawing.Size(125, 25);
             this.btnDelete.TabIndex = 23;
@@ -280,17 +287,17 @@
             // lblIterations
             // 
             this.lblIterations.AutoSize = true;
-            this.lblIterations.Location = new System.Drawing.Point(13, 139);
+            this.lblIterations.Location = new System.Drawing.Point(13, 127);
             this.lblIterations.Name = "lblIterations";
-            this.lblIterations.Size = new System.Drawing.Size(56, 13);
+            this.lblIterations.Size = new System.Drawing.Size(50, 13);
             this.lblIterations.TabIndex = 24;
-            this.lblIterations.Text = "Iterations: ";
+            this.lblIterations.Text = "Iterations";
             this.lblIterations.Visible = false;
             // 
             // lblBounces
             // 
             this.lblBounces.AutoSize = true;
-            this.lblBounces.Location = new System.Drawing.Point(148, 139);
+            this.lblBounces.Location = new System.Drawing.Point(92, 127);
             this.lblBounces.Name = "lblBounces";
             this.lblBounces.Size = new System.Drawing.Size(49, 13);
             this.lblBounces.TabIndex = 25;
@@ -315,7 +322,7 @@
             // 
             // txtIterations
             // 
-            this.txtIterations.Location = new System.Drawing.Point(69, 139);
+            this.txtIterations.Location = new System.Drawing.Point(16, 143);
             this.txtIterations.Name = "txtIterations";
             this.txtIterations.Size = new System.Drawing.Size(52, 20);
             this.txtIterations.TabIndex = 28;
@@ -323,17 +330,71 @@
             // 
             // txtBounces
             // 
-            this.txtBounces.Location = new System.Drawing.Point(203, 139);
+            this.txtBounces.Location = new System.Drawing.Point(89, 143);
             this.txtBounces.Name = "txtBounces";
             this.txtBounces.Size = new System.Drawing.Size(52, 20);
             this.txtBounces.TabIndex = 29;
             this.txtBounces.Visible = false;
             // 
+            // txtBrightness
+            // 
+            this.txtBrightness.Location = new System.Drawing.Point(162, 143);
+            this.txtBrightness.Name = "txtBrightness";
+            this.txtBrightness.Size = new System.Drawing.Size(52, 20);
+            this.txtBrightness.TabIndex = 30;
+            // 
+            // txtIncrBrightness
+            // 
+            this.txtIncrBrightness.Location = new System.Drawing.Point(240, 143);
+            this.txtIncrBrightness.Name = "txtIncrBrightness";
+            this.txtIncrBrightness.Size = new System.Drawing.Size(52, 20);
+            this.txtIncrBrightness.TabIndex = 31;
+            // 
+            // txtBrightnessDelayTime
+            // 
+            this.txtBrightnessDelayTime.Location = new System.Drawing.Point(359, 143);
+            this.txtBrightnessDelayTime.Name = "txtBrightnessDelayTime";
+            this.txtBrightnessDelayTime.Size = new System.Drawing.Size(52, 20);
+            this.txtBrightnessDelayTime.TabIndex = 32;
+            // 
+            // lblBrightness
+            // 
+            this.lblBrightness.AutoSize = true;
+            this.lblBrightness.Location = new System.Drawing.Point(163, 127);
+            this.lblBrightness.Name = "lblBrightness";
+            this.lblBrightness.Size = new System.Drawing.Size(56, 13);
+            this.lblBrightness.TabIndex = 33;
+            this.lblBrightness.Text = "Brightness";
+            // 
+            // lblIncrBrightness
+            // 
+            this.lblIncrBrightness.AutoSize = true;
+            this.lblIncrBrightness.Location = new System.Drawing.Point(232, 127);
+            this.lblIncrBrightness.Name = "lblIncrBrightness";
+            this.lblIncrBrightness.Size = new System.Drawing.Size(77, 13);
+            this.lblIncrBrightness.TabIndex = 34;
+            this.lblIncrBrightness.Text = "Incr Brightness";
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(316, 127);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(163, 13);
+            this.label14.TabIndex = 35;
+            this.label14.Text = "Brightness Delay Time (Seconds)";
+            // 
             // Project
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(600, 224);
+            this.ClientSize = new System.Drawing.Size(600, 278);
+            this.Controls.Add(this.label14);
+            this.Controls.Add(this.lblIncrBrightness);
+            this.Controls.Add(this.lblBrightness);
+            this.Controls.Add(this.txtBrightnessDelayTime);
+            this.Controls.Add(this.txtIncrBrightness);
+            this.Controls.Add(this.txtBrightness);
             this.Controls.Add(this.txtBounces);
             this.Controls.Add(this.txtIterations);
             this.Controls.Add(this.txtDelayTime);
@@ -403,5 +464,11 @@
         private System.Windows.Forms.TextBox txtDelayTime;
         private System.Windows.Forms.TextBox txtIterations;
         private System.Windows.Forms.TextBox txtBounces;
+        private System.Windows.Forms.TextBox txtBrightness;
+        private System.Windows.Forms.TextBox txtIncrBrightness;
+        private System.Windows.Forms.TextBox txtBrightnessDelayTime;
+        private System.Windows.Forms.Label lblBrightness;
+        private System.Windows.Forms.Label lblIncrBrightness;
+        private System.Windows.Forms.Label label14;
     }
 }

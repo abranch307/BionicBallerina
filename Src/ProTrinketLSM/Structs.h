@@ -40,8 +40,8 @@ struct LightingSequence {
 	uint16_t duration; //In milliseconds
 	uint8_t bounces;
 	uint8_t iterations;
-	int8_t brightness;
-	int8_t incrBrightness;
+	int16_t brightness;
+	int16_t incrBrightness;
 	uint32_t brightnessDelayTime;
 };
 

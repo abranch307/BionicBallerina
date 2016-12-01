@@ -25,6 +25,7 @@ namespace LEDLightingComposer
         private Label songName;
         public String currentSongFilePath;
         public bool isPlaying, settingUp;
+        private WaitDialog waitDialogBox;
 
         public MusicManager(LEDLightingComposerCS LLC, AxWindowsMediaPlayer Player2, Button LoadSong, Button Jump2Secs, TextBox Timer, Panel TrackBarPanel, Label SongName, CheckBox ChkPlayerDelayTime, TextBox PlayerDelayTime)
         {
@@ -185,8 +186,22 @@ namespace LEDLightingComposer
                 //Convert seconds to milliseconds for performance time
                 jump2Secs = (long)(Math.Floor(jump2Secs * 1000));
 
+                //Invoke wait dialog
+                waitDialogBox = new WaitDialog();
+                waitDialogBox.Show();
+
+                //Disable jump2secs button
+                this.jump2Secs.Enabled = false;
+
                 //Jump EffectsManager to current performance time
                 EffectsManager.findCurrentSeqFromPerformanceTime((long)jump2Secs);
+
+                //Close wait dialog
+                waitDialogBox.Close();
+                waitDialogBox = null;
+
+                //Enable jump2secs button
+                this.jump2Secs.Enabled = true;
 
                 //Invalidate LLC screen so redraw can happen
                 llc.Invalidate();

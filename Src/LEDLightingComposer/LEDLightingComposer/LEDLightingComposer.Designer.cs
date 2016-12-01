@@ -93,7 +93,7 @@
             // lblProjectDatabase
             // 
             this.lblProjectDatabase.AutoSize = true;
-            this.lblProjectDatabase.Location = new System.Drawing.Point(12, 284);
+            this.lblProjectDatabase.Location = new System.Drawing.Point(12, 294);
             this.lblProjectDatabase.Name = "lblProjectDatabase";
             this.lblProjectDatabase.Size = new System.Drawing.Size(89, 13);
             this.lblProjectDatabase.TabIndex = 9;
@@ -199,7 +199,7 @@
             // lblProjectName
             // 
             this.lblProjectName.AutoSize = true;
-            this.lblProjectName.Location = new System.Drawing.Point(107, 284);
+            this.lblProjectName.Location = new System.Drawing.Point(107, 294);
             this.lblProjectName.Name = "lblProjectName";
             this.lblProjectName.Size = new System.Drawing.Size(108, 13);
             this.lblProjectName.TabIndex = 20;
@@ -346,6 +346,7 @@
             this.Name = "LEDLightingComposerCS";
             this.Text = "LED Lighting Composer";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.LEDLightingComposer_FormClosing);
+            this.Resize += new System.EventHandler(this.LEDLightingComposerCS_Resize);
             ((System.ComponentModel.ISupportInitialize)(this.dgvProjectData)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.WMPlayer)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.tBarTimer)).EndInit();
