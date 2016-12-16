@@ -60,7 +60,6 @@
     <Compile Include="DrawableObject.cs" />
     <Compile Include="Effects.cs" />
     <Compile Include="EffectsManager.cs" />
-    <Compile Include="HSLColor.cs" />
     <Compile Include="HttpRequestResponse.cs" />
     <Compile Include="LED.cs" />
     <Compile Include="LEDLightingComposer.cs">
@@ -69,7 +68,6 @@
     <Compile Include="LEDLightingComposer.Designer.cs">
       <DependentUpon>LEDLightingComposer.cs</DependentUpon>
     </Compile>
-    <Compile Include="LEDManager.cs" />
     <Compile Include="LEDColor.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -1,4 +1,13 @@
-﻿using System;
+﻿/*
+	Author: Aaron Branch, Zach Jarmon, Peter Martinez
+	Created: 
+	Last Modified:
+	Class: DatabaseManager.cs
+	Class Description:
+		This class 
+*/
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -38,8 +47,11 @@ namespace LEDLightingComposer
         }
 
         /*
-           Function loadCBoxByType:
+            Function:
 
+            Parameters:
+
+            Returns:
         */
         public void loadCBoxByType(String Type, ComboBox CBox, String Value1)
         {
@@ -100,6 +112,11 @@ namespace LEDLightingComposer
         }
 
         /*
+            Function:
+
+            Parameters:
+
+            Returns:
         */
         public void loadAllProjects2SearchGrid(DataGridView dgv)
         {
@@ -129,6 +146,11 @@ namespace LEDLightingComposer
         }
 
         /*
+            Function:
+
+            Parameters:
+
+            Returns:
         */
         public int loadProjects2ProjectGrid(String ProjectName, DataGridView dgv)
         {
@@ -175,6 +197,11 @@ namespace LEDLightingComposer
         }
 
         /*
+            Function:
+
+            Parameters:
+
+            Returns:
         */
         public int addFillerEffectsToProject(String ProjectName)
         {
@@ -248,6 +275,11 @@ namespace LEDLightingComposer
         }
 
         /*
+            Function:
+
+            Parameters:
+
+            Returns:
         */
         public int deleteFillerEffectsFromProject(String ProjectName)
         {
@@ -279,6 +311,11 @@ namespace LEDLightingComposer
         }
 
         /*
+            Function:
+
+            Parameters:
+
+            Returns:
         */
         public bool updateProjectsInProjectGrid(String ProjectName)
         {
@@ -316,6 +353,11 @@ namespace LEDLightingComposer
         }
 
         /*
+            Function:
+
+            Parameters:
+
+            Returns:
         */
         public int loadLEDStripEffectsIntoDrawingManager(DataGridView dgv, DrawingManager dmanager, int bottom, int right)
         {
@@ -342,8 +384,14 @@ namespace LEDLightingComposer
                     }
                     else
                     {
-                        //Start at top == last strips' led top + 30, left 20
-                        tp = dmanager.DrawableObjects[(dmanager.DrawableObjects.Count - 1)].Leds[(dmanager.DrawableObjects[(dmanager.DrawableObjects.Count - 1)].Leds.Count - 1)].Top + 30;
+                        try
+                        {
+                            //Start at top == last strips' led top + 30, left 20
+                            tp = dmanager.DrawableObjects[(dmanager.DrawableObjects.Count - 1)].Leds[(dmanager.DrawableObjects[(dmanager.DrawableObjects.Count - 1)].Leds.Count - 1)].Top + 30;
+                        }catch(Exception ex)
+                        {
+
+                        }
                     }
 
                     //Add LEDs to strip if strip not already added
@@ -389,6 +437,11 @@ namespace LEDLightingComposer
         }
 
         /*
+            Function:
+
+            Parameters:
+
+            Returns:
         */
         public bool verifyNameExistsInDatabase(String Table, String Option1, String Value1, String Value2, String Value3)
         {
@@ -457,6 +510,11 @@ namespace LEDLightingComposer
         }
 
         /*
+            Function:
+
+            Parameters:
+
+            Returns:
         */
         public bool verifyOverlappingLightingEffects(String ProjectName, int TruePinSetupVal, float EffectStart, float EffectDuration)
         {
@@ -503,6 +561,11 @@ namespace LEDLightingComposer
         }
 
         /*
+            Function:
+
+            Parameters:
+
+            Returns:
         */
         public int insertRecordIntoDB(String Table, String Value1, String Value2, String Value3, String Value4)
         {
@@ -559,6 +622,13 @@ namespace LEDLightingComposer
            Param1 = Effect_Num
            Value1 = Num_Leds, Value2 = LED_Position_Array, Value3 = LED_Color_Array, Value4 = Lighting_Effect,
            Value5 = Effect_Start, Value6 = Effect_Duration
+        */
+        /*
+            Function:
+
+            Parameters:
+
+            Returns:
         */
         public int updateRecordInDB(String Table, String Param1, String Value1, String Value2, String Value3, String Value4, String Value5, String Value6, String Value7, String Value8, String Value9, String Value10, String Value11)
         {
@@ -621,6 +691,11 @@ namespace LEDLightingComposer
         }
 
         /*
+            Function:
+
+            Parameters:
+
+            Returns:
         */
         public int deleteRecordFromDB(String Table, String Param1)
         {
@@ -669,6 +744,11 @@ namespace LEDLightingComposer
         }
 
         /*
+            Function:
+
+            Parameters:
+
+            Returns:
         */
         public int insertRecordIntoDBReturnIncr(String Table, String Value1, String Value2, String Value3, String Value4, String Value5, String Value6, String Value7, String Value8, String Value9, String Value10, String Value11, String Value12, String Value13, String Value14, String Value15)
         {
@@ -772,6 +852,11 @@ namespace LEDLightingComposer
         }
 
         /*
+            Function:
+
+            Parameters:
+
+            Returns:
         */
         public void writeProjectFromDB2StructsLocalFile(String ProjectName, FileStream SetupFile)
         {
@@ -946,6 +1031,11 @@ namespace LEDLightingComposer
         }
 
         /*
+            Function:
+
+            Parameters:
+
+            Returns:
         */
         public int getPinSetupValue(String MCUName, String[] PinSetup)
         {
@@ -985,6 +1075,11 @@ namespace LEDLightingComposer
         }
 
         /*
+            Function:
+
+            Parameters:
+
+            Returns:
         */
         public List<int> getDistinctPinSetups(String ProjectName)
         {
@@ -1022,7 +1117,11 @@ namespace LEDLightingComposer
         }
 
         /*
-         * 
+            Function:
+
+            Parameters:
+
+            Returns:
         */
         public int getNumLEDs(String ProjectName, String MCUName, int PinSetup)
         {
@@ -1062,6 +1161,11 @@ namespace LEDLightingComposer
         }
 
         /*
+            Function:
+
+            Parameters:
+
+            Returns:
         */
         public string getValueFromDB(String Table, String Option, String Param1, String Param2, String Param3)
         {
@@ -1154,6 +1258,11 @@ namespace LEDLightingComposer
         }
 
         /*
+            Function:
+
+            Parameters:
+
+            Returns:
         */
         public List<String> getMultipleStringValuesFromDB(String Table, String Option, String Param1, String Param2)
         {
@@ -1187,7 +1296,7 @@ namespace LEDLightingComposer
                         }
                         else if (Option.Equals("LEFFECTS"))
                         {
-                            cmd.CommandText = "Select LIGHTING_EFFECT, LED_COLOR_ARRAY, (DELAY_TIME * 1000) AS DELAY_TIME, (EFFECT_DURATION * 1000) as EFFECT_DURATION, BOUNCES, ITERATIONS " +
+                            cmd.CommandText = "Select LIGHTING_EFFECT, LED_COLOR_ARRAY, (DELAY_TIME * 1000) AS DELAY_TIME, (EFFECT_DURATION * 1000) as EFFECT_DURATION, BOUNCES, ITERATIONS, " +
                                 "BRIGHTNESS, INCR_BRIGHTNESS, (BRIGHTNESS_DELAYTIME * 1000) AS BRIGHTNESS_DELAYTIME from Led_Effect where Project_Name = @PName and Pin_Setup = @PSetup order by Effect_Start";
                             cmd.Parameters.AddWithValue("@PName", Param1);
                             cmd.Parameters.AddWithValue("@PSetup", int.Parse(Param2));
@@ -1328,6 +1437,13 @@ namespace LEDLightingComposer
            Method createStructInfo:
             This function will create struct like info for writing to file for passed info
         */
+        /*
+            Function:
+
+            Parameters:
+
+            Returns:
+        */
         private String createStructInfo(String Type, String Value1, String Value2, String Value3, String Value4, String Value5, String Value6, String Value7, String Value8, String Value9, String Value10, String Value11, String Value12)
         {
             //Declare variables
@@ -1379,7 +1495,7 @@ namespace LEDLightingComposer
                     if (Decimal.TryParse(Value11, out dec)) { brightnessDelayTime = Decimal.ToInt32(dec); } else { brightnessDelayTime = -1; }
 
                     //Add lighting effect info to strip
-                    sRet += "seqs" + Value12 + "[" + Value1 + "] = {" + effect + ", " + Value3 + Value12 + ", \"" + Value4 + "\", " + delayTime + ", " + duration + ", " + bounces + ", " + iterations + ", " + brightness + ", " + incrBrightness + ", " + brightnessDelayTime + "}" + ";";
+                    sRet += "seqs" + Value12 + "[" + Value1 + "] = {" + effect + ", " +  Value3 + Value12 + ", \"" + Value4 + "\", " + delayTime + ", " + duration + ", " + bounces + ", " + iterations + ", " + brightness + ", " + incrBrightness + ", " + brightnessDelayTime + "}" + ";";
 
                     break;
             }
@@ -1388,6 +1504,11 @@ namespace LEDLightingComposer
         }
 
         /*
+            Function:
+
+            Parameters:
+
+            Returns:
         */
         private bool OpenDBConnection()
         {
@@ -1407,6 +1528,11 @@ namespace LEDLightingComposer
         }
 
         /*
+            Function:
+
+            Parameters:
+
+            Returns:
         */
         private bool OpenDBConnection2()
         {
@@ -1428,6 +1554,11 @@ namespace LEDLightingComposer
         }
 
         /*
+            Function:
+
+            Parameters:
+
+            Returns:
         */
         private bool OpenDBConnection3()
         {
@@ -1449,6 +1580,11 @@ namespace LEDLightingComposer
         }
 
         /*
+            Function:
+
+            Parameters:
+
+            Returns:
         */
         private bool CloseDBConnection()
         {
@@ -1469,6 +1605,11 @@ namespace LEDLightingComposer
         }
 
         /*
+            Function:
+
+            Parameters:
+
+            Returns:
         */
         private bool CloseDBConnection2()
         {
@@ -1489,6 +1630,11 @@ namespace LEDLightingComposer
         }
 
         /*
+            Function:
+
+            Parameters:
+
+            Returns:
         */
         private bool CloseDBConnection3()
         {
@@ -1514,6 +1660,11 @@ namespace LEDLightingComposer
         #region Screen Events
 
         /*
+            Function:
+
+            Parameters:
+
+            Returns:
         */
         public void dgvProjectData_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
@@ -1521,6 +1672,11 @@ namespace LEDLightingComposer
         }
 
         /*
+            Function:
+
+            Parameters:
+
+            Returns:
         */
         public void btnEditRecord_Click(object sender, EventArgs e)
         {
@@ -1573,6 +1729,11 @@ namespace LEDLightingComposer
         }
 
         /*
+            Function:
+
+            Parameters:
+
+            Returns:
         */
         public void btnAdd2Project_Click(object sender, EventArgs e, LEDLightingComposerCS LLC, int TimerVal, String CurrentSongPath)
         {
@@ -1583,6 +1744,11 @@ namespace LEDLightingComposer
         }
 
         /*
+            Function:
+
+            Parameters:
+
+            Returns:
         */
         public void btnOpenProject_Click(object sender, EventArgs e, LEDLightingComposerCS LLC, DrawingManager DManager)
         {
@@ -1593,6 +1759,11 @@ namespace LEDLightingComposer
         }
 
         /*
+            Function:
+
+            Parameters:
+
+            Returns:
         */
         public void btnSendViaHTTP_Click(object sender, EventArgs e)
         {
@@ -1600,6 +1771,11 @@ namespace LEDLightingComposer
         }
 
         /*
+            Function:
+
+            Parameters:
+
+            Returns:
         */
         public void btnSend2SDCard_Click(object sender, EventArgs e)
         {
@@ -1609,6 +1785,13 @@ namespace LEDLightingComposer
         /*
            Function btnSend2LocalFile_Click:
            This function will write all project led effects to user designated file as structs for copying into microcontroller code
+        */
+        /*
+            Function:
+
+            Parameters:
+
+            Returns:
         */
         public void btnSend2LocalFile_Click(object sender, EventArgs e)
         {
@@ -1658,6 +1841,11 @@ namespace LEDLightingComposer
         }
 
         /*
+            Function:
+
+            Parameters:
+
+            Returns:
         */
         public void btnClearGrid_Click(object sender, EventArgs e, DrawingManager dmanager)
         {

@@ -15,7 +15,13 @@ namespace LEDLightingComposer
         private String objectType, mcuNameDesc, pinSetupDesc;
         private int pinSetup, top, left, bottom, right, rotation;
 
+        /*
+            Function:
 
+            Parameters:
+
+            Returns:
+        */
         public DrawableObject(String ObjectType, int PinSetup, int NUMLeds, String[] LEDColorArray, String[] LEDPositionArray, String MCUNameDesc, String PinSetupDesc, int Top, int Left, int Bottom, int Right, int Rotation, bool Add)
         {
             this.objectType = ObjectType;
@@ -73,6 +79,13 @@ namespace LEDLightingComposer
             }
         }
 
+        /*
+            Function:
+
+            Parameters:
+
+            Returns:
+        */
         public void drawLEDEffect(Graphics g)
         {
             if (objectType.Equals("LED"))

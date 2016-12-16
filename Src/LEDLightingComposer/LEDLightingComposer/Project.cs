@@ -440,7 +440,7 @@ namespace LEDLightingComposer
             this.cBoxMCUName.Update();
             this.cBoxPinSetup.Enabled = true;
             this.cBoxPinSetup.SelectedIndex = -1;
-            this.cBoxPinSetup.Text = "Pin#1;Pin#2;Description";
+            this.cBoxPinSetup.Text = "DataPin#;ClockPin#;Description";
             this.cBoxPinSetup.Update();
             this.cBoxLEffect.SelectedIndex = -1;
             //this.cBoxLEffect.Text = "Effect# - Description";

@@ -1,4 +1,13 @@
-﻿using System;
+﻿/*
+	Author: Aaron Branch, Zach Jarmon, Peter Martinez
+	Created: 
+	Last Modified:    
+	Class: .cs
+	Class Description:
+		This class 
+*/
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,12 +22,12 @@ namespace LEDLightingComposer
         private String stripName;
         private DrawingManager drawManager;
         private List<Structs.LightingSequence> lseqs = new List<Structs.LightingSequence>();
-        private bool proceed = false, init = true, forward = true, isRainbow = false;
+        private bool proceed = false, init = true, forward = true, isRainbow = false, incrementBrightness = false;
         private long currentDuration = 0, // so elapsedtime - this = time within this sequence
             prevDuration = -1, //Makes sure duration isn't processed more than once for sequence
             prevSeqTimesAccumulated = 0; //As sequences change, the duration times are accumulated to here (used to find current effect's duration)
-        private int pinSetup, currentSequence = 0, countSeqs = 0, i = -1, j = -1, p0 = -1, p1 = 0, 
-            p2 = 1, p3 = 2, p4 = 3, p5 = 4, tail = 0, head = 3, shiftPixelBy = 0, 
+        private int pinSetup, currentSequence = 0, countSeqs = 0, i = -1, j = -1, p0 = 0, p1 = 1, 
+            p2 = 2, p3 = 3, p4 = 4, p5 = 5, tail = 0, head = 3, shiftPixelBy = 0, 
             counter1 = 0, counter2 = 0, bounces = 0;
         private int[] virtualPixelArray = null;
 
@@ -130,6 +139,9 @@ namespace LEDLightingComposer
                         //Set current sequence struct
                         seq = lseqs[currentSequence];
                     }
+
+                    //Set update to update Brightness if incrBrightness <> 0
+                    incrementBrightness = seq.incrBrightness != 0 ? true : false;
                 }
                 catch(Exception ex)
                 {
@@ -147,6 +159,9 @@ namespace LEDLightingComposer
                 //Partially reset global variables
                 partialResetGlobalVars();
 
+                //Set update to update Brightness if incrBrightness <> 0
+                incrementBrightness = seq.incrBrightness != 0 ? true : false;
+
                 //Update brightness to current sequence struct's
                 Effects.updateBrightness(this, drawManager);
             }
@@ -162,7 +177,7 @@ namespace LEDLightingComposer
             try
             {
                 //Update brightness if necessary
-                if (seq.incrBrightness != 0 && (roundedDuration % seq.brightnessDelayTime) == 0 && proceed)
+                if (incrementBrightness && (roundedDuration % seq.brightnessDelayTime) == 0 && proceed)
                 {
                     Effects.updateBrightness(this, drawManager);
                 }
@@ -390,16 +405,17 @@ namespace LEDLightingComposer
             init = true;
             forward = true;
             shiftPixelBy = 0;
+            incrementBrightness = false;
             counter1 = 0;
             counter2 = 0;
             i = -1;
             j = -1;
-            p0 = -1;
-            p1 = 0;
-            p2 = 1;
-            p3 = 2;
-            p4 = 3;
-            p5 = 4;
+            p0 = 0;
+            p1 = 1;
+            p2 = 2;
+            p3 = 3;
+            p4 = 4;
+            p5 = 5;
             tail = 0;
             head = 0;
             bounces = 0;
@@ -701,6 +717,11 @@ namespace LEDLightingComposer
             {
                 isRainbow = value;
             }
+        }
+
+        public bool IncrementBrightness
+        {
+            get { return incrementBrightness; }
         }
 
         public int[] VirtualPixelArray

@@ -1,4 +1,15 @@
-﻿using System;
+﻿/*
+	Author: Aaron Branch, Zach Jarmon, Peter Martinez
+	Created: 
+	Last Modified:
+	Class: HttpRequestResponse.cs
+	Class Description:
+		This class handles communication between WiFi enabled devices via HTTPS requests and responses.  In this
+        program, this class specifically communicates with the WiFi modules connected to ProTrinket microcontrollers,
+        passing commands to the WiFi module which in turn relays to microcontrollers.
+*/
+
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -24,6 +35,11 @@ namespace LEDLightingComposer
         public static bool sendSignalThreads;
 
         /*
+            Function:
+
+            Parameters:
+
+            Returns:
         */
         public static WebResponse sendHttpRequest(String IPAddress, String Uri, String Parameter, String BytesAsString)
         {
@@ -70,6 +86,11 @@ namespace LEDLightingComposer
         }
 
         /*
+            Function:
+
+            Parameters:
+
+            Returns:
         */
         public static bool sendHttpRequestNoResponse(String IPAddress, String Uri, String Parameter, String BytesAsString)
         {
@@ -122,6 +143,11 @@ namespace LEDLightingComposer
         }
 
         /*
+            Function:
+
+            Parameters:
+
+            Returns:
         */
         public static String getResponse(WebResponse wr)
         {
@@ -169,6 +195,11 @@ namespace LEDLightingComposer
         }
 
         /*
+            Function:
+
+            Parameters:
+
+            Returns:
         */
         public static bool sendStartHTTPSCommand(String Type, List<String> mcuIPAddresses, String SendString)
         {
@@ -275,6 +306,11 @@ namespace LEDLightingComposer
         }
 
         /*
+            Function:
+
+            Parameters:
+
+            Returns:
         */
         public static List<String> getAllIPAddressesOnNetwork()
         {
@@ -363,6 +399,11 @@ namespace LEDLightingComposer
         }
 
         /*
+            Function:
+
+            Parameters:
+
+            Returns:
         */
         private static void pingNetworkAddress()
         {
@@ -411,6 +452,11 @@ namespace LEDLightingComposer
         }
 
         /*
+            Function:
+
+            Parameters:
+
+            Returns:
         */
         public static void p_PingCompleted(object sender, PingCompletedEventArgs e)
         {

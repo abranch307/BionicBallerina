@@ -13,22 +13,32 @@
 #include "EffectsManager.h"
 #include "Effects.h"
 
-//Declare setup values
-unsigned long localElapsedTime, temp;
-int8_t numStrips = 2, numEffects1 = 5, numEffects2 = 3;
-uint16_t numPixels1 = 120, numPixels2 = 5;
-bool endSeqs = false;
+//WiFi handling specific variables
+bool endSeqs = false, firstRX = true;
 
-//Allocate memory for effects manager and setup
+//End of WiFi Setup***********************************************************************************************************
+
+//Allocate Lighting Effect Memory for MCU: MCU1**************************************************************************************
+
+//Effects specific variables
+unsigned long localElapsedTime, temp;
+int8_t  numStrips = 1, numEffects1 = 17;
+uint16_t numPixels1 = 26;
+
+//Allocate memory for effects manager and steup
 EffectsManager effectsManager;
-EffectsManagerUpdateReturn *uRet = (EffectsManagerUpdateReturn*)calloc(numStrips, sizeof(EffectsManagerUpdateReturn));
+EffectsManagerUpdateReturn *uRet = (EffectsManagerUpdateReturn*)calloc(1, sizeof(EffectsManagerUpdateReturn));
 
 //Allocate memory for strips
-Strip *strips = (Strip*)calloc(numStrips, sizeof(Strip));;
+Strip *strips = (Strip*)calloc(numStrips, sizeof(Strip));
 
 //Allocation memory for Lighting Sequences
 LightingSequence* seqs1 = (LightingSequence*)calloc(numEffects1, sizeof(LightingSequence));
-LightingSequence* seqs2 = (LightingSequence*)calloc(numEffects2, sizeof(LightingSequence));
+
+//End of Allocate Lighting Effect Memory for MCU: MCU1**************************************************************************************
+
+//Tenp variables
+uint16_t elapsedTime, prevTime;
 
 void setup()
 {
@@ -36,33 +46,43 @@ void setup()
 	Serial.begin(115200);
 	Serial.println("Capturing serial output on ProTrinket");
 
-	//Setup lighting sequences 1
-	seqs1[0] = { RAINBOW, numPixels1, "0,0,0,0,0 ", 200, 7000, 1, 2, 100, 0, 0 };//rainbow effect
-	seqs1[1] = { FLOWTHROUGH, numPixels1, "0,1,2,0,2,1,0 ", 200, 11000, 0, 44, 100, 0, 0 };//flowthrough effect
-	seqs1[2] = { LOADCOLOR, numPixels1, "0,4,0,4,0 ", 500, 4000, 0, 0, 10, 0, 0 };//load color effect
-	seqs1[3] = { BOUNCEBACK, numPixels1, "0,0,1,2,0 ", 200, 4000, 4, 2, 150, 0, 0 };//bounceback effect
-	seqs1[4] = { FLOWTHROUGH, numPixels1, "0,4,0,4,0 ", 200, 11000, 0, 44, 100, 0, 0 };//flowthrough effect
+  //Initialize Lighting Effects for MCU: MCU1*****************************************************************************************
 
-	//Initialize strip 1
-	strips[0] = Strip(numPixels1, 8, 6, DOTSTAR_RGB, seqs1, numEffects1);
-	strips[0].getStrip()->begin();
-	strips[0].getStrip()->show();
+  seqs1[0] = {FLOWTHROUGH, numPixels1, "4,0,4,0,4,0,4,0,4,0,4,0,4,0,4,0,4,0,4,0 ", 800, 9000, 100, 100, 100, 20, 800};
+  seqs1[1] = {BOUNCEBACK, numPixels1, "4,0,4,0,0,0,0,0,0,0,4,0,4,0,0,0,0,0,0,0 ", 400, 4000, 100, 100, 100, 50, 600};
+  seqs1[2] = {FLOWTHROUGH, numPixels1, "4,0,4,4,0,4,0,4,0,4,4,0,4,4,0,4,0,4,0,4 ", 200, 4000, 100, 100, 100, 80, 200};
+  seqs1[3] = {BOUNCEBACK, numPixels1, "4,1,4,0,0,0,0,0,0,0,4,1,4,0,0,0,0,0,0,0 ", 100, 4000, 100, 100, 100, 120, 100};
+  seqs1[4] = {ALLCLEAR, numPixels1, "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ", 0, 3000, 0, 0, 255, 0, 0};
+  seqs1[5] = {LOADCOLOR, numPixels1, "1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 ", 500, 5000, 0, 0, 100, 150, 500};
+  seqs1[6] = {LOADCOLOR, numPixels1, "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4 ", 300, 3000, 0, 0, 255, 150, 300};
+  seqs1[7] = {LOADCOLOR, numPixels1, "1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 ", 3000, 3000, 0, 0, 150, 100, 300};
+  seqs1[8] = {LOADCOLOR, numPixels1, "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4 ", 7000, 7000, 0, 0, 100, 100, 200};
+  seqs1[9] = {LOADCOLOR, numPixels1, "1,4,1,4,1,4,1,4,1,4,1,4,1,4,1,4,1,4,1,4 ", 6000, 6000, 0, 0, 150, 150, 400};
+  seqs1[10] = {LOADCOLOR, numPixels1, "4,1,4,1,4,1,4,1,4,1,4,1,4,1,4,1,4,1,4,1 ", 2000, 2000, 0, 0, 150, 150, 400};
+  seqs1[11] = {FLOWTHROUGH, numPixels1, "1,1,4,1,1,4,1,1,4,1,1,1,4,1,1,4,1,1,4,1 ", 100, 8000, 100, 100, 150, 150, 100};
+  seqs1[12] = {FLOWTHROUGH, numPixels1, "4,4,1,4,4,1,4,4,1,4,4,4,1,4,4,1,4,4,1,4 ", 100, 2000, 100, 100, 150, 150, 100};
+  seqs1[13] = {FLOWTHROUGH, numPixels1, "1,1,1,4,1,1,1,4,1,1,1,1,1,4,1,1,1,4,1,1 ", 100, 3000, 100, 100, 150, 200, 100};
+  seqs1[14] = {FLOWTHROUGH, numPixels1, "4,1,4,1,4,1,4,1,4,1,4,1,4,1,4,1,4,1,4,1 ", 100, 2000, 100, 100, 150, 200, 100};
+  seqs1[15] = {BOUNCEBACK, numPixels1, "0,0,0,4,1,1,4,0,0,0,0,0,0,4,1,1,4,0,0,0 ", 100, 6000, 100, 100, 150, 200, 100};
+  seqs1[16] = {BOUNCEBACK, numPixels1, "0,4,4,1,1,1,1,4,4,0,0,4,4,1,1,1,1,4,4,0 ", 100, 7000, 100, 100, 255, 255, 100};
+  
+  //End of Initialize Lighting Effects for MCU: MCU1*****************************************************************************************
+  
+  //Initialize Strips for MCU: MCU1***************************************************************************************************
+  
+  strips[0] = Strip(numPixels1, 4, 5, DOTSTAR_RGB, seqs1, numEffects1);
+  strips[0].getStrip()->begin();
+  strips[0].getStrip()->show();
+  
+  
+  //End of Initialize Strips for MCU: MCU1***************************************************************************************************
 
-	//Setup lighting sequences 2
-	seqs2[0] = { LOADCOLOR, numPixels2, "5,4,3,2,1 ", 5000, 5000, 0, 0 };//load color effect
-	seqs2[1] = { FLOWTHROUGH, numPixels2, "0,2,3,2,0 ", 200, 5000, 0, 20 };//flowthrough effect
-	//seqs2[2] = { CLEAR, numPixels2, " ", 0, 0, 0, 0 };//clear effect
-	seqs2[2] = { BOUNCEBACK, numPixels2, "0,3,3,2,0 ", 200, 8000, 8, 8 };//bounceback effect
-	//seqs2[4] = { RAINBOW, numPixels2, "5,4,3,2,1 ", 200, 6000, 1, 2 };//rainbow effect
-
-	//Initiliaze strip 2
-	strips[1] = Strip(numPixels2, 4, 5, DOTSTAR_RGB, seqs2, numEffects2);
-	strips[1].getStrip()->begin();
-	strips[1].getStrip()->show();
-	
-	//Initiliaze effects manager
-	effectsManager = EffectsManager(strips, numStrips);
-	effectsManager.effectsManagerUpdateRet = uRet;
+   
+  //Initialize effects manager
+  effectsManager = EffectsManager(strips, numStrips);
+  effectsManager.effectsManagerUpdateRet = uRet;
+  
+  //End of Initialize Effects Manager for MCU: MCU1***************************************************************************************
 
 	Serial.print("Strip 2 details - the number of sequences are ");
 	Serial.println(effectsManager.getStrips()[1].getCountSeqs());

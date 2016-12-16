@@ -1,4 +1,13 @@
-﻿using System;
+﻿/*
+	Author: Aaron Branch, Zach Jarmon, Peter Martinez
+	Created: 
+	Last Modified:
+	Class: .cs
+	Class Description:
+		
+*/
+
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -14,6 +23,11 @@ namespace LEDLightingComposer
         private List<DrawableObject> drawableObjects;
 
         /*
+            Function:
+
+            Parameters:
+
+            Returns:
         */
         public DrawingManager()
         {
@@ -22,6 +36,11 @@ namespace LEDLightingComposer
         }
 
         /*
+            Function:
+
+            Parameters:
+
+            Returns:
         */
         public void draw(Graphics g, int bottom, int right)
         {
@@ -36,6 +55,11 @@ namespace LEDLightingComposer
         }
 
         /*
+            Function:
+
+            Parameters:
+
+            Returns:
         */
         public DrawableObject getDrawableObject(String Type, String Value1)
         {
@@ -66,6 +90,11 @@ namespace LEDLightingComposer
         }
 
         /*
+            Function:
+
+            Parameters:
+
+            Returns:
         */
         internal List<DrawableObject> DrawableObjects
         {
