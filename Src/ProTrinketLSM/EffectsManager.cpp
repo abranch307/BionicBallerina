@@ -1,6 +1,13 @@
-// 
-// 
-// 
+/*
+	Author: Aaron Branch, Zach Jarmon, Peter Martinez
+	Created:
+	Last Modified: 12/16/2016
+	Class: Effects Manager.cpp
+	Class Description:
+		This class manages multiple strips connected to a single ProTrinket 5V microcontroller to
+		make sure they light up during proper times, and in synchronization with each other.
+
+*/
 
 #ifndef _EFFECTSMANAGER_h
 	#include "EffectsManager.h"
@@ -20,7 +27,14 @@ EffectsManager::EffectsManager(Strip *strips, int8_t numStrips) {
 	prevTime = -1;
 	countStrips = numStrips;
 }
+/*
+	Method: Update
+	Parameters: elapsedTime: unsigned long
+	Return: void
+	Description: itterates through each strip currently being managed and updates their current
+		time in the performance
 
+*/
 void EffectsManager::Update(unsigned long elapsedTime) {
 	//Declare variables
 
@@ -36,7 +50,13 @@ void EffectsManager::Update(unsigned long elapsedTime) {
 		//Serial.println(i + 1);
 	}
 }
+/*
+	Method: getElapsedTime
+	Parameters: currentTime: unsigned long
+	Return: elapsed time: uint16_t
+	Description: Given the current time, calculates time since this method was last called.
 
+*/
 uint16_t EffectsManager::getElapsedTime(unsigned long currentTime) {
 	//Declare variables
 	uint16_t elapsedTime;
@@ -52,7 +72,13 @@ uint16_t EffectsManager::getElapsedTime(unsigned long currentTime) {
 
 	return elapsedTime;
 }
+/*
+	Method: resumePerformance
+	Parameters: performanceTime: unsigned long
+	Return: true if sucesfully resumed, false otherwise
+	Description: Resumes all strips from their paused states.
 
+*/
 bool EffectsManager::resumePerformance(unsigned long performanceTime) {
 	prevTime = -1;
 
@@ -61,7 +87,13 @@ bool EffectsManager::resumePerformance(unsigned long performanceTime) {
 		strips2Manage[i].findCurrentSeqFromPerformanceTime(performanceTime);
 	}
 }
+/*
+	Method: resetPerformance
+	Parameters: none
+	Return: true if sucesfully reset, false otherwise
+	Description: resets all variables to initial values
 
+*/
 bool EffectsManager::resetPerformance() {
 	//Reset global variables
 	performanceElapsedTime = 0;
@@ -72,7 +104,12 @@ bool EffectsManager::resetPerformance() {
 		strips2Manage[i].resetPerformance();
 	}
 }
-
+/*
+	Method: clearStrips
+	Parameters: none
+	Return: true if sucesfully cleared, false otherwise
+	Description: turns all LEDs on all strips off.
+*/
 bool EffectsManager::clearStrips() {
 	//Clear strips
 	for (int i = 0; i < countStrips; i++) {
@@ -80,7 +117,12 @@ bool EffectsManager::clearStrips() {
 		strips2Manage[i].getStrip()->clear();
 	}
 }
+/*
+	Method: findCurrentSeqFromPerformanceTime
+	Parameters: performanceTime: unsigned long
+	Return: true if sucesfully retrieved, false otherwise
 
+*/
 bool EffectsManager::findCurrentSeqFromPerformanceTime(unsigned long performanceTime) {
 	//Reset global variables
 	performanceElapsedTime = performanceTime;
@@ -91,11 +133,23 @@ bool EffectsManager::findCurrentSeqFromPerformanceTime(unsigned long performance
 		strips2Manage[i].findCurrentSeqFromPerformanceTime(performanceTime);
 	}
 }
+/*
+	Method: getStrips
+	Parameters: none
+	Return: Strips2Manage: Strip * 
+	Description: Return a pointer to managed strips
 
+*/
 Strip* EffectsManager::getStrips() {
 	return strips2Manage;
 }
+/*
+	Method: getPerformanceElapsedTime
+	Parameters: none
+	Return: performanceElapsedTime: unsigned long
+	Description: Return the current elapsed tiem of the performance
 
+*/
 unsigned long EffectsManager::getPerformanceElapsedTime() {
 	return performanceElapsedTime;
 }
