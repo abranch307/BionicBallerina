@@ -2,9 +2,9 @@
 	Author: Aaron Branch, Zach Jarmon, Peter Martinez
 	Created: 
 	Last Modified:    
-	Class: .cs
+	Class: SynchronizedCommandSend.cs
 	Class Description:
-		This class 
+		This class handles the sending of https request with commands in a synchronized fashion to WiFi modules 
 */
 
 using System;
@@ -40,8 +40,12 @@ namespace LEDLightingComposer
 
         /*
             Function SynchronizedSend:
-            This method will send an http request to ESP8266 using passed ip address and set list element to true (mainly to verify that ESP8266 is
-            reachable), then wait until ESP8266SequenceStarter's allReady is true to send signal to ESP8266
+                This method will send an http request to ESP8266 using passed ip address and set list element to true (mainly to verify that ESP8266 is
+                reachable), then wait until ESP8266SequenceStarter's allReady is true to send signal to ESP8266
+
+            Parameters: None
+
+            Returns: Nothing
         */
         public void SynchronizedSend()
         {

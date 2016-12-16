@@ -2,9 +2,10 @@
 	Author: Aaron Branch, Zach Jarmon, Peter Martinez
 	Created: 
 	Last Modified:
-	Class: .cs
+	Class: DrawingManager.cs
 	Class Description:
-		
+		This class handles the drawing of a list of drawableobjects to screen by calling each of their "draw" methods when
+        invoked from other controlling classes
 */
 
 using System;
@@ -23,7 +24,7 @@ namespace LEDLightingComposer
         private List<DrawableObject> drawableObjects;
 
         /*
-            Function:
+            Function: 
 
             Parameters:
 

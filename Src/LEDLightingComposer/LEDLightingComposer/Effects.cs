@@ -1,4 +1,14 @@
-﻿using System;
+﻿/*
+	Author: Aaron Branch, Zach Jarmon, Peter Martinez
+	Created: 
+	Last Modified:
+	Class: Effects.cs
+	Class Description:
+		This class handles performing different pre-defined effects for led strips.  It aides in the simulating of an led strip on-screen
+        by updating of led elements' colors from drawableobjects according to the strips values and the effect being executed
+*/
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;

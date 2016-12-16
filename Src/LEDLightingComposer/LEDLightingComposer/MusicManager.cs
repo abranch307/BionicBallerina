@@ -429,8 +429,8 @@ namespace LEDLightingComposer
                                 return;
                             }
 
-                            //Send start signal and Synchronize MCUs
-                            if(!HttpRequestResponse.sendStartHTTPSCommand("STOP", llc.getSelectedIPAddresses(), null))
+                            //Send stop signal and Synchronize MCUs
+                            if(!HttpRequestResponse.sendHTTPSCommandToWiFiModules(HttpRequestResponse.Command.Stop, llc.getSelectedIPAddresses(), null))
                             {
                                 MessageBox.Show("Stopping performance on microcontrollers failed...");
                             }
@@ -486,8 +486,8 @@ namespace LEDLightingComposer
                                 return;
                             }
 
-                            //Send start signal and Synchronize MCUs
-                            if(!HttpRequestResponse.sendStartHTTPSCommand("PAUSE", llc.getSelectedIPAddresses(), null))
+                            //Send pause signal and Synchronize MCUs
+                            if(!HttpRequestResponse.sendHTTPSCommandToWiFiModules(HttpRequestResponse.Command.Pause, llc.getSelectedIPAddresses(), null))
                             {
                                 MessageBox.Show("Pausing performance on microcontrollers failed...");
                             }
@@ -545,12 +545,12 @@ namespace LEDLightingComposer
                             //Send performance time to update in mcus
                             if (llc.getSelectedIPAddresses() != null && llc.getSelectedIPAddresses().Count > 0)
                             {
-                                if (HttpRequestResponse.sendStartHTTPSCommand("UPDATETIME", llc.getSelectedIPAddresses(), Convert.ToString(Decimal.ToInt32(Decimal.Parse(convertTimeToSeconds(this.timer.Text)) * 1000))))
+                                if (HttpRequestResponse.sendHTTPSCommandToWiFiModules(HttpRequestResponse.Command.UpdateTime, llc.getSelectedIPAddresses(), Convert.ToString(Decimal.ToInt32(Decimal.Parse(convertTimeToSeconds(this.timer.Text)) * 1000))))
                                 {
                                     //Delay for a few seconds
                                     System.Threading.Thread.Sleep(1000);
                                     //Send start signal and Synchronize MCUs
-                                    if (!HttpRequestResponse.sendStartHTTPSCommand("START", llc.getSelectedIPAddresses(), null))
+                                    if (!HttpRequestResponse.sendHTTPSCommandToWiFiModules(HttpRequestResponse.Command.Start, llc.getSelectedIPAddresses(), null))
                                     {
                                         MessageBox.Show("Starting performance on microcontrollers failed...");
                                     }

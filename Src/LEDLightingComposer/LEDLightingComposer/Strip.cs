@@ -4,7 +4,9 @@
 	Last Modified:    
 	Class: .cs
 	Class Description:
-		This class 
+		This class holds lighting sequence structs and information about simulated led strip that allows the leds to be
+        drawn to screen.  It also updates the effects when needed and calls functions to change the led color on leds
+        in the list of drawable objects that are drawn to screen
 */
 
 using System;
@@ -51,6 +53,13 @@ namespace LEDLightingComposer
             8 - Orange
         */
 
+        /*
+            Function:
+
+            Parameters:
+
+            Returns:
+        */
         public Strip(String StripName, int PinSetup, List<Structs.LightingSequence> LightingSequences, DrawingManager DManager)
         {
             this.stripName = StripName;
@@ -69,8 +78,11 @@ namespace LEDLightingComposer
         }
 
         /*
-            Function: updateLEDEffects
+            Function:
 
+            Parameters:
+
+            Returns:
         */
         public bool update(long currentPerformanceTime)
         {
@@ -231,6 +243,13 @@ namespace LEDLightingComposer
             return bRet;
         }
 
+        /*
+            Function:
+
+            Parameters:
+
+            Returns:
+        */
         public bool findCurrentSeqFromPerformanceTime(long performanceTime)
         {
             //Declare variables
@@ -281,6 +300,11 @@ namespace LEDLightingComposer
         }
 
         /*
+            Function:
+
+            Parameters:
+
+            Returns:
         */
         private void advanceEffectToDuration(int TimesThroughDelayTime)
         {
@@ -346,6 +370,13 @@ namespace LEDLightingComposer
             }
         }
 
+        /*
+            Function:
+
+            Parameters:
+
+            Returns:
+        */
         private int accountForOverShift(int PixelPosition, int TotalPixels)
         {
             //Declare variables
@@ -362,6 +393,13 @@ namespace LEDLightingComposer
             return pixelShift;
         }
 
+        /*
+            Function:
+
+            Parameters:
+
+            Returns:
+        */
         public bool resetPerformance()
         {
             //Declare variables
@@ -373,6 +411,13 @@ namespace LEDLightingComposer
             return bRet;
         }
 
+        /*
+            Function:
+
+            Parameters:
+
+            Returns:
+        */
         private bool resetGlobalVars()
         {
             //countSeqs = 0;
@@ -400,6 +445,13 @@ namespace LEDLightingComposer
             return true;
         }
 
+        /*
+            Function:
+
+            Parameters:
+
+            Returns:
+        */
         private bool partialResetGlobalVars()
         {
             init = true;
@@ -423,6 +475,13 @@ namespace LEDLightingComposer
             return true;
         }
 
+        /*
+            Function:
+
+            Parameters:
+
+            Returns:
+        */
         private int getHeadofLED()
         {
             //Declare variables
@@ -440,6 +499,13 @@ namespace LEDLightingComposer
             return head;
         }
 
+        /*
+            Function:
+
+            Parameters:
+
+            Returns:
+        */
         private int getTailofLED()
         {
             //Declare variables
@@ -457,6 +523,9 @@ namespace LEDLightingComposer
 
             return tail;
         }
+
+
+        #region Getters & Setters
 
         public List<Structs.LightingSequence> LSeqs
         {
@@ -736,5 +805,8 @@ namespace LEDLightingComposer
                 virtualPixelArray = value;
             }
         }
+
+
+        #endregion Getters & Setters
     }
 }

@@ -1,4 +1,16 @@
-﻿using System;
+﻿/*
+	Author: Aaron Branch, Zach Jarmon, Peter Martinez
+	Created: 
+	Last Modified:
+	Class: DrawableObject.cs
+	Class Description:
+		This class holds information for different types of components that can be drawn on screen.  The main components are led strips
+        and text, but deriving a class from this one and setting up a new type with specific values can add new elements that can be drawn
+        on-screen like a stick figure that the leds attach to...
+
+*/
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;

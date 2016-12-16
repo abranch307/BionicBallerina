@@ -2,9 +2,9 @@
 	Author: Aaron Branch, Zach Jarmon, Peter Martinez
 	Created: 
 	Last Modified:    
-	Class: .cs
+	Class: Structs.cs
 	Class Description:
-		This class 
+		This class holds different struct elements needed by other classes 
 */
 
 using System;

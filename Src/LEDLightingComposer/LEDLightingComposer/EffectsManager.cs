@@ -2,9 +2,11 @@
 	Author: Aaron Branch, Zach Jarmon, Peter Martinez
 	Created: 
 	Last Modified:    
-	Class: .cs
+	Class: EffectsManager.cs
 	Class Description:
-		This class 
+		This class controls the synchronization of the leds drawn on screen with the music by keeping track of the
+        elapsed time between calls to this function and sending the elapsed time to the simulated led strip so it
+        can update its led components before being drawn to screen
 */
 
 using System;

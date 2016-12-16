@@ -1,4 +1,15 @@
-﻿using System;
+﻿/*
+	Author: Aaron Branch, Zach Jarmon, Peter Martinez
+	Created: 
+	Last Modified:
+	Class: SearchBrowser.cs
+	Class Description:
+		This class handles opening a windows form and allowing a user to select existing projects
+        to load into datagridview and drawing panel
+
+*/
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -18,6 +29,15 @@ namespace LEDLightingComposer
         private LEDLightingComposerCS llc;
         private DrawingManager dmanager;
 
+        /*
+            Function: SearchBrowser
+                Default constructor.  Initializes global variables and windows form components
+
+            Parameters: DataGridView ProjectGrid - , DatabaseManager DBManager - , 
+                LEDLightingComposerCS LLC - , DrawingManager DManager -
+
+            Returns: 
+        */
         public SearchBrowser(DataGridView ProjectGrid, DatabaseManager DBManager, LEDLightingComposerCS LLC, DrawingManager DManager)
         {
             InitializeComponent();
@@ -32,23 +52,20 @@ namespace LEDLightingComposer
             dbmanager.loadAllProjects2SearchGrid(this.dataGridView1);
         }
 
-        private void btnExit_Click(object sender, EventArgs e)
-        {
-            this.Close();
-        }
+        /*
+            Function: 
 
-        private void btnSelect_Click(object sender, EventArgs e)
-        {
-            dataGridView1_CellDoubleClick(null, null);
-        }
+            Parameters:
 
+            Returns: 
+        */
         private void dataGridView1_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             //Verify current row selected
             if (dataGridView1.CurrentRow != null && dataGridView1.CurrentCell != null)
             {
                 //Load project into Project Grid
-                if (dbmanager.loadProjects2ProjectGrid(dataGridView1.Rows[dataGridView1.CurrentRow.Index].Cells[0].Value.ToString().Trim(), projectGrid) > -1)
+                if (dbmanager.loadProjects2ProjectGrid(dataGridView1.Rows[dataGridView1.CurrentRow.Index].Cells[0].Value.ToString().Trim(), projectGrid))
                 {
                     //Update Effect Manager's strips
                     EffectsManager.replaceStrips(projectGrid);
@@ -66,6 +83,30 @@ namespace LEDLightingComposer
                     this.Close();
                 }
             }
+        }
+
+        /*
+            Function: 
+
+            Parameters:
+
+            Returns: 
+        */
+        private void btnSelect_Click(object sender, EventArgs e)
+        {
+            dataGridView1_CellDoubleClick(null, null);
+        }
+
+        /*
+            Function: 
+
+            Parameters:
+
+            Returns: 
+        */
+        private void btnExit_Click(object sender, EventArgs e)
+        {
+            this.Close();
         }
     }
 }
