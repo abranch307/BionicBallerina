@@ -32,11 +32,45 @@ bool Effects_MockObject::allClear_Test(LightingSequence* lseqs, uint16_t current
 bool Effects_MockObject::loadColor_Test(LightingSequence* lseqs, uint16_t currentSequence, uint16_t shiftPixelToLoad) {
 	bool bret = false;
 
+	if (lseqs == NULL) {
+		return bret;
+	}
+	try {
+		for (int i = 0; i < lseqs[currentSequence].totalPixels; i++) {
+			Effects_MockObject::theStrip[i] = i;
+		}
+
+		bret = true;
+	}
+	catch (...) {
+		bret = false;
+	}
 	return bret;
 }
 bool Effects_MockObject::bounceBack_Test(LightingSequence* lseqs, uint16_t currentSequence, bool* init, bool* forward, int16_t *shiftPixelsBy, int16_t* tail, int16_t* head, uint16_t* bounces, uint16_t initHead, uint16_t initTail) {
 	bool bret = false;
+	if (lseqs == NULL) {
+		return bret;
+	}
+	try {
+		if (*forward) {
+			for (int i = lseqs[currentSequence].totalPixels-1; i > 0; i--) {
+				Effects_MockObject::theStrip[i] = Effects_MockObject::theStrip[i - 1];
+			}
+			Effects_MockObject::theStrip[0] = 0;
+		}
+		else {
+			for (int i = 0; i < lseqs[currentSequence].totalPixels - 1; i++) {
+				Effects_MockObject::theStrip[i] = Effects_MockObject::theStrip[i - 1];
+			}
+			Effects_MockObject::theStrip[2] = 0;
+		}
 
+		bret = true;
+	}
+	catch (...) {
+		bret = false;
+	}
 	return bret;
 }
 bool Effects_MockObject::flowThrough_Test(LightingSequence* lseqs, uint16_t currentSequence, int16_t* i, bool isRainbow, int16_t* p0, int16_t* p1, int16_t* p2, int16_t* p3, int16_t* p4, int16_t* p5, int16_t* virtualPixelIndexArray) {
