@@ -344,8 +344,7 @@
             this.Controls.Add(this.lblTimer);
             this.Controls.Add(this.dgvProjectData);
             this.Name = "LEDLightingComposerCS";
-            this.Text = "LED Lighting Composer";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.LEDLightingComposer_FormClosing);
+            this.Text = "DotStar Effects Composer GUI";
             this.Resize += new System.EventHandler(this.LEDLightingComposerCS_Resize);
             ((System.ComponentModel.ISupportInitialize)(this.dgvProjectData)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.WMPlayer)).EndInit();

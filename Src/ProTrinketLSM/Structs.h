@@ -29,7 +29,7 @@ struct CommaDelimitReturn {
 Lighting Sequence Struct
 DelayTime is milliseconds
 
-72 bits + arbitrary char* variables
+144 bits + arbitrary char* variables
 */
 struct LightingSequence {
 	uint8_t lightsequence;

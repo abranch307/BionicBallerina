@@ -1,4 +1,14 @@
-﻿using System;
+﻿/*
+	Author: Aaron Branch, Zach Jarmon, Peter Martinez
+	Created: 
+	Last Modified:
+	Class: DrawingManager.cs
+	Class Description:
+		This class handles the drawing of a list of drawableobjects to screen by calling each of their "draw" methods when
+        invoked from other controlling classes
+*/
+
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -14,6 +24,11 @@ namespace LEDLightingComposer
         private List<DrawableObject> drawableObjects;
 
         /*
+            Function: 
+
+            Parameters:
+
+            Returns:
         */
         public DrawingManager()
         {
@@ -22,6 +37,11 @@ namespace LEDLightingComposer
         }
 
         /*
+            Function:
+
+            Parameters:
+
+            Returns:
         */
         public void draw(Graphics g, int bottom, int right)
         {
@@ -36,6 +56,11 @@ namespace LEDLightingComposer
         }
 
         /*
+            Function:
+
+            Parameters:
+
+            Returns:
         */
         public DrawableObject getDrawableObject(String Type, String Value1)
         {
@@ -66,6 +91,11 @@ namespace LEDLightingComposer
         }
 
         /*
+            Function:
+
+            Parameters:
+
+            Returns:
         */
         internal List<DrawableObject> DrawableObjects
         {

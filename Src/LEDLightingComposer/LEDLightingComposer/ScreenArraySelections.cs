@@ -67,6 +67,9 @@ namespace LEDLightingComposer
                 //Set global variables to passed variables
                 this.ledCArray = LEDCArray;
 
+                //Add global color changing panel
+                createAndAdd2Panel("GLOBAL", null, 0);
+
                 //If list is empty, create new blank text boxes for each led, otherwise load existing array if numLEDs = list length
                 if (ledCArray.Count > 0 && ledCArray.Count == NumLEDs)
                 {
@@ -81,7 +84,7 @@ namespace LEDLightingComposer
                     //Load new comboboxes into panel
                     for (int i = 0; i < NumLEDs; i++)
                     {
-                        createAndAdd2Panel("", null, i);
+                        createAndAdd2Panel(" ", null, i);
                     }
                 }
             }else if (type.Equals("IP"))
@@ -104,7 +107,7 @@ namespace LEDLightingComposer
                     //Load existing array into panel
                     for (int i = 0; i < foundIPAddresses.Count; i++)
                     {
-                        createAndAdd2Panel(null, new Dictionary<string, bool>() { {FoundIPAddresses.Keys.ElementAt(i), foundIPAddresses.Values.ElementAt(i) } }, i);
+                        createAndAdd2Panel("", new Dictionary<string, bool>() { {FoundIPAddresses.Keys.ElementAt(i), foundIPAddresses.Values.ElementAt(i) } }, i);
                     }
                 }
             }
@@ -115,6 +118,7 @@ namespace LEDLightingComposer
         {
             //Create new textbox, add to list, and then add to panel
             Label lbl = new Label();
+            bool globalColor = text.Trim().Equals("GLOBAL") ? true : false;
 
             if (type.Equals("LED"))
             {
@@ -143,12 +147,26 @@ namespace LEDLightingComposer
             }
             else if (type.Equals("COLOR"))
             {
-                //Create Label
-                lbl.Text = "Color Selection: " + count;
-                lbl.Top = 25 * count;
-
+                //Create new combo box
                 ComboBox cbox = new ComboBox();
-                comboBoxes.Add(cbox);
+
+                //Create Label
+                if (globalColor)
+                {
+                    lbl.Text = "Global Color Selection";
+                    lbl.Top = 0;
+                    lbl.Left = 250;
+                    lbl.Width = 150;
+                }
+                else
+                {
+                    lbl.Text = "Color Selection: " + count;
+                    lbl.Top = 25 * count;
+
+                    //Add combo box to array for later saving to list
+                    comboBoxes.Add(cbox);
+                }
+
                 cbox.Items.AddRange(new object[] {
                 "0 - Clear",
                 "1 - White",
@@ -159,7 +177,7 @@ namespace LEDLightingComposer
                 "6 - Cyan",
                 "7 - Magenta",
                 "8 - Orange"});
-                if (text.Trim().Equals(""))
+                if (text.Trim().Equals("") || globalColor)
                 {
                     cbox.SelectedIndex = 0;
                 }
@@ -167,8 +185,18 @@ namespace LEDLightingComposer
                 {
                     cbox.SelectedItem = text;
                 }
-                cbox.Top = 25 * count;
-                cbox.Left = 100;
+
+                if (globalColor)
+                {
+                    cbox.Top = 25;
+                    cbox.Left = 250;
+                    cbox.SelectedIndexChanged += Cbox_SelectedIndexChanged;
+                }
+                else
+                {
+                    cbox.Top = 25 * count;
+                    cbox.Left = 100;
+                }
 
                 this.panel1.Controls.Add(cbox);
             }
@@ -200,6 +228,12 @@ namespace LEDLightingComposer
 
             //Add label
             this.panel1.Controls.Add(lbl);
+        }
+
+        private void Cbox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            //Change all cboxes to this selected index
+            comboBoxes.ForEach(cb => cb.SelectedIndex = ((ComboBox)sender).SelectedIndex);
         }
 
         private void btnRefresh_Click(object sender, EventArgs e)

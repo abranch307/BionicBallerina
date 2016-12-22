@@ -1,4 +1,14 @@
-﻿using System;
+﻿/*
+	Author: Aaron Branch, Zach Jarmon, Peter Martinez
+	Created: 
+	Last Modified:    
+	Class: LED.cs
+	Class Description:
+		This class holds information about the position, shape, and color of itself, which is a representation
+        of an led.  This led is used in a list where the leds can be grouped to look like a led strip
+*/
+
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;

@@ -1,4 +1,21 @@
-﻿using System;
+﻿/*
+	Author: Aaron Branch, Zach Jarmon, Peter Martinez
+	Created: 
+	Last Modified:
+    Program Description:
+        This program allows a user to take pre-configured lighting effects, compose them for multiple led strips
+        across multiple microcontrollers, save composed effects as a project, export composed effects to a txt file 
+        which can be compiled into microcontrollers later.  This program also allows the user to select multiple
+        ip addresses to mutliple WiFi modules and send commands to synchronize performances with music running
+        through this program's Windows Media Player component
+	Class: LEDLightingComposer.cs
+	Class Description:
+		This class initializes the components for the main LEDLighting Composer windows form, as well as all used
+        classes in the program.  Different screen events are passed to specific classes to handle if relevant to
+        that class, otherwise the screen even is handled by this class.
+*/
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -14,13 +31,17 @@ namespace LEDLightingComposer
     public partial class LEDLightingComposerCS : Form
     {
         //Declare global variables
-        private MusicManager musicmanager;
-        private DatabaseManager databasemanager;
-        private DrawingManager composerDrawManager;
-        private System.Windows.Forms.Timer screenRefreshTimer;
-        private Dictionary<String, bool> foundIPAddresses = new Dictionary<string, bool>();
-        private WaitDialog waitDialogBox;
+        private MusicManager musicmanager; //Class that manages the AXWindowsMediaPlayer object and synchronizing WiFi modules with music
+        private DatabaseManager databasemanager; //Class that manages saving, updating, and deleting projects in the MariaDB database
+        private DrawingManager composerDrawManager; //Class that manages the drawing of objects onto the panel on screen
+        private System.Windows.Forms.Timer screenRefreshTimer; //Controls the updating of drawing elements and timer label on screen through its own thread
+        private Dictionary<String, bool> foundIPAddresses = new Dictionary<string, bool>(); //Holds found ip addresses from pings found through HTTPSRequestResponse class methods
+        private WaitDialog waitDialogBox; //Global wait dialog box used throughout this class
 
+        /*
+            Default constructor
+                Initializes helper classes, anchors screen components, and sets screen defaults
+        */
         public LEDLightingComposerCS()
         {
             InitializeComponent();
@@ -65,15 +86,19 @@ namespace LEDLightingComposer
             screenRefreshTimer.Interval = 100; /* 100 millisec */
             screenRefreshTimer.Tick += new EventHandler(TimerCallback);
         }
-        
+
+        #region Public Methods
+
         /*
             Function: startTicker
-            This function will start a new thread which will increment "Timer - Secs" textbox on main
-            "LED Lighting Composer" screen.  This will happen only while media player's "is playing" is true
+                This function will start a new thread which will increment "Timer - Secs" textbox on main
+                "LED Lighting Composer" screen by calling the updateLabelThreadProc method.  This will happen 
+                only while media player's "isPlaying" variable is true which also lends to closing the thread 
+                when the "isPlaying" variable is set to false
 
             Parameters: none
 
-            Returns: nothing
+            Returns: Thread - a started thread that runs the updateLabelThreadProc method
         */
         public Thread startTicker()
         {
@@ -87,165 +112,18 @@ namespace LEDLightingComposer
         }
 
         /*
+            Function: mcuIPSetupAndWait
+                Pings all ip addresses on computer's/device's and displays them, along with
+                their hostname if available, in a new screen for user to select WiFi modules
+                with which to synchronize Music from Windows Media Player (AxWindowsMediaPlayer)
+            
+            Parameters: None
+
+            Returns: List<String> - ip address returned from pinging network or ip addresses that were remembered
+                from user's previous selection (If user has selected ip addresses, no ping will be done so user
+                doesn't have to re-select their ip addresses.  User has to refresh to get new ip addresses)
         */
-        public void mcuIPSetupAndWait()
-        {
-            //Declare variables
-            List<String> ipAddresses = new List<string>();
-
-            //Skip getting new ip addresses if foundIPAddresses is not empty
-            if (foundIPAddresses == null || foundIPAddresses.Count <= 0)
-            {
-                //Create new dictionary
-                foundIPAddresses = new Dictionary<string, bool>();
-
-                //Get IP Addresses on network
-                ipAddresses = HttpRequestResponse.getAllIPAddressesOnNetwork();
-
-                try
-                {
-                    //Add to dictionary
-                    foreach (String str in ipAddresses)
-                    {
-                        foundIPAddresses.Add(str, false);
-                    }
-                }
-                catch (Exception ex)
-                {
-
-                }
-            }
-
-            try
-            {
-                //Show screen for user IP address selection
-                ScreenArraySelections ledp = new ScreenArraySelections("IP", foundIPAddresses.Count, null, null, foundIPAddresses);
-                ledp.Owner = this;
-                var diagResult = ledp.ShowDialog();
-                
-            }
-            catch (Exception ex)
-            {
-                
-            }
-        }
-
-        #region Private Methods
-
-        /*
-            Function: TimerCallback
-            Invalidates Windows Form so form can be redrawn (mainly for LED redrawing).  Also
-            calls LEDStripEffect's updateLEDEffects function from Drawing Manager if isPlaying 
-            is true for MusicManager class.
-
-            Parameters: object & eventargs
-
-            Returns: nothing
-        */
-        private void TimerCallback(object sender, EventArgs e)
-        {
-            //Invalidate panel here?
-
-            //Call LEDStripEffect's updateLEDEffects function from DrawingManager if musicmanager's isPlaying is true
-            if (musicmanager.isPlaying && !musicmanager.settingUp)
-            {
-                //Invalidate Windows Form so screen can be redrawn
-                this.Invalidate();
-
-                //Update Effects Manager and its strips performance time
-                //EffectsManager.updatePerformance(EffectsManager.getElapsedTime(DateTime.Now.Millisecond));
-                EffectsManager.updatePerformance(EffectsManager.getElapsedTime());
-            }
-            return;
-        }
-
-        /*
-        */
-        private void updateLabelThreadProc()
-        {
-            while (musicmanager.isPlaying)
-            {
-                try
-                {
-                    this.BeginInvoke(new MethodInvoker(UpdateLabel));
-                }catch(Exception ex)
-                {
-
-                }
-                System.Threading.Thread.Sleep(1000);
-            }
-        }
-
-        private void UpdateLabel()
-        {
-            musicmanager.UpdateLabel();
-        }
-
-        #endregion Private Methods
-
-        #region Screen Events
-
-        private void btnLoadSong_Click(object sender, EventArgs e)
-        {
-            //Allow the MusicManager class to handle this event
-            musicmanager.btnLoadSong_Click(sender, e);
-        }
-
-        private void btnExit_Click(object sender, EventArgs e)
-        {
-            //Close program
-            this.Close();
-        }
-
-        private void btnSend2LocalFile_Click(object sender, EventArgs e)
-        {
-            //Allow the DatabaseManager class handle this event
-            databasemanager.btnSend2LocalFile_Click(sender, e);
-        }
-
-        private void btnSend2SDCard_Click(object sender, EventArgs e)
-        {
-            //Allow the DatabaseManager class to handle this event
-            databasemanager.btnSend2SDCard_Click(sender, e);
-        }
-
-        private void btnSendViaHTTP_Click(object sender, EventArgs e)
-        {
-            //Allow the DatabaseManager class to handle this event
-            databasemanager.btnSendViaHTTP_Click(sender, e);
-        }
-
-        private void btnEditRecord_Click(object sender, EventArgs e)
-        {
-            //Allow the DatabaseManager class to handle this event
-            databasemanager.btnEditRecord_Click(sender, e);
-        }
-
-        private void btnAdd2Project_Click(object sender, EventArgs e)
-        {
-            //Allow the DatabaseManager class to handle this event
-            int i = 0;
-            if (!musicmanager.timer.Text.ToString().Trim().Equals(""))
-            {
-                try
-                {
-                    i = int.Parse(musicmanager.timer.Text.ToString().Trim());
-                }catch(Exception ex)
-                {
-                    try
-                    {
-                        i = int.Parse(musicmanager.timer.Text.ToString().Trim().Split(':')[1]);
-                    }
-                    catch(Exception ex2)
-                    {
-
-                    }
-                }
-            }
-            databasemanager.btnAdd2Project_Click(sender, e, this, i, musicmanager.CurrentSongFilePath);
-        }
-
-        private void btnMCUIPSetup_Click(object sender, EventArgs e)
+        public List<String> mcuIPSetupAndWait()
         {
             //Declare variables
             List<String> ipAddresses = new List<string>();
@@ -270,7 +148,8 @@ namespace LEDLightingComposer
                     {
                         foundIPAddresses.Add(str, false);
                     }
-                }catch(Exception ex)
+                }
+                catch (Exception ex)
                 {
 
                 }
@@ -308,7 +187,8 @@ namespace LEDLightingComposer
                             //{
                             foundIPAddresses.Add(str, false);
                             //}
-                        }catch(Exception ex)
+                        }
+                        catch (Exception ex)
                         {
 
                         }
@@ -322,42 +202,213 @@ namespace LEDLightingComposer
                     waitDialogBox = null;
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show("No IP Address were found or another issue occurred: " + ex.Message);
             }
+
+            return ipAddresses;
         }
 
-        private void btnJump2Secs_Click(object sender, EventArgs e)
+        #endregion Public Methods
+
+        #region Private Methods       
+
+        /*
+            Function: updateLabelThreadProc
+                Spawns a new thread that in turn calls the updateLabel function and sleeps
+                for 1 second
+            Parameters: None
+
+            Returns: Nothing
+        */
+        private void updateLabelThreadProc()
         {
-            //Allow the MusicManager class to handle this event
-            musicmanager.btnJump2Secs_Click(sender, e);
+            while (musicmanager.isPlaying)
+            {
+                try
+                {
+                    this.BeginInvoke(new MethodInvoker(updateLabel));
+                }
+                catch (Exception ex)
+                {
+
+                }
+                System.Threading.Thread.Sleep(1000);
+            }
         }
 
-        private void chkPlayerDelayTime_CheckedChanged(object sender, EventArgs e)
+        /*
+            Function: updateLabel
+                Calls MusicManager class's update label to update timer textbox to match
+                Windows Media Player track time
+            
+            Parameter: None
+
+            Returns: Nothing
+        */
+        private void updateLabel()
         {
-            //Allow the MusicManager class to handle this event
-            musicmanager.chkPlayerDelayTime_CheckedChanged(sender, e);
+            musicmanager.updateLabel();
         }
 
-        private void WMPlayer_PositionChange(object sender, AxWMPLib._WMPOCXEvents_PositionChangeEvent e)
+        /*
+            Function: TimerCallback
+                Invalidates Windows Form so form can be redrawn (mainly for LED redrawing).  Also
+                calls LEDStripEffect's updateLEDEffects function from Drawing Manager if isPlaying 
+                is true for MusicManager class (meaning Windows Media Player is playing).
+
+            Parameters: object & eventargs
+
+            Returns: nothing
+        */
+        private void TimerCallback(object sender, EventArgs e)
         {
-            //Allow the MusicManager class to handle this event
-            musicmanager.WMPlayer_PositionChange(sender, e);
+            //Invalidate panel here?
+
+            //Call LEDStripEffect's updateLEDEffects function from DrawingManager if musicmanager's isPlaying is true
+            if (musicmanager.isPlaying && !musicmanager.settingUp)
+            {
+                //Invalidate Windows Form so screen can be redrawn
+                this.Invalidate();
+
+                //Update Effects Manager and its strips performance time
+                //EffectsManager.updatePerformance(EffectsManager.getElapsedTime(DateTime.Now.Millisecond));
+                EffectsManager.updatePerformance(EffectsManager.getElapsedTime());
+            }
+            return;
         }
 
-        private void WMPlayer_PlayStateChange(object sender, AxWMPLib._WMPOCXEvents_PlayStateChangeEvent e)
+        #endregion Private Methods
+
+        #region Screen Events
+
+        /*
+            Function: btnMCUIPSetup_Click
+                Calls mcuIPSetupAndWait method
+
+            Parameters: object & eventargs
+
+            Returns: Nothing
+        */
+        private void btnMCUIPSetup_Click(object sender, EventArgs e)
         {
-            //Allow the MusicManager class to handle this event
-            musicmanager.WMPlayer_PlayStateChange(sender, e);
+            //Call mcuIPSetupAndWait method
+            mcuIPSetupAndWait();
         }
 
+        #region DatabaseManager Class Handles
+
+        /*
+            Function: btnSend2LocalFile
+                Handled in DatabaseManager class
+            
+            Parameters: object and eventargs
+
+            Returns: Nothing
+        */
+        private void btnSend2LocalFile_Click(object sender, EventArgs e)
+        {
+            //Allow the DatabaseManager class handle this event
+            databasemanager.btnSend2LocalFile_Click(sender, e);
+        }
+
+        /*
+            Function: btnSend2SDCard_Click
+                Handled in DatabaseManager class
+            
+            Parameters: object and eventargs
+
+            Returns: Nothing
+        */
+        private void btnSend2SDCard_Click(object sender, EventArgs e)
+        {
+            //Allow the DatabaseManager class to handle this event
+            databasemanager.btnSend2SDCard_Click(sender, e);
+        }
+
+        /*
+            Function: btnSendViaHTTP_Click
+                Handled in DatabaseManager class
+            
+            Parameters: object and eventargs
+
+            Returns: Nothing
+        */
+        private void btnSendViaHTTP_Click(object sender, EventArgs e)
+        {
+            //Allow the DatabaseManager class to handle this event
+            databasemanager.btnSendViaHTTP_Click(sender, e);
+        }
+
+        /*
+            Function: btnEditRecord_Click
+                Handled in DatabaseManager class
+            
+            Parameters: object and eventargs
+
+            Returns: Nothing
+        */
+        private void btnEditRecord_Click(object sender, EventArgs e)
+        {
+            //Allow the DatabaseManager class to handle this event
+            databasemanager.btnEditRecord_Click(sender, e);
+        }
+
+        /*
+            Function: btnAdd2Project_Click
+                Handled in DatabaseManager class
+            
+            Parameters: object and eventargs
+
+            Returns: Nothing
+        */
+        private void btnAdd2Project_Click(object sender, EventArgs e)
+        {
+            //Allow the DatabaseManager class to handle this event
+            int i = 0;
+            if (!musicmanager.timer.Text.ToString().Trim().Equals(""))
+            {
+                try
+                {
+                    i = int.Parse(musicmanager.timer.Text.ToString().Trim());
+                }catch(Exception ex)
+                {
+                    try
+                    {
+                        i = int.Parse(musicmanager.timer.Text.ToString().Trim().Split(':')[1]);
+                    }
+                    catch(Exception ex2)
+                    {
+
+                    }
+                }
+            }
+            databasemanager.btnAdd2Project_Click(sender, e, this, i, musicmanager.CurrentSongFilePath);
+        }
+
+        /*
+            Function: dgvProjectData_CellDoubleClick
+                Handled in DatabaseManager class
+            
+            Parameters: object and eventargs
+
+            Returns: Nothing
+        */
         private void dgvProjectData_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             //Allow the DatabaseManager class to handle this event
             databasemanager.dgvProjectData_CellDoubleClick(sender, e);
         }
 
+        /*
+            Function: btnClearGrid_Click
+                Handled in DatabaseManager class
+            
+            Parameters: object and eventargs
+
+            Returns: Nothing
+        */
         private void btnClearGrid_Click(object sender, EventArgs e)
         {
             //Allow the DatabaseManager class to handle this event
@@ -367,17 +418,106 @@ namespace LEDLightingComposer
             this.Invalidate();
         }
 
+        /*
+            Function: btnOpenProject_Click
+                Handled in DatabaseManager class
+            
+            Parameters: object and eventargs
+
+            Returns: Nothing
+        */
         private void btnOpenProject_Click(object sender, EventArgs e)
         {
             //Allow the DatabaseManager class to handle this event
             databasemanager.btnOpenProject_Click(sender, e, this, composerDrawManager);
         }
 
-        private void LEDLightingComposer_FormClosing(object sender, FormClosingEventArgs e)
+        #endregion DatabaseManager Class Handles
+
+
+        #region MusicManager Class Handles
+
+        /*
+            Function: btnLoadSong_Click
+                Handled in MusicManager class
+            
+            Parameters: object and eventargs
+
+            Returns: Nothing
+        */
+        private void btnLoadSong_Click(object sender, EventArgs e)
         {
-            this.composerDrawManager = null;
+            //Allow the MusicManager class to handle this event
+            musicmanager.btnLoadSong_Click(sender, e);
         }
 
+        /*
+            Function: btnJump2Secs_Click
+                Handled in MusicManager class
+            
+            Parameters: object and eventargs
+
+            Returns: Nothing
+        */
+        private void btnJump2Secs_Click(object sender, EventArgs e)
+        {
+            //Allow the MusicManager class to handle this event
+            musicmanager.btnJump2Secs_Click(sender, e);
+        }
+
+        /*
+            Function: chkPlayerDelayTime_CheckedChanged
+                Handled in MusicManager class
+            
+            Parameters: object and eventargs
+
+            Returns: Nothing
+        */
+        private void chkPlayerDelayTime_CheckedChanged(object sender, EventArgs e)
+        {
+            //Allow the MusicManager class to handle this event
+            musicmanager.chkPlayerDelayTime_CheckedChanged(sender, e);
+        }
+
+        /*
+            Function: WMPlayer_PositionChange
+                Handled in MusicManager class
+            
+            Parameters: object and eventargs
+
+            Returns: Nothing
+        */
+        private void WMPlayer_PositionChange(object sender, AxWMPLib._WMPOCXEvents_PositionChangeEvent e)
+        {
+            //Allow the MusicManager class to handle this event
+            musicmanager.WMPlayer_PositionChange(sender, e);
+        }
+
+        /*
+            Function: WMPlayer_PlayStateChange
+                Handled in MusicManager class
+            
+            Parameters: object and eventargs
+
+            Returns: Nothing
+        */
+        private void WMPlayer_PlayStateChange(object sender, AxWMPLib._WMPOCXEvents_PlayStateChangeEvent e)
+        {
+            //Allow the MusicManager class to handle this event
+            musicmanager.WMPlayer_PlayStateChange(sender, e);
+        }
+
+        #endregion MusicManager Class Handles
+
+        /*
+            Function: OnPaint
+                Calls form's native paint function along with DrawingManager's "draw" function to
+                draw special components on top of base screen and within designated panel on screen
+
+            Parameters: painteventargs
+
+            Returns: Nothing
+        */
         protected override void OnPaint(PaintEventArgs e)
         {
             //Draw the form's native elements
@@ -394,6 +534,14 @@ namespace LEDLightingComposer
             }
         }
 
+        /*
+            Function: LEDLightingComposerCS_Resize
+                Redraw elements on screen to match new panel size if music is not playing
+
+            Parameters: object & eventargs
+
+            Returns: Nothing
+        */
         private void LEDLightingComposerCS_Resize(object sender, EventArgs e)
         {
             //Redraw LEDs on screen if necessary
@@ -402,6 +550,16 @@ namespace LEDLightingComposer
                 this.Invalidate();
                 databasemanager.updateProjectsInProjectGrid(this.lblProjectName.Text.ToString().Trim());
             }
+        }
+
+        /*
+            Function: btnExit_Click
+                Exit program
+        */
+        private void btnExit_Click(object sender, EventArgs e)
+        {
+            //Close program
+            this.Close();
         }
 
         #endregion Screen Events

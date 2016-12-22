@@ -1,4 +1,17 @@
-﻿using System;
+﻿/*
+	Author: Aaron Branch, Zach Jarmon, Peter Martinez
+	Created: 
+	Last Modified:
+	Class: MusicManager.cs
+	Class Description:
+		This class handles the Windows Media Player (AxWindowsMediaPlayer) component on screen and
+        events surrounding the component including song loading, playing state changes, and synchronize
+        selected WiFi modules when state changes to Play, Stop, and Pause if synchronization option is
+        selected
+
+*/
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -16,17 +29,24 @@ namespace LEDLightingComposer
         //Declare global variables
         private LEDLightingComposerCS llc;
         private SoundPlayer player;
+        private Button loadSong, jump2Secs;
+        private Label songName;
+        private WaitDialog waitDialogBox;
         public AxWindowsMediaPlayer player2;
         public Panel TrackBarPanel;
         public TrackBar trackBar;
         public CheckBox chkPlayerDelayTime;
         public TextBox timer, playerDelayTime;
-        private Button loadSong, jump2Secs;
-        private Label songName;
         public String currentSongFilePath;
         public bool isPlaying, settingUp;
-        private WaitDialog waitDialogBox;
 
+        /*
+            Default Constructor
+                Sets up global variables including passed screen elements and initialize
+                Windows Media Player component
+
+            Parameters: Classes, Media Player object, and screen elements
+        */
         public MusicManager(LEDLightingComposerCS LLC, AxWindowsMediaPlayer Player2, Button LoadSong, Button Jump2Secs, TextBox Timer, Panel TrackBarPanel, Label SongName, CheckBox ChkPlayerDelayTime, TextBox PlayerDelayTime)
         {
             //Set class variables to passed
@@ -58,19 +78,124 @@ namespace LEDLightingComposer
             player = new SoundPlayer();
         }
 
-        public void UpdateLabel()
+        #region Public Methods
+
+        /*
+            Function: updateLabel
+                Updates timer textbox onscreen to match windows media player's current position/time
+            
+            Parameters: Nothing
+
+            Returns: int - value of media player's current position/time in seconds
+        */
+        public int updateLabel()
         {
+            int iret = 0;
+
             try
             {
                 timer.Text = Convert.ToInt32(player2.Ctlcontrols.currentPosition).ToString();
                 timer.Update();
-                this.trackBar.Value = (int)this.player2.Ctlcontrols.currentPosition;
+                iret = (this.trackBar.Value = (int)this.player2.Ctlcontrols.currentPosition);
             }
             catch(Exception ex)
             {
 
             }
+
+            return iret;
         }
+
+        /*
+            Function: updateMusicPlayerAndTimerText
+                Updates timer textbox time to match Windows Media Player's time and updates EffectsManager
+                perforamnce which in turn updates led strips current lighting effect sequences
+
+            Parameters: Nothing
+
+            Returns: bool - true or false depending on if method runs and does not encounter an
+            Exception
+        */
+        public bool updateMusicPlayerAndTimerText()
+        {
+            //Declare variables
+            long jump2Secs = 0;
+            double currentPosition = 0;
+            String currentPositionString = "";
+            bool bret = false;
+
+            try
+            {
+                //Update timer text
+                //currentPositionString = this.player2.Ctlcontrols.currentPosition.ToString();
+                this.timer.Text = this.player2.Ctlcontrols.currentPositionString;
+                //this.timer.Text = convertTimeToSeconds(currentPositionString);
+                this.timer.Update();
+
+                //Update player position
+                currentPosition = double.Parse(convertTimeToSeconds(this.timer.Text.ToString().Trim()));
+                //player2.Ctlcontrols.currentPosition = currentPosition;
+
+                //Convert seconds to milliseconds for performance time
+                jump2Secs = (long)Math.Floor(currentPosition * 1000);
+
+                //Jump EffectsManager to current performance time
+                EffectsManager.findCurrentSeqFromPerformanceTime(jump2Secs);
+
+                bret = true;
+            }
+            catch (Exception ex) { }
+
+            return bret;
+        }
+
+        /*
+            Function: convertTimeToSeconds
+                Time from Windows Media Player usually comes in this format "00:45".  This method
+                formats the WMP format to show the time as seconds like the format .75
+
+            Parameters: String Time2Convert - string representation of time format that needs
+                to be converted
+
+            Returns: String - time converted into seconds as a float number
+        */
+        public String convertTimeToSeconds(String Time2Convert)
+        {
+            //Declare variables
+            String sRet = "";
+            String[] temp = { "" };
+
+            //Split ??:?? into hour, min, second
+            if (Time2Convert.Trim().Equals(""))
+            {
+                temp = ("00:00").Split(':');
+            }
+            else if (!Time2Convert.Contains(":"))
+            {
+                sRet = Time2Convert;
+                return sRet;
+            }
+            else
+            {
+                temp = Time2Convert.Split(':');
+            }
+
+            if (temp.Length > 2)
+            {
+                //Account for hours
+                sRet = Convert.ToUInt32(((float.Parse(temp[0]) * 3600) + (float.Parse(temp[1]) * 60) + float.Parse(temp[2]))).ToString();
+            }
+            else
+            {
+                //Only minutes and seconds
+                sRet = Convert.ToDouble(((float.Parse(temp[0]) * 60) + float.Parse(temp[1]))).ToString();
+            }
+
+            return sRet;
+        }
+
+        #endregion Public Methods
+
 
         #region Private Methods
 
@@ -78,42 +203,17 @@ namespace LEDLightingComposer
         #endregion Private Methods
 
 
-        #region Getters & Setters
-
-        public bool IsPlaying
-        {
-            get
-            {
-                return isPlaying;
-            }
-
-            set
-            {
-                isPlaying = value;
-            }
-        }
-
-        public string CurrentSongFilePath
-        {
-            get
-            {
-                return currentSongFilePath;
-            }
-
-            set
-            {
-                currentSongFilePath = value;
-            }
-        }
-
-        #endregion Getters & Setters
-
-
         #region Screen Events
 
         /*
             Function btnLoadSong_Click:
-            This function will load a song a filestream for playing via onscreen buttons
+                This function allows a user to choose a song from Windows Explorer
+                and loads the selected song into the Windows Media Player component.
+                The song plays right away...
+            
+            Parameters: object & eventargs
+
+            Returns: Nothing
         */
         public void btnLoadSong_Click(object sender, EventArgs e)
         {
@@ -154,7 +254,16 @@ namespace LEDLightingComposer
         }
 
         /*
+            Function: btnJump2Secs_Click
+                After the user enters a time (seconds) into the timer textbox and
+                presses the Jump 2 Secs button, this method will be fired and update
+                the Windows Media Player's current position to match user's entered
+                time.  The EffectsManager class is also called to update led strip's
+                performance to match updated time.
 
+            Parameters: object & eventargs
+
+            Returns: Nothing
         */
         public void btnJump2Secs_Click(object sender, EventArgs e)
         {
@@ -212,6 +321,13 @@ namespace LEDLightingComposer
         }
 
         /*
+            Function: chkPlayerDelayTime_CheckedChanged
+                Enables or disables the playerDelayTime textbox depending on if the
+                checkbox was just checked or unchecked
+
+            Parameters: object, eventargs
+
+            Returns: Nothing
         */
         public void chkPlayerDelayTime_CheckedChanged(object sender, EventArgs e)
         {
@@ -227,7 +343,13 @@ namespace LEDLightingComposer
         }
 
         /*
-            
+            Function: WMPlayer_PositionChange
+                Updates the timer textbox to match Windows Media Player's currentPosition time
+                as the player's currentPosition time changes
+
+            Parameters: object & AxWMPLib._WMPOCXEvents_PositionChangeEvent
+
+            Returns: Nothing
         */
         public void WMPlayer_PositionChange(object sender, AxWMPLib._WMPOCXEvents_PositionChangeEvent e)
         {
@@ -237,6 +359,16 @@ namespace LEDLightingComposer
         }
 
         /*
+            Function: WMPlayer_PlayStateChange
+                Method fires when the WMP changes its play state mainly between Play, Pause, and
+                Stop. This method will update EffectManager's peformance time, allow user to select
+                WiFi module ipaddresses to synchronize music with, and send https 
+                requests to synchronize WiFi modules/ProTrinket performance with playing music (Starts,
+                Stops, or Pauses) performance running on ProTrinket & LED Strips
+
+            Parameters: object & AxWMPLib._WMPOCXEvents_PlayStateChangeEvent
+
+            Returns: Nothing
         */
         public void WMPlayer_PlayStateChange(object sender, AxWMPLib._WMPOCXEvents_PlayStateChangeEvent e)
         {
@@ -297,8 +429,8 @@ namespace LEDLightingComposer
                                 return;
                             }
 
-                            //Send start signal and Synchronize MCUs
-                            if(!HttpRequestResponse.sendStartHTTPSCommand("STOP", llc.getSelectedIPAddresses(), null))
+                            //Send stop signal and Synchronize MCUs
+                            if(!HttpRequestResponse.sendHTTPSCommandToWiFiModules(HttpRequestResponse.Command.Stop, llc.getSelectedIPAddresses(), null))
                             {
                                 MessageBox.Show("Stopping performance on microcontrollers failed...");
                             }
@@ -354,8 +486,8 @@ namespace LEDLightingComposer
                                 return;
                             }
 
-                            //Send start signal and Synchronize MCUs
-                            if(!HttpRequestResponse.sendStartHTTPSCommand("PAUSE", llc.getSelectedIPAddresses(), null))
+                            //Send pause signal and Synchronize MCUs
+                            if(!HttpRequestResponse.sendHTTPSCommandToWiFiModules(HttpRequestResponse.Command.Pause, llc.getSelectedIPAddresses(), null))
                             {
                                 MessageBox.Show("Pausing performance on microcontrollers failed...");
                             }
@@ -413,12 +545,12 @@ namespace LEDLightingComposer
                             //Send performance time to update in mcus
                             if (llc.getSelectedIPAddresses() != null && llc.getSelectedIPAddresses().Count > 0)
                             {
-                                if (HttpRequestResponse.sendStartHTTPSCommand("UPDATETIME", llc.getSelectedIPAddresses(), Convert.ToString(Decimal.ToInt32(Decimal.Parse(convertTimeToSeconds(this.timer.Text)) * 1000))))
+                                if (HttpRequestResponse.sendHTTPSCommandToWiFiModules(HttpRequestResponse.Command.UpdateTime, llc.getSelectedIPAddresses(), Convert.ToString(Decimal.ToInt32(Decimal.Parse(convertTimeToSeconds(this.timer.Text)) * 1000))))
                                 {
                                     //Delay for a few seconds
                                     System.Threading.Thread.Sleep(1000);
                                     //Send start signal and Synchronize MCUs
-                                    if (!HttpRequestResponse.sendStartHTTPSCommand("START", llc.getSelectedIPAddresses(), null))
+                                    if (!HttpRequestResponse.sendHTTPSCommandToWiFiModules(HttpRequestResponse.Command.Start, llc.getSelectedIPAddresses(), null))
                                     {
                                         MessageBox.Show("Starting performance on microcontrollers failed...");
                                     }
@@ -526,74 +658,39 @@ namespace LEDLightingComposer
 
             settingUp = false;
         }
-
-        /*
-        */
-        public void updateMusicPlayerAndTimerText()
-        {
-            //Declare variables
-            long jump2Secs = 0;
-            double currentPosition = 0;
-            String currentPositionString = "";
-
-            try
-            {
-                //Update timer text
-                //currentPositionString = this.player2.Ctlcontrols.currentPosition.ToString();
-                this.timer.Text = this.player2.Ctlcontrols.currentPositionString;
-                //this.timer.Text = convertTimeToSeconds(currentPositionString);
-                this.timer.Update();
-
-                //Update player position
-                currentPosition = double.Parse(convertTimeToSeconds(this.timer.Text.ToString().Trim()));
-                //player2.Ctlcontrols.currentPosition = currentPosition;
-
-                //Convert seconds to milliseconds for performance time
-                jump2Secs = (long)Math.Floor(currentPosition * 1000);
-
-                //Jump EffectsManager to current performance time
-                EffectsManager.findCurrentSeqFromPerformanceTime(jump2Secs);
-            }catch(Exception ex) { }
-        }
-
-        /*
-           Convert "00:45" and like formats to .75
-        */
-        public String convertTimeToSeconds(String Time2Convert)
-        {
-            //Declare variables
-            String sRet = "";
-            String[] temp = { "" };
-
-            //Split ??:?? into hour, min, second
-            if (Time2Convert.Trim().Equals(""))
-            {
-                temp = ("00:00").Split(':');
-            }
-            else if (!Time2Convert.Contains(":"))
-            {
-                sRet = Time2Convert;
-                return sRet;
-            }
-            else
-            {
-                temp = Time2Convert.Split(':');
-            }
-
-            if(temp.Length > 2)
-            {
-                //Account for hours
-                sRet = Convert.ToUInt32(((float.Parse(temp[0]) * 3600) + (float.Parse(temp[1]) * 60) + float.Parse(temp[2]))).ToString();
-            }
-            else
-            {
-                //Only minutes and seconds
-                sRet = Convert.ToDouble(((float.Parse(temp[0])*60) + float.Parse(temp[1]))).ToString();
-            }
-
-            return sRet;
-        }
+        
 
         #endregion Screen Events
+
+
+        #region Getters & Setters
+
+        public bool IsPlaying
+        {
+            get
+            {
+                return isPlaying;
+            }
+
+            set
+            {
+                isPlaying = value;
+            }
+        }
+
+        public string CurrentSongFilePath
+        {
+            get
+            {
+                return currentSongFilePath;
+            }
+
+            set
+            {
+                currentSongFilePath = value;
+            }
+        }
+
+        #endregion Getters & Setters
     }
 }

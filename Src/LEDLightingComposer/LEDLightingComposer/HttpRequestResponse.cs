@@ -1,4 +1,15 @@
-﻿using System;
+﻿/*
+	Author: Aaron Branch, Zach Jarmon, Peter Martinez
+	Created: 
+	Last Modified:
+	Class: HttpRequestResponse.cs
+	Class Description:
+		This class handles communication between WiFi enabled devices via HTTPS requests and responses.  In this
+        program, this class specifically communicates with the WiFi modules connected to ProTrinket microcontrollers,
+        passing commands to the WiFi module which in turn relays to microcontrollers.
+*/
+
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -16,14 +27,22 @@ namespace LEDLightingComposer
     static class HttpRequestResponse
     {
         //Global variables
-        private static String ESP8266DNSPREFIX = "ESP_";
-        private static ConcurrentBag<String> ips;
-        private static List<String> iparray, endingIPS;
-        private static int waitTimeMiliSeconds = 7000;
-        private static short START = 0, PAUSE = 1, STOP = 2, UPDATETIME = 3;
-        public static bool sendSignalThreads;
+        private static String ESP8266DNSPREFIX = "ESP_"; //Allows for later filtering of returned ipaddress/hostname to only show ESP8266 WiFi Modules (Currently don't do b/c user may not have DNS)
+        private static ConcurrentBag<String> ips; //Allows for multiple threads to add to same list (thread safe list)
+        private static List<String> iparray, endingIPS; //iparray holds all ipaddress that are conjured for pinging on local network while endingIPS holds actually found ipaddresses on network (ipaddresses that returned pings)
+        private static int waitTimeMiliSeconds = 7000; //Default value for calling thread in sendStartHTTPSCommand to wait for spawned ping threads to return before killing all threads
+        private static short START = 0, PAUSE = 1, STOP = 2, UPDATETIME = 3; //Available commands to send to WiFi module through HTTPS request
+        public static bool sendSignalThreads; //Used to verify all selected WiFi modules returned a READY response
+        public enum Command { Start, Pause, Stop, UpdateTime}
 
         /*
+            Function: sendHTTPRequest
+                Sends an HTTP request to passed ip address with passed uri, parameter, bytes to send and waits for a response
+
+            Parameters: String IPAddress - remote device's/server's ip address, String Uri - uri for ip address local directory needed, 
+                String Parameter - parameter for uri, String BytesAsString - data to send to remote computer
+
+            Returns:WebResponse - the response from remote computer including http response variables
         */
         public static WebResponse sendHttpRequest(String IPAddress, String Uri, String Parameter, String BytesAsString)
         {
@@ -70,6 +89,15 @@ namespace LEDLightingComposer
         }
 
         /*
+            Function: sendHttpRequestNoResponse
+                Sends an HTTP request to passed ip address with passed uri, parameter, bytes to send and DOES NOT wait for a response
+                (Speeds up synchronization efforts since time is not wasted waiting for a respond to the command sent, allowing music and
+                performance on microcontroller to be more likely to start in synchrony)
+
+            Parameters: String IPAddress - remote computer's/server's ip address, String Uri - uri for ip address local directory needed, 
+                String Parameter - parameter for uri, String BytesAsString - data to send to remote computer
+
+            Returns: bool - true or false as to the success of the http request sent
         */
         public static bool sendHttpRequestNoResponse(String IPAddress, String Uri, String Parameter, String BytesAsString)
         {
@@ -122,6 +150,13 @@ namespace LEDLightingComposer
         }
 
         /*
+            Function: getResponse
+                Takes a WebResponse (HttpResponse), pulls response from remote device/server and converts retrieved data
+                as a string if status is OK
+
+            Parameters: WebResponse wr - http response matching previously sent http request
+
+            Returns: String - data in http response
         */
         public static String getResponse(WebResponse wr)
         {
@@ -169,8 +204,17 @@ namespace LEDLightingComposer
         }
 
         /*
+            Function: sendHTTPSCommandToWiFiModules
+                Sends commands (Play, Stop, Pause, Update Performance Time) to WiFi Modules as an https request that
+                the WiFi module will relay to connected microcontroller via Serial interface
+
+            Parameters: Command Command2Send - command to send to WiFi Module, MCUIPAddresses - list of ip address to send
+                command to (should only be ip addresses of valid ESP8266 WiFi modules or equivalent),
+                String SendString - if sending UpdateTime this will be current performance time in milliseconds as a string
+
+            Returns: bool - true or false as to the success of sending commands and all devices on other end of ipaddresses responding
         */
-        public static bool sendStartHTTPSCommand(String Type, List<String> mcuIPAddresses, String SendString)
+        public static bool sendHTTPSCommandToWiFiModules(Command Command2Send, List<String> MCUIPAddresses, String SendString)
         {
             //Declare variables
             Boolean[] esp8266sReady;
@@ -182,45 +226,45 @@ namespace LEDLightingComposer
             sendSignalThreads = false;
 
             //Verify ip address list is not empty and all values have been entered
-            foreach (String ip in mcuIPAddresses)
+            foreach (String ip in MCUIPAddresses)
             {
                 if (!ip.Trim().Equals(""))
                 {
                     iLoopCount += 1;
                 }
             }
-            if (iLoopCount == 0 || iLoopCount != mcuIPAddresses.Count)
+            if (iLoopCount == 0 || iLoopCount != MCUIPAddresses.Count)
             {
                 //Notify user that there is either nothing in list or not all values in list has values
                 //MessageBox.Show("Please validate that your ip addresses were entered correctly then retry sending...");
-                return false;
+                return bret;
             }
 
             //Reset iLoopCount and setup thread array
-            SynchronizedCommandSend scs;
-            Thread[] threads = new Thread[mcuIPAddresses.Count];
-            esp8266sReady = new Boolean[mcuIPAddresses.Count];
+            SynchronizedCommandSend scs = null;
+            Thread[] threads = new Thread[MCUIPAddresses.Count];
+            esp8266sReady = new Boolean[MCUIPAddresses.Count];
             iLoopCount = 0;
             Stopwatch stopWatch = new Stopwatch();
 
             /*Create a thread for each element in the list which will contact ESP8266 module and wait until all modules
             have responded with a ready signal before sending the start, stop, or restart signal*/
-            foreach (String ip in mcuIPAddresses)
+            foreach (String ip in MCUIPAddresses)
             {
-                if (Type.Equals("START"))
+                switch (Command2Send)
                 {
-                    scs = new SynchronizedCommandSend(esp8266sReady, ip, iLoopCount, START, null);
-                }
-                else if (Type.Equals("PAUSE"))
-                {
-                    scs = new SynchronizedCommandSend(esp8266sReady, ip, iLoopCount, PAUSE, null);
-                }
-                else if(Type.Equals("STOP"))
-                {
-                    scs = new SynchronizedCommandSend(esp8266sReady, ip, iLoopCount, STOP, null);
-                }else
-                {
-                    scs = new SynchronizedCommandSend(esp8266sReady, ip, iLoopCount, UPDATETIME, SendString);
+                    case Command.Start:
+                        scs = new SynchronizedCommandSend(esp8266sReady, ip, iLoopCount, START, null);
+                        break;
+                    case Command.Pause:
+                        scs = new SynchronizedCommandSend(esp8266sReady, ip, iLoopCount, PAUSE, null);
+                        break;
+                    case Command.Stop:
+                        scs = new SynchronizedCommandSend(esp8266sReady, ip, iLoopCount, STOP, null);
+                        break;
+                    case Command.UpdateTime:
+                        scs = new SynchronizedCommandSend(esp8266sReady, ip, iLoopCount, UPDATETIME, SendString);
+                        break;
                 }
 
                 threads[iLoopCount] = new Thread(new ThreadStart(scs.SynchronizedSend));
@@ -275,6 +319,15 @@ namespace LEDLightingComposer
         }
 
         /*
+            Function: getAllIPAddressesOnNetwork
+                Gets ip base (assumes a 192.168. network) for device program is running on, pings all devices on the network, and adds 
+                ip addresses whose device responded to a list to be returned
+
+            Parameters: None
+
+            Returns: List<String> - list of ip addresses whose device responded to ping (currently is not filtered to only return ESP8266s, but returns all devices.
+                To return only the ESP8266 ip addresses, one could check for "ESP_" in dns hostname and only return those, but this only works if there is a dns
+                server on network.  Attempts to allow ESP8266 to return its own hostname when pinged using the MDNResponder class failed to work)
         */
         public static List<String> getAllIPAddressesOnNetwork()
         {
@@ -326,7 +379,10 @@ namespace LEDLightingComposer
         }
 
         /*
-            Method getLocalBaseIP:
+            Function: getLocalBaseIP:
+                Returns the base ip address of the connected device (assumes a 192.168. network to filter out other network interfaces
+                attached to device (ex. Ethernet and WiFi interfaces - the program wouldn't know which device to send through unless
+                specified which could be an added functionality)
 
             Parameters:  None
 
@@ -363,6 +419,13 @@ namespace LEDLightingComposer
         }
 
         /*
+            Function: pingNetworkAddress
+                Pings the network address at the end of the global iparray.  This method is spawned in a new thread, so
+                using the global array removes the need to pass values through the thread intitialization
+
+            Parameters: Nothing
+
+            Returns: Nothing
         */
         private static void pingNetworkAddress()
         {
@@ -411,6 +474,12 @@ namespace LEDLightingComposer
         }
 
         /*
+            Function: p_PingCompleted
+                Callback function for pings (Currently not used as was not efficient as handling the completed pings myself)
+
+            Parameters: object & PingCompletedEventArgs parameters
+
+            Returns: Nothing
         */
         public static void p_PingCompleted(object sender, PingCompletedEventArgs e)
         {

@@ -1,0 +1,11 @@
+C:\Users\Abranch\Source\Repos\BionicBallerina\Src\LEDLightingComposer\LEDLightingComposer_Tests\bin\Release\LEDLightingComposer_Tests.dll
+C:\Users\Abranch\Source\Repos\BionicBallerina\Src\LEDLightingComposer\LEDLightingComposer_Tests\bin\Release\LEDLightingComposer_Tests.pdb
+C:\Users\Abranch\Source\Repos\BionicBallerina\Src\LEDLightingComposer\LEDLightingComposer_Tests\bin\Release\LEDLightingComposer.exe
+C:\Users\Abranch\Source\Repos\BionicBallerina\Src\LEDLightingComposer\LEDLightingComposer_Tests\bin\Release\Microsoft.VisualStudio.QualityTools.UnitTestFramework.dll
+C:\Users\Abranch\Source\Repos\BionicBallerina\Src\LEDLightingComposer\LEDLightingComposer_Tests\bin\Release\MySql.Data.dll
+C:\Users\Abranch\Source\Repos\BionicBallerina\Src\LEDLightingComposer\LEDLightingComposer_Tests\bin\Release\AxInterop.WMPLib.dll
+C:\Users\Abranch\Source\Repos\BionicBallerina\Src\LEDLightingComposer\LEDLightingComposer_Tests\bin\Release\Interop.WMPLib.dll
+C:\Users\Abranch\Source\Repos\BionicBallerina\Src\LEDLightingComposer\LEDLightingComposer_Tests\bin\Release\LEDLightingComposer.pdb
+C:\Users\Abranch\Source\Repos\BionicBallerina\Src\LEDLightingComposer\LEDLightingComposer_Tests\obj\Release\LEDLightingComposer_Tests.csprojResolveAssemblyReference.cache
+C:\Users\Abranch\Source\Repos\BionicBallerina\Src\LEDLightingComposer\LEDLightingComposer_Tests\obj\Release\LEDLightingComposer_Tests.dll
+C:\Users\Abranch\Source\Repos\BionicBallerina\Src\LEDLightingComposer\LEDLightingComposer_Tests\obj\Release\LEDLightingComposer_Tests.pdb

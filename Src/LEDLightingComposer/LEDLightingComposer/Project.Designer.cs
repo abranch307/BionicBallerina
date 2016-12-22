@@ -429,7 +429,7 @@
             this.Controls.Add(this.cBoxProjectName);
             this.Controls.Add(this.label1);
             this.Name = "Project";
-            this.Text = "Project";
+            this.Text = "Project Effects";
             this.ResumeLayout(false);
             this.PerformLayout();
 

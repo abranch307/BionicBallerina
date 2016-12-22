@@ -1,0 +1,48 @@
+Guide to connect battery to battery protection board.
+
+**What you will need before you start***
+
+Solder
+Soldering Iron
+2 HXT cables
+22 gauge wire(red,white,black)
+Female JST-XH connector
+Wire Strippers
+Zippy Compact 4000 Mah Battery
+20A 7.4V Battery Protection Board
+Volt Meter
+Electrical Tape
+
+**Step 1: Make Cables ***
+
+Solder red,black,white wires to JST-XH female connector so that the 
+connector will line up with the connector from the battery.
+
+Cut two HXT cables so its just the connector plug and two wires (red & black coming out).
+
+**Step 2: Solder Cables to Board ***
+
+Solder HXT connector ground cable(black wire) to P- pad on PCB.
+Solder HXT power cable(red wire) to P+ pad on PCB.
+Solder HXT connector ground cable(black wire) to B- pad on PCB.
+Solder HXT power cable(red wire) to B+ pad on PCB.
+Solder JST-XH power cable(red wire) to B+ pad on PCB.
+Solder JST-XH current sense cable(white wire) to COM pad on PCB.
+Solder JST-XH ground cable(black wire) to B- pad on PCB.
+
+** Step 3: Connect battery to board ***
+
+Plug in HXT connector from B+ & B- to battery connector.
+Plug in JST-XH connector from PCB board to battery JST-XH.
+
+
+** Step 4: Test ***
+
+Take reading from B+/B- pads. Should be 7.4V
+Take reading from COM pad, Should be one cell of battery, roughly 3.7V
+Take reading from P+/P- pads. Should be 7.4V
+
+** Step 5: Precaution *** 
+
+Tape off pads and all wires with electrical tape until needed. 
+

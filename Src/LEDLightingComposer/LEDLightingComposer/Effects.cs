@@ -1,4 +1,14 @@
-﻿using System;
+﻿/*
+	Author: Aaron Branch, Zach Jarmon, Peter Martinez
+	Created: 
+	Last Modified:
+	Class: Effects.cs
+	Class Description:
+		This class handles performing different pre-defined effects for led strips.  It aides in the simulating of an led strip on-screen
+        by updating of led elements' colors from drawableobjects according to the strips values and the effect being executed
+*/
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -29,6 +39,15 @@ namespace LEDLightingComposer
         public const byte BOUNCEBACK = 3;
         public const byte FLOWTHROUGH = 4;
 
+        #region Public Methods
+
+        /*
+            Function:
+
+            Parameters:
+
+            Returns:
+        */
         public static bool allClear(Strip strip, DrawingManager DrawManager)
         {
             //Declare variables
@@ -70,6 +89,13 @@ namespace LEDLightingComposer
             return bRet;
         }
 
+        /*
+            Function:
+
+            Parameters:
+
+            Returns:
+        */
         public static bool loadColor(Strip strip, DrawingManager DrawManager)
         {
             //Declare variables
@@ -137,6 +163,13 @@ namespace LEDLightingComposer
             return bRet;
         }
 
+        /*
+            Function:
+
+            Parameters:
+
+            Returns:
+        */
         public static bool bounceBack(Strip strip, DrawingManager DrawManager, int initHead, int initTail)
         {
             //Declare variables
@@ -235,6 +268,13 @@ namespace LEDLightingComposer
             return bRet;
         }
 
+        /*
+            Function:
+
+            Parameters:
+
+            Returns:
+        */
         public static bool flowThrough(Strip strip, DrawingManager DrawManager)
         {
             //Declare variables
@@ -273,12 +313,12 @@ namespace LEDLightingComposer
                 if (strip.IsRainbow)
                 {
                     //Reset p values
-                    strip.P0 = -1;
-                    strip.P1 = 0;
-                    strip.P2 = 1;
-                    strip.P3 = 2;
-                    strip.P4 = 3;
-                    strip.P5 = 4;
+                    strip.P0 = 0;
+                    strip.P1 = 1;
+                    strip.P2 = 2;
+                    strip.P3 = 3;
+                    strip.P4 = 4;
+                    strip.P5 = 5;
                 }
                 else
                 {
@@ -317,12 +357,12 @@ namespace LEDLightingComposer
                     //allClear(strip, DrawManager);
 
                     //Set specific pixels to rainbow colors
-                    try { dbo.Leds[strip.P0++].LEDColor = Effects.getColorFromCode(CLEAR, seq.brightness); } catch (Exception ex) { }
-                    try { dbo.Leds[strip.P1++].LEDColor = Effects.getColorFromCode(RED, seq.brightness); } catch (Exception ex) { }
-                    try { dbo.Leds[strip.P2++].LEDColor = Effects.getColorFromCode(ORANGE, seq.brightness); } catch (Exception ex) { }
-                    try { dbo.Leds[strip.P3++].LEDColor = Effects.getColorFromCode(YELLOW, seq.brightness); } catch (Exception ex) { }
-                    try { dbo.Leds[strip.P4++].LEDColor = Effects.getColorFromCode(GREEN, seq.brightness); } catch (Exception ex) { }
-                    try { dbo.Leds[strip.P5++].LEDColor = Effects.getColorFromCode(BLUE, seq.brightness); } catch (Exception ex) { }
+                    try { if (strip.P0 >= seq.totalPixels) { strip.P0++; } else { dbo.Leds[strip.P0++].LEDColor = Effects.getColorFromCode(CLEAR, seq.brightness); } } catch (Exception ex) { }
+                    try { if (strip.P1 >= seq.totalPixels) { strip.P1++; } else { dbo.Leds[strip.P1++].LEDColor = Effects.getColorFromCode(RED, seq.brightness); } } catch (Exception ex) { }
+                    try { if (strip.P2 >= seq.totalPixels) { strip.P2++; } else { dbo.Leds[strip.P2++].LEDColor = Effects.getColorFromCode(ORANGE, seq.brightness); } } catch (Exception ex) { }
+                    try { if (strip.P3 >= seq.totalPixels) { strip.P3++; } else { dbo.Leds[strip.P3++].LEDColor = Effects.getColorFromCode(YELLOW, seq.brightness); } } catch (Exception ex) { }
+                    try { if (strip.P4 >= seq.totalPixels) { strip.P4++; } else { dbo.Leds[strip.P4++].LEDColor = Effects.getColorFromCode(GREEN, seq.brightness); } } catch (Exception ex) { }
+                    try { if (strip.P5 >= seq.totalPixels) { strip.P5++; } else { dbo.Leds[strip.P5++].LEDColor = Effects.getColorFromCode(BLUE, seq.brightness); } } catch (Exception ex) { }
 
                     if (strip.P0 >= seq.totalPixels)
                     {
@@ -394,6 +434,13 @@ namespace LEDLightingComposer
             return bRet;
         }
 
+        /*
+            Function:
+
+            Parameters:
+
+            Returns:
+        */
         public static bool updateBrightness(Strip strip, DrawingManager DrawManager)
         {
             //Declare variables
@@ -425,17 +472,11 @@ namespace LEDLightingComposer
                 return bRet;
             }
 
-            //Default sequence brightness to 255 if necessary
-            if(seq.brightness == 0)
-            {
-                seq.brightness = 255;
-            }
-
             //Update brightness if necessary
-            if (seq.incrBrightness != 0)
+            if (strip.IncrementBrightness)
             {
                 //Add incr to brightness
-                seq.brightness = seq.brightness += seq.incrBrightness;
+                seq.brightness += seq.incrBrightness;
 
                 if (seq.brightness > 255)
                 {
@@ -453,7 +494,10 @@ namespace LEDLightingComposer
                 {
                     try
                     {
-                        dbo.Leds[(i + strip.ShiftPixelBy)].updateBrightness(seq.brightness);
+                        if ((i + strip.ShiftPixelBy) < seq.totalPixels && (i + strip.ShiftPixelBy) >= 0)
+                        {
+                            dbo.Leds[(i + strip.ShiftPixelBy)].updateBrightness(seq.brightness);
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -468,7 +512,10 @@ namespace LEDLightingComposer
                 {
                     try
                     {
-                        dbo.Leds[(i + strip.ShiftPixelBy)].updateBrightness(seq.brightness);
+                        if ((i + strip.ShiftPixelBy) < seq.totalPixels && (i + strip.ShiftPixelBy) >= 0)
+                        {
+                            dbo.Leds[(i + strip.ShiftPixelBy)].updateBrightness(seq.brightness);
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -486,6 +533,11 @@ namespace LEDLightingComposer
         }
 
         /*
+            Function:
+
+            Parameters:
+
+            Returns:
         */
         public static Color getColorFromCode(int ColorCode, int Brightness)
         {
@@ -528,6 +580,11 @@ namespace LEDLightingComposer
         }
 
         /*
+            Function:
+
+            Parameters:
+
+            Returns:
         */
         public static String getEffectFromCode(int EffectCode)
         {
@@ -559,6 +616,11 @@ namespace LEDLightingComposer
         }
 
         /*
+            Function:
+
+            Parameters:
+
+            Returns:
         */
         public static Color updateBrightness(Color CLR, int Brightness)
         {
@@ -566,40 +628,11 @@ namespace LEDLightingComposer
 
             try
             {
-                float correctionFactor = -((float)Brightness / (float)255);
-                //float red = ((255 - clr.R) * correctionFactor) + clr.R;
-                //float green = ((255 - clr.G) * correctionFactor) + clr.G;
-                //float blue = ((255 - clr.B) * correctionFactor) + clr.B;
-                //int alpha = (int)(clr.A * correctionFactor) + clr.A;
-                //float correctionFactor = ((float)Brightness / (float)255);
-                //float red = 255 - (clr.R * correctionFactor);
-                //float green = 255 - (clr.G * correctionFactor);
-                //float blue = 255 - (clr.B * correctionFactor);
-                //if (red < 0) { red = 0; }else if(red > 255) { red = 255; }
-                //if (green < 0) { green = 0; } else if (green > 255) { green = 255; }
-                //if (blue < 0) { blue = 0; } else if (blue > 255) { blue = 255; }
-                //if (alpha < 0) { alpha = 0; } else if (alpha > 255) { alpha = 255; }
-
-                //float red = (float)clr.R;
-                //float green = (float)clr.G;
-                //float blue = (float)clr.B;
-
-                //if (correctionFactor < 0)
-                //{
-                //    correctionFactor = 1 + correctionFactor;
-                //    red *= correctionFactor;
-                //    green *= correctionFactor;
-                //    blue *= correctionFactor;
-                //}
-                //else
-                //{
-                //    red = (255 - red) * correctionFactor + red;
-                //    green = (255 - green) * correctionFactor + green;
-                //    blue = (255 - blue) * correctionFactor + blue;
-                //}
-
-                //clr = Color.FromArgb(clr.A, Math.Max(Math.Min((int)red, 0), 255), Math.Max(Math.Min((int)green, 0), 255), (Math.Max(Math.Min((int)blue, 0), 255)));
-                //clr = Color.FromArgb(alpha, clr.R, clr.G, clr.B);
+                float correctionFactor = ((float)Brightness / (float)255);
+                int red = ((int)(clr.R * correctionFactor) > 255) ? 255 : (int)(clr.R * correctionFactor);
+                int green = ((int)(clr.G * correctionFactor) > 255) ? 255 : (int)(clr.G * correctionFactor);
+                int blue = ((int)(clr.B * correctionFactor) > 255) ? 255 : (int)(clr.B * correctionFactor);
+                clr = Color.FromArgb(clr.A, red, green, blue);
             }
             catch(Exception ex)
             {
@@ -608,5 +641,8 @@ namespace LEDLightingComposer
 
             return clr;
         }
+
+
+        #endregion Public Methods
     }
 }

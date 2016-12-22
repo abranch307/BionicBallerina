@@ -1,4 +1,13 @@
-﻿using System;
+﻿/*
+	Author: Aaron Branch, Zach Jarmon, Peter Martinez
+	Created: 
+	Last Modified:    
+	Class: Structs.cs
+	Class Description:
+		This class holds different struct elements needed by other classes 
+*/
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -26,7 +35,7 @@ namespace LEDLightingComposer
             public ushort iterations { get; set; }
             public Int16 brightness { get; set; }
             public Int16 incrBrightness { get; set; }
-            public float brightnessDelayTime { get; set; }
+            public Int32 brightnessDelayTime { get; set; }
         };
 
         struct StripInfo

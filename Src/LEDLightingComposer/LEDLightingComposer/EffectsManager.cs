@@ -1,4 +1,15 @@
-﻿using System;
+﻿/*
+	Author: Aaron Branch, Zach Jarmon, Peter Martinez
+	Created: 
+	Last Modified:    
+	Class: EffectsManager.cs
+	Class Description:
+		This class controls the synchronization of the leds drawn on screen with the music by keeping track of the
+        elapsed time between calls to this function and sending the elapsed time to the simulated led strip so it
+        can update its led components before being drawn to screen
+*/
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -29,6 +40,15 @@ namespace LEDLightingComposer
             continueFromCurrentTime = false;
         }
 
+        #region Public Methods
+
+        /*
+            Function:
+
+            Parameters:
+
+            Returns:
+        */
         public static bool updatePerformance(long elapsedTime)
         {
             //Declare variables
@@ -57,6 +77,13 @@ namespace LEDLightingComposer
             return bRet;
         }
 
+        /*
+            Function:
+
+            Parameters:
+
+            Returns:
+        */
         public static bool replaceStrips(DataGridView dgv)
         {
             //Declare variables
@@ -99,6 +126,13 @@ namespace LEDLightingComposer
             return bRet;
         }
 
+        /*
+            Function:
+
+            Parameters:
+
+            Returns:
+        */
         public static long getElapsedTime()
         {
             //Declare variables
@@ -129,6 +163,13 @@ namespace LEDLightingComposer
             return elapsedTime;
         }
 
+        /*
+            Function:
+
+            Parameters:
+
+            Returns:
+        */
         public static long resetPerformanceTime()
         {
             //Reset global variables
@@ -146,6 +187,13 @@ namespace LEDLightingComposer
             return performanceElapsedTime;
         }
 
+        /*
+            Function:
+
+            Parameters:
+
+            Returns:
+        */
         public static bool findCurrentSeqFromPerformanceTime(long performanceTime)
         {
             //Declare variables
@@ -168,6 +216,13 @@ namespace LEDLightingComposer
             return bRet;
         }
 
+        /*
+            Function:
+
+            Parameters:
+
+            Returns:
+        */
         public static bool updateStripsBrightness()
         {
             bool bRet = true;
@@ -192,6 +247,13 @@ namespace LEDLightingComposer
             return bRet;
         }
 
+        /*
+            Function:
+
+            Parameters:
+
+            Returns:
+        */
         public static Structs.LightingSequence createAddLSeqStruct(List<Structs.LightingSequence> LSeqs, int LightSequence, int NumPixels, String[] PixelPositions, String[] Colors, float DelayTime, float Duration, int Bounces, int Iterations, int Brightness, int IncrBrightness, float BrightnessDelayTime)
         {
             //Declare variables
@@ -251,7 +313,7 @@ namespace LEDLightingComposer
                 iterations = (ushort)Iterations,
                 brightness = (short)Brightness,
                 incrBrightness = (short)IncrBrightness,
-                brightnessDelayTime = BrightnessDelayTime};
+                brightnessDelayTime = (int)(BrightnessDelayTime * 1000)};
 
             if (LSeqs != null)
             {
@@ -261,6 +323,13 @@ namespace LEDLightingComposer
             return temp;
         }
 
+        /*
+            Function:
+
+            Parameters:
+
+            Returns:
+        */
         public static List<Structs.LightingSequence> createAllLSeqsFromGrid(String Type, String Value1, DataGridView dgv)
         {
             //Declare variables
@@ -304,6 +373,13 @@ namespace LEDLightingComposer
             return lSeqRet;
         }
 
+        /*
+            Function:
+
+            Parameters:
+
+            Returns:
+        */
         public static Stopwatch StopWatch
         {
             get
@@ -317,6 +393,11 @@ namespace LEDLightingComposer
             }
         }
 
+        #endregion Public Methods
+
+
+        #region Getters & Setters
+
         public static List<Strip> StripsArray
         {
             get
@@ -324,6 +405,8 @@ namespace LEDLightingComposer
                 return stripsArray;
             }
         }
+
+        #endregion Getters & Setters
 
     }
 }
