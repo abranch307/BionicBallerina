@@ -1,6 +1,13 @@
-// 
-// 
-// 
+/*
+	Author: Aaron Branch, Zach Jarmon, Peter Martinez
+	Created:
+	Last Modified: 12/16/2016
+	Class: Effects.cpp
+	Class Description: Methods within are pre programmed effects that the strips of LEDs can implement. Any method below
+		could be implemented just with the setSinglePixelColor method, but for ease more are provided.
+	
+
+*/ 
 
 #ifndef _EFFECTS_h
 	#include "Effects.h"
@@ -10,6 +17,13 @@
 
 CommaDelimitReturn Effects::cdrColor;
 
+/*
+	Method: allClear
+	Parameters: strip: Adafruit_DotStar*, lseqs: LightingSequence*, currentSequence: uint16_t, PassedStripClass: Strip*
+	Return: void
+	Description: Turns all LEDs off on the given strip. 
+	
+*/
 void Effects::allClear(Adafruit_DotStar* strip, LightingSequence* lseqs, uint16_t currentSequence, Strip* PassedStripClass) {
 	//Exit if invalid pointers passed
 	if (strip == NULL) {
@@ -33,7 +47,13 @@ void Effects::allClear(Adafruit_DotStar* strip, LightingSequence* lseqs, uint16_
 	//Show new effects
 	strip->show();
 }
-
+/*
+	Method: loadColor
+	Parameters: strip: Adafruit_DotStar*, lseqs: LightingSequence*, currentSequence: uint16_t, shiftPixelToLoad: uint16_t, PassedStripClass: Strip*
+	Return: void
+	Description: Sets a group of pixels to values given in PassedStripClass's color field, in positions specified by PassedStripClass.
+	
+*/
 void Effects::loadColor(Adafruit_DotStar* strip, LightingSequence* lseqs, uint16_t currentSequence, uint16_t shiftPixelToLoad, Strip* PassedStripClass) {
 	//Exit if invalid pointers passed
 	if (strip == NULL) {
@@ -66,7 +86,13 @@ void Effects::loadColor(Adafruit_DotStar* strip, LightingSequence* lseqs, uint16
 	//Show new effects
 	strip->show();
 }
-
+/*
+	Method: bounceBack
+	Parameters: strip: Adafruit_DotStar*, lseqs: LightingSequence*, currentSequence: uint16_t, init: bool*, forward: bool*, shiftPixelsBy: int16_t, tail: int16_t, head: int16_t, bounces: int16_t, initHead: uint16_t, initTail: uint16_t, PassedStripClass: Strip*
+	Return: void
+	Description: Given positions in PassedStripClass, take a block of LEDs and shift them forwards along the strip until they hit the end, then shift them backward until they hit the forward. 
+	
+*/
 void Effects::bounceBack(Adafruit_DotStar* strip, LightingSequence* lseqs, uint16_t currentSequence, bool* init, bool* forward, int16_t *shiftPixelsBy, int16_t* tail, int16_t* head, uint16_t* bounces, uint16_t initHead, uint16_t initTail, Strip* PassedStripClass) {
 	//Exit if invalid pointers passed
 	if (strip == NULL) {
@@ -133,7 +159,13 @@ void Effects::bounceBack(Adafruit_DotStar* strip, LightingSequence* lseqs, uint1
 	//Show effect on led
 	strip->show();
 }
-
+/*
+	Method: flowThrough
+	Parameters: strip: Adafruit_DotStar*, lseqs: LightingSequence*, currentSequence: uint16_t, i: int16_t*, isRainbow: bool, p0: int16_t, p1: int16_t, p2: int16_t, p3: int16_t, p4: int16_t, p5: int16_t, virtualPixelIndexArray: int16_t, PassedStripClass: Strip*
+	Return: void
+	Description: Given colors and positions in PassedStripClass, take a sequence of LEDs, and move them forward in the strip. Once the end is reached, move each pixel one by one to the beginning of the strip. 
+	
+*/
 void Effects::flowThrough(Adafruit_DotStar* strip, LightingSequence* lseqs, uint16_t currentSequence, int16_t* i, bool isRainbow, int16_t* p0, int16_t* p1, int16_t* p2, int16_t* p3, int16_t* p4, int16_t* p5, int16_t* virtualPixelIndexArray, Strip* PassedStripClass) {
 	//Exit if invalid pointers passed
 	if (strip == NULL) {
@@ -250,6 +282,11 @@ void Effects::flowThrough(Adafruit_DotStar* strip, LightingSequence* lseqs, uint
 }
 
 /*
+	Method: setSinglePixelColor
+	Parameters: strip: Adafruit_DotStar*, lseqs: LightingSequence*, pixelElem: uint16_t, color: uint16_t
+	Return: void
+	Description: set a single pixel to a color
+	
 */
 void Effects::setSinglePixelColor(Adafruit_DotStar* strip, LightingSequence* lseqs, uint16_t pixelElem, uint16_t color) {
 	//Exit if invalid pointers passed
@@ -298,6 +335,12 @@ void Effects::setSinglePixelColor(Adafruit_DotStar* strip, LightingSequence* lse
 }
 
 /*
+	Method: updateBrightness
+	Parameters: strip: Adafruit_DotStar*, lseqs: LightingSequence*, uint16_t: currentSequence
+	Return: void
+	Description: If the incrBrightness variable is not zero, increment or decrement brightness by that value, otherwise set to default brightness specified in sequence.
+				 If max brightness or minimum brightness is reached while using incrBrightness, multiply incrBrightness by -1.
+	
 */
 void Effects::updateBrightness(Adafruit_DotStar* strip, LightingSequence* lseqs, uint16_t currentSequence) {
 	//Update brightness if necessary
@@ -324,6 +367,11 @@ void Effects::updateBrightness(Adafruit_DotStar* strip, LightingSequence* lseqs,
 }
 
 /*
+	Method: getNextCommaDelimitedColorToken
+	Parameters: String: const char*, BegPosition: uint16_t
+	Return: void
+	Description: split a given string into color/position pairs. 
+	
 */
 void Effects::getNextCommaDelimitedColorToken(const char* String, uint16_t BegPosition) {
 	//Declare variables
@@ -376,7 +424,13 @@ void Effects::getNextCommaDelimitedColorToken(const char* String, uint16_t BegPo
 	cdrColor.nextBegPosition = iret.nextBegPosition;
 	cdrColor.value = iret.value;
 }
-
+/*
+	Method: getHeadTailofLED
+	Parameters: Type: const char *, Colors: const char *, TotalPixels: uint16_t
+	Return: tailOrHead: uint16_t
+	Description: determine the head or tail (depending on when called) of the block of LEds in a sequence
+	
+*/
 uint16_t Effects::getHeadTailofLED(const char* Type, const char* Colors, uint16_t TotalPixels) {
 	//Declare variables
 	int elem = 0, tailOrHead = -1;

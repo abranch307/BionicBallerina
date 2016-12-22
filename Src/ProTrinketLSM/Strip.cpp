@@ -1,6 +1,13 @@
-// 
-// 
-// 
+/*
+	Author: Aaron Branch, Zach Jarmon, Peter Martinez
+	Created:
+	Last Modified: 12/16/2016
+	Class: Strip.cpp
+	Class Description: Class keeps track of information associated with different strips of LEDs. Uses all basic information associated with Adafruit_DotStar
+		class and adds more to keep track of.
+	
+
+*/ 
 
 #ifndef _EFFECTS_h
 	#include "Effects.h"
@@ -22,8 +29,15 @@ Strip::Strip(uint16_t NumPixels, uint8_t Datapin, uint8_t ClockPin, uint8_t RGB,
 	countSeqs = numSeqs;
 }
 
-//CommaDelimitReturn Effects::cdrPixel, Effects::cdrColor;
 
+/*
+	Method: Update
+	Parameters: currentPerformanceTime: unsigned long
+	Return: void
+	Description: This is where most of the work is done. Make sure we aren't passed designated time or sequence, read the next sequence, and call
+		the method that will update the strip of LEDs. 
+	
+*/
 void Strip::Update(unsigned long currentPerformanceTime) {
 	//Declare variables
 	unsigned long roundedDuration = 0;
@@ -129,44 +143,110 @@ void Strip::Update(unsigned long currentPerformanceTime) {
 	}
 }
 
+/*
+	Method: setColor
+	Parameters: pixel: uint16_t, color: uint32_t
+	Return: void
+	Description: set a single pixel to a single color.
+	
+*/
 void Strip::setColor(uint16_t pixel, uint32_t color) {
 	strip.setPixelColor(pixel, color);
 }
 
+/*
+	Method: getStrip
+	Parameters: none
+	Return: strip: Adafruit_DotStar *
+	Description: Return point to Adafruit_DotStar object associated with this strip
+	
+*/
 Adafruit_DotStar* Strip::getStrip() {
 	return &strip;
 }
 
+/*
+	Method: getProceed
+	Parameters: none
+	Return: proceed: bool
+	Description: Return proceed
+	
+*/
 bool Strip::getProceed() {
 	return proceed;
 }
 
+/*
+	Method: getCurrentSeq
+	Parameters: none
+	Return: uint16_t
+	Description: Return currentSequence
+	
+*/
 uint16_t Strip::getCurrentSeq() {
 	return currentSequence;
 }
-
+/*
+	Method: getCountSeqs
+	Parameters: none
+	Return: countSeqs: uint16_t
+	Description: Return countSeqs
+	
+*/
 uint16_t Strip::getCountSeqs() {
 	return countSeqs;
 }
 
+/*
+	Method: getCurrentDuration
+	Parameters: none
+	Return: currentDuration: unsigned long
+	Description: Return currentDuration
+	
+*/
 unsigned long Strip::getCurrentDuration() {
 	return currentDuration;
 }
 
+/*
+	Method: getPrevDuration
+	Parameters: none
+	Return: prevDuration: unsigned long
+	Description: Return prevDuration
+	
+*/
 unsigned long Strip::getPrevDuration() {
 	return prevDuration;
 }
 
+/*
+	Method:  getPrevSeqTimesAccumulated
+	Parameters: none
+	Return: prevSeqTimesAccumulated: unsigned long
+	Description: Return prevSeqTimesAccumulated
+	
+*/
 unsigned long Strip::getPrevSeqTimesAccumulated() {
 	return prevSeqTimesAccumulated;
 }
 
+/*
+	Method: getEffectNum
+	Parameters: none
+	Return: current effect we are on.
+	Description: Return current effect number.
+	
+*/
 uint8_t Strip::getEffectNum() {
 	return lseqs[currentSequence].lightsequence;
 }
 
 /*
-	Should i always be resetting the p values?
+	Method: resetGlobalVars
+	Parameters: none
+	Return: true of succesfull, false if not
+	Description: Reset variables associated with sequences, so the next one can use them without issue.
+	
 */
 bool Strip::resetGlobalVars() {
 	//currentSequence = 0;
@@ -176,7 +256,13 @@ bool Strip::resetGlobalVars() {
 
 	return true;
 }
-
+/*
+	Method: resetPerformance
+	Parameters: none
+	Return: true if succesfull, false otherwise
+	Description: reset all sequence variables, and set currentSequence to 0.
+	
+*/
 bool Strip::resetPerformance() {
 	//Reset global variables
 	currentSequence = 0;
@@ -186,6 +272,13 @@ bool Strip::resetPerformance() {
 	return true;
 }
 
+/*
+	Method: findCurrentSeqFromPerformanceTime
+	Parameters: performanceTime: unsigned long
+	Return: true if found, false otherwise.
+	Description: Based on current time, make sure we are using the correct sequence. Correct currentSequence variable if not.
+	
+*/
 bool Strip::findCurrentSeqFromPerformanceTime(unsigned long performanceTime) {
 	//Declare variables
 	LightingSequence temp;
@@ -223,10 +316,24 @@ bool Strip::findCurrentSeqFromPerformanceTime(unsigned long performanceTime) {
 	
 }
 
+/*
+	Method:  getCurrentLightingSequence
+	Parameters: none
+	Return: LightingSequence*
+	Description: return the current sequence being run by the strip.
+	
+*/
 LightingSequence* Strip::getCurrentLightingSequence() {
 	return &lseqs[currentSequence];
 }
 
+/*
+	Method: getLightingSequences
+	Parameters: none
+	Return: lseqs: LightingSequence *
+	Description: Return lighting sequences associated with this strip
+	
+*/
 LightingSequence* Strip::getLightingSequences() {
 	return lseqs;
 }
